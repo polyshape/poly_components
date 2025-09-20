@@ -201,7 +201,6 @@ export function ButtonDropdownExample() {
 Notes
 
 - The small arrow aligns under the chevron; if you set `hideChevron`, it centers under the button. You can nudge it with `styles.dropdownArrow.offsetX` or fully override using `left`/`right`.
-- The dropdown includes a tiny invisible hover buffer to prevent flicker moving from the trigger to the menu.
 
 ### Example: Nav (top/side) and NavSmall (mobile)
 
