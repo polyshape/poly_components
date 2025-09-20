@@ -287,8 +287,6 @@ export default function Nav(props: NavProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const measureRef = useRef<HTMLDivElement | null>(null);
   const [visibleCount, setVisibleCount] = useState<number>(items.length);
-  const [moreOpen, setMoreOpen] = useState<boolean>(false);
-  const isTestEnv = typeof process !== 'undefined' && !!(process as any)?.env && (((process as any).env.VITEST) || (process as any).env.NODE_ENV === 'test');
   useEffect(() => {
     if (typeof window === "undefined") return;
     const check = () => setIsSmall(window.innerWidth < responsiveBreakpoint);
@@ -300,10 +298,6 @@ export default function Nav(props: NavProps) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (disableOverflow) {
-      setVisibleCount(items.length);
-      return;
-    }
-    if (isTestEnv) {
       setVisibleCount(items.length);
       return;
     }
@@ -374,7 +368,6 @@ export default function Nav(props: NavProps) {
       }, 0);
       if (totalUsed <= effectiveWidth) {
         setVisibleCount(items.length);
-        setMoreOpen(false);
         return;
       }
 
@@ -417,7 +410,7 @@ export default function Nav(props: NavProps) {
       window.cancelAnimationFrame(raf);
       window.removeEventListener('resize', calc);
     };
-  }, [items, variant, isSmall, isTestEnv, disableOverflow, overflowMeasure, overflowAvailableWidth]);
+  }, [items, variant, isSmall, disableOverflow, overflowMeasure, overflowAvailableWidth]);
   const [open, setOpen] = useState<Set<string>>(new Set(defaultOpenIds));
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -714,8 +707,8 @@ export default function Nav(props: NavProps) {
             </div>
           )}
         </nav>
-        {/* Hidden measurer for computing widths (not rendered in tests) */}
-        {!isTestEnv && !disableOverflow && (
+        {/* Hidden measurer for computing widths (skip via disableOverflow, e.g. in tests) */}
+        {!disableOverflow && (
           <div
             className={classes.hiddenMeasure}
             ref={measureRef as any}
