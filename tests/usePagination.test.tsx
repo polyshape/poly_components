@@ -1,9 +1,15 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ReactNode } from "react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useSearchParams } from "react-router-dom";
 import { usePagination } from "../src/pagination/usePagination";
+import { setup } from "../src/pagination/enableRouterIntegration";
+
+// Setup React Router integration for tests
+beforeEach(() => {
+  setup({ useSearchParams });
+});
 
 function HookProbe({ items, pageSize }: { items: number[]; pageSize: number }) {
   const { visible, currentPage, totalPages, setPage } = usePagination(items, pageSize);

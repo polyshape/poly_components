@@ -1,2 +1,3 @@
 export { default as Pagination } from "./Pagination";
-export { usePagination } from "./usePagination";
+export { usePagination, setReactRouterHooks } from "./usePagination";
+export { setup } from "./enableRouterIntegration";

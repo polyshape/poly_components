@@ -89,7 +89,7 @@ import { Pagination, usePagination } from "@polyutils/components";
 const items = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
 
 function Example() {
-  // Default: uses React Router if available, falls back to local state otherwise
+  // Automatically syncs with browser URL if React Router is configured
   const { visible, currentPage, totalPages, setPage } = usePagination(items, 5);
 
   return (
@@ -111,7 +111,26 @@ function Example() {
 }
 ```
 
-#### Router-agnostic usage
+#### React Router Integration
+
+To enable automatic URL synchronization with React Router, call the setup function once in your app's main entry point:
+
+```tsx
+// In your main.tsx/main.ts
+import { setup } from "@polyutils/components/pagination/enableRouterIntegration";
+import { useSearchParams } from "react-router-dom";
+
+setup({ useSearchParams });
+```
+
+After setup, `usePagination` will automatically:
+
+- Read the current page from URL parameters (`?page=3`)
+- Update the URL when pagination changes
+- Work with browser back/forward navigation
+- Fall back to local state if React Router is not available
+
+#### Manual State Management
 
 You can provide custom page state management via options:
 
@@ -123,7 +142,7 @@ const { visible, currentPage, totalPages } = usePagination(items, 5, {
 });
 ```
 
-If you do not use React Router, or want to control pagination state yourself, pass `getPage` and `setPageParam` to usePagination. Otherwise, it will use React Router's URL state if available, or local state as a fallback.
+Use `getPage` and `setPageParam` options when you want full control over pagination state, or when using a different routing solution.
 
 ### Example: Button
 

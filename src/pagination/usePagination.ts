@@ -1,11 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import { flushSync } from "react-dom";
-declare const require: undefined | ((moduleId: string) => any);
 
 type PaginationOptions = {
   getPage?: () => number | undefined;
   setPageParam?: (n: number) => void;
 };
+
+// This will be set by the consuming app if they want React Router integration
+let reactRouterHooks: {
+  useSearchParams: () => [URLSearchParams, (params: URLSearchParams, opts?: { replace?: boolean }) => void];
+} | null = null;
+
+// Function to register React Router hooks (called by consuming app)
+export function setReactRouterHooks(hooks: {
+  useSearchParams: () => [URLSearchParams, (params: URLSearchParams, opts?: { replace?: boolean }) => void];
+}) {
+  reactRouterHooks = hooks;
+}
 
 export function usePagination<T>(items: T[], pageSize: number, options?: PaginationOptions) {
   const normalizedSize = Math.max(1, Math.floor(pageSize || 1));
@@ -19,18 +30,15 @@ export function usePagination<T>(items: T[], pageSize: number, options?: Paginat
   let useRouter = false;
   let params: URLSearchParams | undefined = undefined;
   let setParams: ((next: URLSearchParams, opts?: { replace?: boolean }) => void) | undefined = undefined;
-  try {
-    if (!getPage && !setPageParam && typeof require === 'function') {
-      const maybeRouter = require('react-router-dom') as {
-        useSearchParams?: () => [URLSearchParams, (next: URLSearchParams, opts?: { replace?: boolean }) => void];
-      };
-      const hook = maybeRouter?.useSearchParams;
-      if (typeof hook === 'function') {
-        [params, setParams] = hook();
-        useRouter = true;
-      }
+  
+  if (!getPage && !setPageParam && reactRouterHooks) {
+    try {
+      [params, setParams] = reactRouterHooks.useSearchParams();
+      useRouter = true;
+    } catch {
+      // Router hooks failed, fall back to local state
     }
-  } catch {}
+  }
 
   // Initial page
   let initialPage = 1;
