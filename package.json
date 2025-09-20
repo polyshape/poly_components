@@ -1,0 +1,75 @@
+{
+  "name": "@polyutils/components",
+  "version": "2.3.2",
+  "description": "Reusable React components",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run exports:write && npm run clean && npm run build",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:ci": "vitest run --reporter=dot",
+    "exports:write": "node scripts/exports.mjs",
+    "exports:check": "node scripts/exports.mjs --check",
+    "release:patch": "npm version patch && git push && git push --tags",
+    "release:minor": "npm version minor && git push && git push --tags",
+    "release:major": "npm version major && git push && git push --tags",
+    "dev:link": "rm -rf node_modules && npm install --no-package-lock --legacy-peer-deps && npm link",
+    "dev:watch": "rm -rf node_modules && npm install --no-package-lock --legacy-peer-deps && npm link && tsup --watch",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "keywords": [
+    "react",
+    "pagination",
+    "hook",
+    "component"
+  ],
+  "author": "Marios Papamarkou",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/polyshape/poly-components"
+  },
+  "homepage": "https://github.com/polyshape/poly-components#readme",
+  "peerDependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "optionalDependencies": {
+    "react-router-dom": "^7.8.2"
+  },
+  "devDependencies": {
+    "@fortawesome/fontawesome-free": "^7.0.1",
+    "@storybook/addon-docs": "^9.1.6",
+    "@storybook/react-vite": "^9.1.6",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "@vitest/coverage-v8": "^3.2.4",
+    "jsdom": "^27.0.0",
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.8.2",
+    "shx": "^0.4.0",
+    "storybook": "^9.1.6",
+    "storybook-addon-pseudo-states": "^9.1.6",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@griffel/react": "^1.5.30"
+  }
+}

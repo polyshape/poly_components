@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "declaration": true,
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "types": ["react", "vitest/globals", "@testing-library/jest-dom"],
+    "skipLibCheck": true
+  },
+  "include": [
+    "src",
+    "tests/**/*.test.ts",
+    "tests/**/*.test.tsx",
+    "setupTests.ts"
+  ],
+  "exclude": ["stories"]
+}
