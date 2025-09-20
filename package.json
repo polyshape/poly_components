@@ -38,9 +38,9 @@
   "author": "Marios Papamarkou",
   "repository": {
     "type": "git",
-    "url": "https://github.com/polyshape/poly-components"
+    "url": "https://github.com/polyshape/poly_components"
   },
-  "homepage": "https://github.com/polyshape/poly-components#readme",
+  "homepage": "https://github.com/polyshape/poly_components#readme",
   "peerDependencies": {
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
