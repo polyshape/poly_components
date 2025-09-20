@@ -329,7 +329,7 @@ Notes:
 
 This library includes a simple theme system with a provider and hook.
 
-### ThemeProvider and Toggle
+### ThemeProvider Setup
 
 ```tsx
 import { ThemeProvider, ThemeToggle } from "@polyutils/components";
@@ -337,22 +337,45 @@ import { ThemeProvider, ThemeToggle } from "@polyutils/components";
 export function App() {
   return (
     <ThemeProvider initialTheme="light">
-      <header style={{ display: 'flex', justifyContent: 'flex-end', padding: 8 }}>
+      <header>
+        <h1>My App</h1>
         <ThemeToggle appearance="subtle" size="medium" />
       </header>
-      {/* your app */}
+      <main>
+        {/* All content here gets automatic baseline theming */}
+        <p>This paragraph, <a href="#">links</a>, and other elements are automatically themed.</p>
+        <button>Regular HTML elements look great!</button>
+      </main>
     </ThemeProvider>
   );
 }
 ```
 
-The provider:
+The ThemeProvider:
 
-- Applies `theme-light`/`theme-dark` classes on `:root`.
-- Sets core CSS variables used by components: `--pc-fg`, `--pc-bg`, `--pc-border`, `--pc-accent`, `--pc-muted`.
-- Additionally, Tabs can read `--pc-card` if you define them.
-- Persists the last theme to `localStorage`.
-- Listens to OS theme changes when no explicit user choice has been made.
+- Applies `theme-light`/`theme-dark` classes on `:root`
+- Sets core CSS variables used by components: `--pc-fg`, `--pc-bg`, `--pc-border`, `--pc-accent`, `--pc-muted`
+- Additionally, Tabs can read `--pc-card` if you define them
+- Persists the last theme to `localStorage`
+- Listens to OS theme changes when no explicit user choice has been made
+- **Applies baseline styles to `<main>` elements automatically** for a polished, themed HTML experience
+
+### Alternative: Custom containers
+
+If you can't use `<main>` (e.g., multiple content areas), use the `scope` prop:
+
+```tsx
+<ThemeProvider scope=".app">
+  <div className="app">
+    {/* This div now gets the same baseline theming as <main> */}
+    <p>Themed content with <a href="#">styled links</a></p>
+  </div>
+</ThemeProvider>
+```
+
+You can target multiple selectors: `scope=".app, .content, [data-theme-scope]"`
+
+**Note:** The `scope` prop works *in addition* to `<main>` - both will receive baseline theming.
 
 ### Custom control with useTheme
 

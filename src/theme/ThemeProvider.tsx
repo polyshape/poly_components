@@ -47,7 +47,7 @@ export type ThemeTokenName =
 type AnyCssVar = `--${string}`;
 export type ThemeTokens = Partial<Record<ThemeTokenName | AnyCssVar, string>>;
 
-function applyTheme(theme: Theme, overrides?: ThemeTokens) {
+function applyTheme(theme: Theme, overrides?: ThemeTokens, scope?: string) {
   const win = safeWindow();
   if (!win) return;
   const root = win.document.documentElement;
@@ -144,56 +144,71 @@ function applyTheme(theme: Theme, overrides?: ThemeTokens) {
       styleEl.id = id;
       win.document.head.appendChild(styleEl);
     }
+    
+    // Create selector list - always include main, plus custom scope if provided
+    const selectors = scope ? `main, ${scope}` : 'main';
+    
     // Always refresh baseline to reflect updates and stay in sync with tokens
     styleEl.textContent = `
-      /* Baseline theming for common HTML elements scoped to main */
-      main a { color: var(--pc-accent); text-decoration: underline; text-underline-offset: 2px; }
-      main a:hover { color: color-mix(in srgb, var(--pc-accent) 90%, var(--pc-fg)); }
-      main a:active { color: color-mix(in srgb, var(--pc-accent) 70%, var(--pc-fg)); }
-      main a:visited { color: color-mix(in srgb, var(--pc-accent) 80%, var(--pc-fg)); }
-      main a:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
+      /* Baseline theming for common HTML elements scoped to main and custom selectors */
+      ${selectors} a { color: var(--pc-accent); text-decoration: underline; text-underline-offset: 2px; }
+      ${selectors} a:hover { color: color-mix(in srgb, var(--pc-accent) 90%, var(--pc-fg)); }
+      ${selectors} a:active { color: color-mix(in srgb, var(--pc-accent) 70%, var(--pc-fg)); }
+      ${selectors} a:visited { color: color-mix(in srgb, var(--pc-accent) 80%, var(--pc-fg)); }
+      ${selectors} a:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
 
-      main ::selection { background: var(--pc-accent); color: #fff; }
+      ${selectors} ::selection { background: var(--pc-accent); color: #fff; }
 
-      main hr { border: 0; border-top: 1px solid var(--pc-border); }
+      ${selectors} hr { border: 0; border-top: 1px solid var(--pc-border); }
 
-      main code, main kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: var(--pc-card); border: 1px solid var(--pc-border); padding: 2px 6px; border-radius: 6px; }
-      main pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: var(--pc-card); border: 1px solid var(--pc-border); padding: 12px; border-radius: 8px; overflow: auto; }
-      main pre > code { background: transparent; border: 0; padding: 0; }
+      ${selectors} code, ${selectors} kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: var(--pc-card); border: 1px solid var(--pc-border); padding: 2px 6px; border-radius: 6px; }
+      ${selectors} pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: var(--pc-card); border: 1px solid var(--pc-border); padding: 12px; border-radius: 8px; overflow: auto; }
+      ${selectors} pre > code { background: transparent; border: 0; padding: 0; }
 
-      main blockquote { margin: 0; padding: 8px 12px; border-left: 3px solid var(--pc-border); color: var(--pc-muted); background: color-mix(in srgb, var(--pc-card) 60%, transparent); border-radius: 6px; }
+      ${selectors} blockquote { margin: 0; padding: 8px 12px; border-left: 3px solid var(--pc-border); color: var(--pc-muted); background: color-mix(in srgb, var(--pc-card) 60%, transparent); border-radius: 6px; }
 
-      main table { width: 100%; border-collapse: collapse; }
-      main th, main td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--pc-border); }
-      main th { background: var(--pc-card); }
+      ${selectors} table { width: 100%; border-collapse: collapse; }
+      ${selectors} th, ${selectors} td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--pc-border); }
+      ${selectors} th { background: var(--pc-card); }
 
-      main small, main .muted { color: var(--pc-muted); }
+      ${selectors} small, ${selectors} .muted { color: var(--pc-muted); }
 
-      main ul li::marker, main ol li::marker { color: var(--pc-muted); }
+      ${selectors} ul li::marker, ${selectors} ol li::marker { color: var(--pc-muted); }
 
-      main mark { background: color-mix(in srgb, var(--pc-accent) 30%, var(--pc-bg)); color: var(--pc-fg); border-radius: 3px; padding: 0 2px; }
+      ${selectors} mark { background: color-mix(in srgb, var(--pc-accent) 30%, var(--pc-bg)); color: var(--pc-fg); border-radius: 3px; padding: 0 2px; }
 
-      main input, main textarea, main select { background: var(--pc-field-bg); color: var(--pc-fg); border: 1px solid var(--pc-field-border); border-radius: 10px; padding: 12px 14px; transition: background-color .2s ease, border-color .2s ease; }
-      main input:hover, main textarea:hover, main select:hover { border-color: color-mix(in srgb, var(--pc-field-border) 70%, var(--pc-fg)); }
-      main input::placeholder, main textarea::placeholder { color: var(--pc-field-placeholder); }
-      main input:focus-visible, main textarea:focus-visible, main select:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
-      main input:disabled, main textarea:disabled, main select:disabled { opacity: .7; cursor: not-allowed; }
+      ${selectors} input, ${selectors} textarea, ${selectors} select { background: var(--pc-field-bg); color: var(--pc-fg); border: 1px solid var(--pc-field-border); border-radius: 10px; padding: 12px 14px; transition: background-color .2s ease, border-color .2s ease; }
+      ${selectors} input:hover, ${selectors} textarea:hover, ${selectors} select:hover { border-color: color-mix(in srgb, var(--pc-field-border) 70%, var(--pc-fg)); }
+      ${selectors} input::placeholder, ${selectors} textarea::placeholder { color: var(--pc-field-placeholder); }
+      ${selectors} input:focus-visible, ${selectors} textarea:focus-visible, ${selectors} select:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
+      ${selectors} input:disabled, ${selectors} textarea:disabled, ${selectors} select:disabled { opacity: .7; cursor: not-allowed; }
     `;
   } catch {}
 }
 
-export function ThemeProvider({ children, initialTheme, tokens }: { children: ReactNode; initialTheme?: Theme; tokens?: ThemeTokens }) {
+export function ThemeProvider({ 
+  children, 
+  initialTheme, 
+  tokens, 
+  scope 
+}: { 
+  children: ReactNode; 
+  initialTheme?: Theme; 
+  tokens?: ThemeTokens; 
+  /** Additional CSS selector(s) to apply baseline styles to, alongside 'main'. Example: '.app' or '.app, .content' */
+  scope?: string;
+}) {
   const init = useMemo(() => getInitialTheme(initialTheme), [initialTheme]);
   const [theme, setTheme] = useState<Theme>(init.theme);
   const sourceRef = useRef<ThemeSource>(init.source);
 
   // Apply theme side effects
   useEffect(() => {
-    applyTheme(theme, tokens);
+    applyTheme(theme, tokens, scope);
     try {
       safeWindow()?.localStorage?.setItem("theme", theme);
     } catch {}
-  }, [theme, tokens]);
+  }, [theme, tokens, scope]);
 
   // Listen to system preference changes when source is system
   useEffect(() => {

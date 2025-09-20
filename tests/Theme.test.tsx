@@ -99,4 +99,31 @@ describe("Theming", () => {
       "color-mix(in srgb, var(--primary-link, var(--pc-accent)) 40%, var(--border, rgba(255,255,255,0.08)))"
     );
   });
+
+  it("applies baseline styles to custom scope selectors", () => {
+    render(
+      <ThemeProvider initialTheme="light" scope=".app, .content">
+        <div />
+      </ThemeProvider>
+    );
+
+    // Check that the baseline styles are injected
+    const styleEl = document.getElementById("pc-theme-baseline") as HTMLStyleElement;
+    expect(styleEl).toBeDefined();
+    expect(styleEl?.textContent).toContain("main, .app, .content a {");
+    expect(styleEl?.textContent).toContain("main, .app, .content input,");
+  });
+
+  it("works without scope prop (main only)", () => {
+    render(
+      <ThemeProvider initialTheme="dark">
+        <div />
+      </ThemeProvider>
+    );
+
+    // Check that only main is targeted when no scope prop
+    const styleEl = document.getElementById("pc-theme-baseline") as HTMLStyleElement;
+    expect(styleEl?.textContent).toContain("main a {");
+    expect(styleEl?.textContent).not.toContain("main, ");
+  });
 });
