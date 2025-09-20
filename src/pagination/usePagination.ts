@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { flushSync } from "react-dom";
+declare const require: undefined | ((moduleId: string) => any);
 
 type PaginationOptions = {
   getPage?: () => number | undefined;
@@ -19,11 +20,15 @@ export function usePagination<T>(items: T[], pageSize: number, options?: Paginat
   let params: URLSearchParams | undefined = undefined;
   let setParams: ((next: URLSearchParams, opts?: { replace?: boolean }) => void) | undefined = undefined;
   try {
-    if (!getPage && !setPageParam) {
-      // Dynamically require useSearchParams
-      const { useSearchParams } = require("react-router-dom");
-      [params, setParams] = useSearchParams();
-      useRouter = true;
+    if (!getPage && !setPageParam && typeof require === 'function') {
+      const maybeRouter = require('react-router-dom') as {
+        useSearchParams?: () => [URLSearchParams, (next: URLSearchParams, opts?: { replace?: boolean }) => void];
+      };
+      const hook = maybeRouter?.useSearchParams;
+      if (typeof hook === 'function') {
+        [params, setParams] = hook();
+        useRouter = true;
+      }
     }
   } catch {}
 
