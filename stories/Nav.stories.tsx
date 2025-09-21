@@ -252,32 +252,13 @@ export const TopWithBrandAndActions: Story = {
 };
 
 // Consumer-like layout: brand, toggle, then Nav as last; centered row with max-width
-export const TopConsumerCenteredSpaceBetween: Story = {
+export const TopWithBrandAndActionsCentered: Story = {
   args: { items: sample, variant: 'top', as: NavLink },
   parameters: { layout: 'fullscreen' },
   render: (args) => {
-    const [slotWidth, setSlotWidth] = React.useState<number | null>(null);
-    const slotRef = React.useRef<HTMLDivElement | null>(null);
-
-    React.useLayoutEffect(() => {
-      const el = slotRef.current;
-      if (!el) return;
-      const seed = () => {
-        const w = el.getBoundingClientRect().width;
-        if (w > 8) setSlotWidth(w);
-      };
-      const id = requestAnimationFrame(seed);
-      const ro = new ResizeObserver(([entry]) => {
-        const next = entry?.contentRect?.width ?? 0;
-        if (next > 8) setSlotWidth(next);
-      });
-      ro.observe(el);
-      return () => { cancelAnimationFrame(id); ro.disconnect(); };
-    }, []);
-
     return (
       <MemoryRouter initialEntries={['/home']}>
-        <div style={{ width: '100%', background: 'var(--pc-nav-bg)', borderBottom: '1px solid var(--pc-border)' }}>
+        <div style={{ width: '100%', background: 'var(--pc-nav-bg)', display: "flex", borderBottom: '1px solid var(--pc-border)' }}>
           <div style={{
             margin: '0 auto',
             padding: '8px 24px',
@@ -292,14 +273,10 @@ export const TopConsumerCenteredSpaceBetween: Story = {
               <img src="https://dummyimage.com/96x28/3406c9/e0e0e0.png&text=Brand" alt="Brand" style={{ width: 96, height: 28, objectFit: 'contain' }} />
             </a>
             {/* Toggle */}
-            <Button appearance="secondary" size="small" style={{ width: 64 }}>Toggle</Button>
-            {/* Nav slot measured */}
-            <div ref={slotRef} style={{ flex: '1 1 0px', minWidth: 0 }}>
+            <Button appearance="secondary" size="small">T</Button>
+            <div style={{ flex: '1 1 0px', minWidth: 0 }}>
               <Nav
                 {...args}
-                // Prefer explicit width; fallback to self-measure
-                overflowAvailableWidth={typeof slotWidth === 'number' ? slotWidth : undefined}
-                overflowMeasure="self"
                 showBorder={false}
                 responsiveBreakpoint={500}
                 styles={{
@@ -322,84 +299,90 @@ export const TopConsumerCenteredSpaceBetween: Story = {
 // Exact consumer-like markup + CSS provided by user
 export const TopExactConsumerLayout: Story = {
   args: { items: sample, variant: 'top', as: NavLink },
-  parameters: { layout: 'fullscreen' },
-  render: (args) => (
-    <MemoryRouter initialEntries={['/home']}>
-      <>
-        <style>{`
-        .nav {
-          z-index: 2000;
-          display: flex;
-          background: var(--pc-nav-bg);
-          backdrop-filter: blur(6px) saturate(1.05);
-          border-bottom: 1px solid var(--border);
-        }
-        .nav__inner {
-          margin: 0 auto;
-          padding: 0.45rem 1.6rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          background: var(--pc-nav-bg);
-          gap: 3rem;
-        }
-        .brand__logo {
-          height: 44px;
-          display: block;
-        }
-        .menu { display: flex; }
-        .menu > *:not(:last-child) {
-          margin-right: 3.5rem;
-          align-items: center;
-        }
-        .menu__item {
-          color: var(--fg);
-          text-decoration: none;
-          font-weight: 600;
-          font-size: 1.2rem;
-          padding-bottom: 0.4rem;
-          position: relative;
-          transition: opacity 160ms ease, color 160ms ease;
-        }
-        .theme-toggle {
-          background: #0e0e0e !important;
-          border: 1px solid rgba(255, 255, 255, 0.08) !important;
-          padding: 0.3rem 0.5rem;
-          margin-left: 0.75rem;
-          width: 4rem;
-          height: 2.5rem;
-        }
-        .theme-toggle:hover { opacity: 0.75; }
-        `}</style>
+  parameters: { layout: 'fullscreen', docs: { disable: true } },
+  render: (args) => {
+    return (
+      <MemoryRouter initialEntries={['/home']}>
+        <>
+          <style>{`
+          .nav {
+            z-index: 2000;
+            display: flex;
+            background: var(--pc-nav-bg);
+            backdrop-filter: blur(6px) saturate(1.05);
+            border-bottom: 1px solid var(--border);
+          }
+          .nav__inner {
+            margin: 0 auto;
+            padding: 0.45rem 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--pc-nav-bg);
+            gap: 3rem;
+          }
+          .brand__logo {
+            height: 32px;
+            display: block;
+          }
+          .menu { display: flex; }
+          .menu > *:not(:last-child) {
+            margin-right: 3.5rem;
+            align-items: center;
+          }
+          .menu__item {
+            color: var(--fg);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            padding-bottom: 0.4rem;
+            position: relative;
+            transition: opacity 160ms ease, color 160ms ease;
+          }
+          .theme-toggle {
+            background: #0e0e0e !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            padding: 0.3rem 0.5rem;
+            margin-left: 0.75rem;
+            width: 4rem;
+            height: 2.5rem;
+          }
+          .theme-toggle:hover { opacity: 0.75; }
+          `}</style>
 
-        <div className="nav">
-          <div className="nav__inner">
-            <NavLink className="brand" to={'/home'}>
-              <picture>
-                <source srcSet="/logo.webp" type="image/webp" />
-                <img src="/logo.png" alt="Brand" className="brand__logo" />
-              </picture>
-            </NavLink>
-            <ThemeToggle className="theme-toggle" />
-            <Nav
-              {...args}
-              items={sample}
-              showBorder={false}
-              responsiveBreakpoint={500}
-              styles={{
-                root: { flex: '1 1 auto', minWidth: 0 },
-                menu: { gap: '1.7rem' },
-                subMenu: { backgroundColor: 'var(--pc-nav-bg)', minWidth: '200px' },
-                bar: { width: '100%', paddingTop: '8px', paddingRight: '0px' },
-                link: { color: 'var(--pc-fg)', fontSize: '1.2rem', fontWeight: 600 },
-                subLink: { fontWeight: 700, padding: '.7rem .9rem' },
-              }}
-            />
+          <div className="nav">
+            <div className="nav__inner">
+              <NavLink className="brand" to={'/home'}>
+                <picture>
+                  <source srcSet="/logo.webp" type="image/webp" />
+                  <img src="/logo.png" alt="Brand" className="brand__logo" />
+                </picture>
+              </NavLink>
+              <div>
+                <ThemeToggle className="theme-toggle" />
+              </div>
+              <div style={{ flex: '1 1 auto', minWidth: 0 }}>
+                <Nav
+                  {...args}
+                  items={sample}
+                  responsiveBreakpoint={700}
+                  showBorder={false}
+                  styles={{
+                    root: { flex: '1 1 auto', minWidth: 0 },
+                    menu: { gap: '1.7rem' },
+                    subMenu: { backgroundColor: 'var(--pc-nav-bg)', minWidth: '200px' },
+                    bar: { width: '100%', paddingTop: '8px', paddingRight: '0px' },
+                    link: { color: 'var(--pc-fg)', fontSize: '1.2rem', fontWeight: 600 },
+                    subLink: { fontWeight: 700, padding: '.7rem .9rem' },
+                  }}
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </>
-    </MemoryRouter>
-  ),
+        </>
+      </MemoryRouter>
+    );
+  },
 };
 
 function SmallNavOverlayDemo(args: any, withMemoryRouter = false) {

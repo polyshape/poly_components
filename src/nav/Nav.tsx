@@ -25,6 +25,18 @@ export type NavStyleOverrides = Partial<{
   overlay: CSSProperties;
   burgerButton: CSSProperties;
   closeButton: CSSProperties;
+  // More button styling
+  moreButton: CSSProperties;
+  moreWrapper: CSSProperties;
+  // Chevron/dropdown indicator styling
+  chevron: CSSProperties;
+  chevronOpen: CSSProperties;
+  chevronSide: CSSProperties;
+  chevronIcon: CSSProperties;
+  // Active state styling
+  activeItem: CSSProperties;
+  activeLink: CSSProperties;
+  activeSubLink: CSSProperties;
 }>;
 
 export type NavProps = {
@@ -50,10 +62,11 @@ export type NavProps = {
   disableOverflow?: boolean;
   /**
    * How to determine available width for the top navigation overflow calculation.
-   * - 'siblings' (default): infer from parent width minus siblings' widths.
+   * - 'smart' (default): automatically detects flex layouts and chooses the best strategy.
+   * - 'siblings' (classic): infer from parent width minus siblings' widths.
    * - 'self': use the container's own clientWidth (more robust in centered flex layouts).
    */
-  overflowMeasure?: 'siblings' | 'self';
+  overflowMeasure?: 'smart' | 'siblings' | 'self';
   /**
    * Explicit available width (in px) for the navigation items area. When provided,
    * this takes precedence over overflowMeasure.
@@ -243,7 +256,7 @@ const useStyles = makeStyles({
   // Overflow handling (top variant only)
   moreWrapper: { position: "relative", display: 'flex', alignItems: 'center' },
   moreBtn: {
-    height: "32px",
+    height: "24px",
   },
   hiddenMeasure: { visibility: "hidden", position: "absolute", left: 0, top: 0, pointerEvents: "none" },
   rootSide: {
@@ -278,8 +291,146 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * Detects if the nav container is inside a flex layout
+ */
+function isInFlexLayout(container: HTMLElement): boolean {
+  let current = container.parentElement;
+  let levels = 0;
+  const maxLevels = 5;
+  
+  while (current && levels < maxLevels) {
+    const styles = window.getComputedStyle(current);
+    if (styles.display === 'flex') {
+      // Check for centering that causes measurement issues
+      const justifyContent = styles.justifyContent;
+      if (justifyContent === 'space-between' || 
+          justifyContent === 'center' ||
+          justifyContent === 'space-around' ||
+          justifyContent === 'space-evenly') {
+        return true;
+      }
+    }
+    current = current.parentElement;
+    levels++;
+  }
+  return false;
+}
+
+/**
+ * Calculates available width using viewport-based approach for flex layouts
+ */
+function calculateFlexAwareWidth(container: HTMLElement): number {
+  // Find the flex container that has space-between or similar
+  let flexContainer: HTMLElement | null = null;
+  let navAncestor: HTMLElement | null = null;
+  let current = container.parentElement;
+  let levels = 0;
+  const maxLevels = 5;
+  
+  // Traverse up to find the flex container
+  while (current && levels < maxLevels) {
+    const styles = window.getComputedStyle(current);
+    if (styles.display === 'flex') {
+      const justifyContent = styles.justifyContent;
+      if (justifyContent === 'space-between' || 
+          justifyContent === 'center' ||
+          justifyContent === 'space-around' ||
+          justifyContent === 'space-evenly') {
+        flexContainer = current;
+        // Find which child of this flex container contains our nav
+        let ancestor = container;
+        while (ancestor.parentElement && ancestor.parentElement !== flexContainer) {
+          ancestor = ancestor.parentElement;
+        }
+        navAncestor = ancestor;
+        break;
+      }
+    }
+    current = current.parentElement;
+    levels++;
+  }
+  
+  if (!flexContainer || !navAncestor) {
+    // Fallback to siblings calculation
+    return calculateSiblingsWidth(container);
+  }
+  
+  // Use viewport-based calculation similar to calculateAvailableWidth
+  const viewportWidth = window.innerWidth;
+  const flexStyles = window.getComputedStyle(flexContainer);
+  const paddingLeft = parseFloat(flexStyles.paddingLeft || '0');
+  const paddingRight = parseFloat(flexStyles.paddingRight || '0');
+  const gap = parseFloat(flexStyles.gap || '0');
+  
+  // Calculate widths of sibling elements (excluding the nav ancestor)
+  const siblings = Array.from(flexContainer.children) as HTMLElement[];
+  let siblingWidths = 0;
+  let siblingCount = 0;
+  
+  for (const el of siblings) {
+    if (el === navAncestor) continue;
+    
+    const cs = window.getComputedStyle(el);
+    // Ignore hidden/absolute/inert measure elements
+    if (
+      el.hasAttribute('aria-hidden') ||
+      cs.visibility === 'hidden' ||
+      cs.display === 'none' ||
+      cs.position === 'absolute'
+    ) {
+      continue;
+    }
+    
+    const rect = el.getBoundingClientRect();
+    if (rect.width > 0) {
+      siblingWidths += rect.width;
+      siblingCount++;
+    }
+  }
+  
+  // Calculate total gaps between flex children
+  const totalGaps = siblingCount > 0 ? gap * siblingCount : 0;
+  
+  // Available width = viewport - siblings - paddings - gaps - buffer
+  const availableWidth = viewportWidth - siblingWidths - paddingLeft - paddingRight - totalGaps - 40; // 40px buffer
+  
+  return Math.max(100, availableWidth);
+}
+
+/**
+ * Traditional siblings width calculation
+ */
+function calculateSiblingsWidth(container: HTMLElement): number {
+  const barEl = container.parentElement as HTMLElement | null;
+  // Available width = bar width minus widths of siblings (logo, actions, etc.)
+  const barWidth = (barEl?.clientWidth || barEl?.offsetWidth || 0) || 0;
+  let sibsWidth = 0;
+  if (barEl) {
+    const siblings = Array.from(barEl.children) as HTMLElement[];
+    for (const el of siblings) {
+      if (el === container) continue;
+      const cs = window.getComputedStyle(el);
+      // Ignore hidden/absolute/inert measure elements (like our hidden measurer)
+      if (
+        el.hasAttribute('aria-hidden') ||
+        cs.visibility === 'hidden' ||
+        cs.display === 'none' ||
+        cs.position === 'absolute'
+      ) {
+        continue;
+      }
+      const rect = el.getBoundingClientRect();
+      const ml = parseFloat(cs.marginLeft || '0');
+      const mr = parseFloat(cs.marginRight || '0');
+      sibsWidth += rect.width + ml + mr;
+    }
+  }
+  return Math.max(0, barWidth - sibsWidth);
+}
+
 export default function Nav(props: NavProps) {
-  const { items, variant = "top", defaultOpenIds = [], className, styles, showBorder = true, as, linkProp, responsiveBreakpoint = 850, showActiveUnderline = true, disableOverflow = false, overflowMeasure = 'siblings', overflowAvailableWidth } = props;
+  const { items, variant = "top", defaultOpenIds = [], className, styles, showBorder = true, as, linkProp, responsiveBreakpoint = 850, showActiveUnderline = true, disableOverflow = false, overflowMeasure = 'smart', overflowAvailableWidth } = props;
   const classes = useStyles();
   // Responsive switch between full Nav and NavSmall
   const [isSmall, setIsSmall] = useState<boolean>(false);
@@ -318,32 +469,16 @@ export default function Nav(props: NavProps) {
         containerWidth = Math.max(0, overflowAvailableWidth);
       } else if (overflowMeasure === 'self') {
         containerWidth = (container.clientWidth || (container as any).offsetWidth || 0) || 0;
-      } else {
-        const barEl = container.parentElement as HTMLElement | null;
-        // Available width = bar width minus widths of siblings (logo, actions, etc.)
-        const barWidth = (barEl?.clientWidth || barEl?.offsetWidth || 0) || 0;
-        let sibsWidth = 0;
-        if (barEl) {
-          const siblings = Array.from(barEl.children) as HTMLElement[];
-          for (const el of siblings) {
-            if (el === container) continue;
-            const cs = window.getComputedStyle(el);
-            // Ignore hidden/absolute/inert measure elements (like our hidden measurer)
-            if (
-              el.hasAttribute('aria-hidden') ||
-              cs.visibility === 'hidden' ||
-              cs.display === 'none' ||
-              cs.position === 'absolute'
-            ) {
-              continue;
-            }
-            const rect = el.getBoundingClientRect();
-            const ml = parseFloat(cs.marginLeft || '0');
-            const mr = parseFloat(cs.marginRight || '0');
-            sibsWidth += rect.width + ml + mr;
-          }
+      } else if (overflowMeasure === 'smart') {
+        // Smart detection: check if we're in a flex layout
+        if (isInFlexLayout(container)) {
+          containerWidth = calculateFlexAwareWidth(container);
+        } else {
+          containerWidth = calculateSiblingsWidth(container);
         }
-        containerWidth = Math.max(0, barWidth - sibsWidth);
+      } else {
+        // Default 'siblings' behavior
+        containerWidth = calculateSiblingsWidth(container);
       }
       const BUFFER_PX = 15; // Reserve a tiny buffer to avoid visual overflow
       const effectiveWidth = Math.max(0, containerWidth - BUFFER_PX);
@@ -422,6 +557,7 @@ export default function Nav(props: NavProps) {
       shape="circular"
       pressEffect={false}
       className={`${classes.moreBtn}`}
+      style={styles?.moreButton}
       menuTrigger="click"
       icon={<i className="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>}
       iconOnly
@@ -474,7 +610,7 @@ export default function Nav(props: NavProps) {
                   appearance="transparent"
                   pressEffect={false}
                   className={classes.itemBtnSide}
-                    style={styles?.item}
+                    style={{...styles?.item, ...(isActive ? styles?.activeItem : {})}}
                   onClick={(e) => {
                     if (hasChildren) {
                       setOpen(prev => { const next = new Set(prev); opened ? next.delete(id) : next.add(id); return next; });
@@ -489,7 +625,7 @@ export default function Nav(props: NavProps) {
                   {(it.href || it.to)
                     ? <LinkComponent
                         className={`${classes.linkSide} ${!showActiveUnderline ? classes.noUnderline : ''}`}
-                          style={styles?.link}
+                          style={{...styles?.link, ...(isActive ? styles?.activeLink : {})}}
                         {...getLinkProps(it)}
                         onClick={(e: React.MouseEvent) => {
                           if (!hasChildren) {
@@ -501,8 +637,8 @@ export default function Nav(props: NavProps) {
                       >
                         <span>{it.label}</span>
                         {hasChildren && (
-                        <span className={`${classes.chevronSide} ${opened ? classes.chevronOpenSide : ''}`} aria-hidden>
-                          <svg className={classes.chevronIcon} width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <span className={`${classes.chevronSide} ${opened ? classes.chevronOpenSide : ''}`} style={{...styles?.chevronSide, ...(opened ? styles?.chevronOpen : {})}} aria-hidden>
+                          <svg className={classes.chevronIcon} width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={styles?.chevronIcon}>
                             <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                         </span>
@@ -520,7 +656,7 @@ export default function Nav(props: NavProps) {
                           ? <LinkComponent
                               key={subId}
                               className={classes.subLink}
-                                style={styles?.subLink}
+                                style={{...styles?.subLink, ...(subActive ? styles?.activeSubLink : {})}}
                               {...getLinkProps(sub)}
                               onClick={(e: React.MouseEvent) => {
                                 setActiveId(subId);
@@ -559,7 +695,7 @@ export default function Nav(props: NavProps) {
             return (
               <div
                 key={id}
-                style={{ position: "relative", whiteSpace: 'nowrap', ...(styles?.item ?? {}) }}
+                style={{ position: "relative", whiteSpace: 'nowrap', ...(styles?.item ?? {}), ...(isActive ? styles?.activeItem : {}) }}
                 onMouseEnter={() => setHoverIdx(idx)}
                 onMouseLeave={() => setHoverIdx(v => (v === idx ? null : v))}
               >
@@ -567,7 +703,7 @@ export default function Nav(props: NavProps) {
                   <>
                     <LinkComponent
                       className={`${classes.itemBtn} ${classes.link}`}
-                      style={styles?.link}
+                      style={{...styles?.link, ...(isActive ? styles?.activeLink : {})}}
                       {...getLinkProps(it)}
                       onClick={(e: React.MouseEvent) => {
                         // Parent with submenu should not set active
@@ -576,8 +712,8 @@ export default function Nav(props: NavProps) {
                       aria-current={isActive ? "page" : undefined}
                     >
                       <span>{it.label}</span>
-                      <span className={`${classes.chevron} ${hoverIdx === idx ? classes.chevronOpen : ''}`} aria-hidden>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <span className={`${classes.chevron} ${hoverIdx === idx ? classes.chevronOpen : ''}`} style={{...styles?.chevron, ...(hoverIdx === idx ? styles?.chevronOpen : {})}} aria-hidden>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={styles?.chevronIcon}>
                           <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </span>
@@ -604,7 +740,7 @@ export default function Nav(props: NavProps) {
                                 ? <LinkComponent
                                     key={subId}
                                     className={classes.subLink}
-                                    style={styles?.subLink}
+                                    style={{...styles?.subLink, ...(subActive ? styles?.activeSubLink : {})}}
                                     {...getLinkProps(sub)}
                                     onClick={(e: React.MouseEvent) => {
                                       setActiveId(subId);
@@ -636,7 +772,7 @@ export default function Nav(props: NavProps) {
                             <LinkComponent
                               key={subId}
                               className={classes.subLink}
-                              style={styles?.subLink}
+                              style={{...styles?.subLink, ...(subActive ? styles?.activeSubLink : {})}}
                               {...getLinkProps(sub)}
                               onClick={(e: React.MouseEvent) => {
                                 setActiveId(subId);
@@ -659,7 +795,7 @@ export default function Nav(props: NavProps) {
                   (it.href || it.to)
                   ? <LinkComponent
                       className={`${classes.itemBtn} ${classes.link} ${!showActiveUnderline ? classes.noUnderline : ''}`}
-                      style={styles?.link}
+                      style={{...styles?.link, ...(isActive ? styles?.activeLink : {})}}
                         {...getLinkProps(it)}
                         onClick={(e: React.MouseEvent) => {
                           if (!hasChildren) {
@@ -677,7 +813,7 @@ export default function Nav(props: NavProps) {
             );
           })}
           {!disableOverflow && visibleCount < items.length && (
-            <div className={classes.moreWrapper}>
+            <div className={classes.moreWrapper} style={styles?.moreWrapper}>
               {renderMoreButton(
                 items.slice(visibleCount).map((it, idx) => {
                   const hasChildren = !!it.items?.length;
@@ -688,7 +824,7 @@ export default function Nav(props: NavProps) {
                       ? <LinkComponent
                           key={id}
                           className={classes.subLink}
-                          style={styles?.subLink}
+                          style={{...styles?.subLink, ...(isActive ? styles?.activeSubLink : {})}}
                           {...getLinkProps(it)}
                           onClick={(e: React.MouseEvent) => {
                             if (!hasChildren) {
@@ -724,8 +860,8 @@ export default function Nav(props: NavProps) {
                       ? <LinkComponent className={`${classes.itemBtn} ${classes.link}`} style={styles?.link} {...getLinkProps(it)} data-role="item">
                           <span>{it.label}</span>
                           {hasChildren && (
-                            <span className={classes.chevron} aria-hidden>
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <span className={classes.chevron} style={styles?.chevron} aria-hidden>
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={styles?.chevronIcon}>
                                 <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                             </span>
