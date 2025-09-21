@@ -1,6 +1,6 @@
 {
   "name": "@polyutils/components",
-  "version": "2.4.3",
+  "version": "2.4.4",
   "description": "Reusable React components",
   "license": "MIT",
   "main": "dist/index.js",
