@@ -291,9 +291,25 @@ const useStyles = makeStyles({
   },
 });
 
-/**
- * Detects if the nav container is inside a flex layout
- */
+function getActualViewportWidth(isResize = false): number {
+  if (!isResize) {
+    // Use window.innerWidth for initial load to avoid timing issues
+    return window.innerWidth;
+  }
+  
+  // Create a temporary element that spans the full available width
+  const test = document.createElement('div');
+  test.style.position = 'absolute';
+  test.style.visibility = 'hidden';
+  test.style.width = '100vw';
+  test.style.left = '0';
+  test.style.pointerEvents = 'none';
+  document.body.appendChild(test);
+  const width = test.offsetWidth;
+  document.body.removeChild(test);
+  return width;
+}
+
 function isInFlexLayout(container: HTMLElement): boolean {
   let current = container.parentElement;
   let levels = 0;
@@ -320,7 +336,7 @@ function isInFlexLayout(container: HTMLElement): boolean {
 /**
  * Calculates available width using viewport-based approach for flex layouts
  */
-function calculateFlexAwareWidth(container: HTMLElement): number {
+function calculateFlexAwareWidth(container: HTMLElement, isResize = false): number {
   // Find the flex container that has space-between or similar
   let flexContainer: HTMLElement | null = null;
   let navAncestor: HTMLElement | null = null;
@@ -356,8 +372,8 @@ function calculateFlexAwareWidth(container: HTMLElement): number {
     return calculateSiblingsWidth(container);
   }
   
-  // Use viewport-based calculation similar to calculateAvailableWidth
-  const viewportWidth = window.innerWidth;
+  // Use viewport-based calculation with actual CSS viewport width
+  const viewportWidth = getActualViewportWidth(isResize);
   const flexStyles = window.getComputedStyle(flexContainer);
   const paddingLeft = parseFloat(flexStyles.paddingLeft || '0');
   const paddingRight = parseFloat(flexStyles.paddingRight || '0');
@@ -457,7 +473,7 @@ export default function Nav(props: NavProps) {
       return;
     }
 
-    const calc = () => {
+    const calc = (isResizeEvent = false) => {
       const container = containerRef.current;
       const measurer = measureRef.current;
       if (!container || !measurer) {
@@ -472,7 +488,7 @@ export default function Nav(props: NavProps) {
       } else if (overflowMeasure === 'smart') {
         // Smart detection: check if we're in a flex layout
         if (isInFlexLayout(container)) {
-          containerWidth = calculateFlexAwareWidth(container);
+          containerWidth = calculateFlexAwareWidth(container, isResizeEvent);
         } else {
           containerWidth = calculateSiblingsWidth(container);
         }
@@ -538,12 +554,14 @@ export default function Nav(props: NavProps) {
       setVisibleCount(Math.max(0, best));
       };
 
+    const handleResize = () => calc(true);
+
     // Initial and on next paint for accuracy
-    const raf = window.requestAnimationFrame(() => calc());
-    window.addEventListener('resize', calc);
+    const raf = window.requestAnimationFrame(() => calc(false));
+    window.addEventListener('resize', handleResize);
     return () => {
       window.cancelAnimationFrame(raf);
-      window.removeEventListener('resize', calc);
+      window.removeEventListener('resize', handleResize);
     };
   }, [items, variant, isSmall, disableOverflow, overflowMeasure, overflowAvailableWidth]);
   const [open, setOpen] = useState<Set<string>>(new Set(defaultOpenIds));

@@ -155,7 +155,7 @@ function applyTheme(theme: Theme, overrides?: ThemeTokens, scope?: string) {
       ${selectors} a:hover { color: color-mix(in srgb, var(--pc-accent) 90%, var(--pc-fg)); }
       ${selectors} a:active { color: color-mix(in srgb, var(--pc-accent) 70%, var(--pc-fg)); }
       ${selectors} a:visited { color: color-mix(in srgb, var(--pc-accent) 80%, var(--pc-fg)); }
-      ${selectors} a:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
+      ${selectors} a:focus-visible { outline: 1px solid var(--pc-accent); }
 
       ${selectors} ::selection { background: var(--pc-accent); color: #fff; }
 
@@ -178,9 +178,9 @@ function applyTheme(theme: Theme, overrides?: ThemeTokens, scope?: string) {
       ${selectors} mark { background: color-mix(in srgb, var(--pc-accent) 30%, var(--pc-bg)); color: var(--pc-fg); border-radius: 3px; padding: 0 2px; }
 
       ${selectors} input, ${selectors} textarea, ${selectors} select { background: var(--pc-field-bg); color: var(--pc-fg); border: 1px solid var(--pc-field-border); border-radius: 10px; padding: 12px 14px; transition: background-color .2s ease, border-color .2s ease; }
-      ${selectors} input:hover, ${selectors} textarea:hover, ${selectors} select:hover { border-color: color-mix(in srgb, var(--pc-field-border) 70%, var(--pc-fg)); }
+      ${selectors} input:hover:not(:focus), ${selectors} textarea:hover:not(:focus), ${selectors} select:hover:not(:focus) { border-color: color-mix(in srgb, var(--pc-field-border) 70%, var(--pc-fg)); }
       ${selectors} input::placeholder, ${selectors} textarea::placeholder { color: var(--pc-field-placeholder); }
-      ${selectors} input:focus-visible, ${selectors} textarea:focus-visible, ${selectors} select:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
+      ${selectors} input:focus-visible, ${selectors} textarea:focus-visible, ${selectors} select:focus-visible { outline: 1px solid var(--pc-accent); }
       ${selectors} input:disabled, ${selectors} textarea:disabled, ${selectors} select:disabled { opacity: .7; cursor: not-allowed; }
     `;
   } catch {}
