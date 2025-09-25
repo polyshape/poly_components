@@ -17,6 +17,9 @@ export type NavItem = {
 export type NavStyleOverrides = Partial<{
   root: CSSProperties;
   bar: CSSProperties;
+  customLeftSlot: CSSProperties;
+  customRightSlot: CSSProperties;
+  itemsWrapper: CSSProperties;
   menu: CSSProperties;
   item: CSSProperties;
   link: CSSProperties;
@@ -48,6 +51,10 @@ export type NavProps = {
   showBorder?: boolean;
   as?: React.ElementType;
   linkProp?: "to" | "href" | (string & {}); // "to" for NavLink, "href" for <a>, or any string
+  /** Optional content rendered to the left side of the navigation items (top variant only). */
+  customLeft?: ReactNode;
+  /** Optional content rendered to the right side of the navigation items (top variant only). */
+  customRight?: ReactNode;
   /**
    * Viewport width (in px) under which the small/mobile navigation is rendered.
    * Defaults to 850.
@@ -61,10 +68,7 @@ export type NavProps = {
    */
   disableOverflow?: boolean;
   /**
-   * How to determine available width for the top navigation overflow calculation.
-   * - 'smart' (default): automatically detects flex layouts and chooses the best strategy.
-   * - 'siblings' (classic): infer from parent width minus siblings' widths.
-   * - 'self': use the container's own clientWidth (more robust in centered flex layouts).
+   * @deprecated Width is measured automatically; this option is ignored.
    */
   overflowMeasure?: 'smart' | 'siblings' | 'self';
   /**
@@ -92,6 +96,24 @@ const useStyles = makeStyles({
     alignItems: "center",
     gap: "12px",
     padding: "16px 16px",
+  },
+  slot: {
+    display: "flex",
+    alignItems: "center",
+    flexShrink: 0,
+    minWidth: 0,
+    gap: "12px",
+  },
+  slotLeft: {
+    composes: "$slot",
+  },
+  slotRight: {
+    composes: "$slot",
+    justifyContent: "flex-end",
+  },
+  itemsContainer: {
+    minWidth: 0,
+    display: "flex",
   },
   plainTextItem: {
     color: "var(--pc-fg, currentColor)",
@@ -258,7 +280,13 @@ const useStyles = makeStyles({
   moreBtn: {
     height: "24px",
   },
-  hiddenMeasure: { visibility: "hidden", position: "absolute", left: 0, top: 0, pointerEvents: "none" },
+  hiddenMeasure: {
+    visibility: "hidden",
+    position: "absolute",
+    left: "-9999px",
+    top: 0,
+    pointerEvents: "none",
+  },
   rootSide: {
     color: "var(--pc-fg, #222)",
     background: "var(--pc-nav-bg)",
@@ -291,279 +319,214 @@ const useStyles = makeStyles({
   },
 });
 
-function getActualViewportWidth(isResize = false): number {
-  if (!isResize) {
-    // Use window.innerWidth for initial load to avoid timing issues
-    return window.innerWidth;
-  }
-  
-  // Create a temporary element that spans the full available width
-  const test = document.createElement('div');
-  test.style.position = 'absolute';
-  test.style.visibility = 'hidden';
-  test.style.width = '100vw';
-  test.style.left = '0';
-  test.style.pointerEvents = 'none';
-  document.body.appendChild(test);
-  const width = test.offsetWidth;
-  document.body.removeChild(test);
-  return width;
-}
 
-function isInFlexLayout(container: HTMLElement): boolean {
-  let current = container.parentElement;
-  let levels = 0;
-  const maxLevels = 5;
-  
-  while (current && levels < maxLevels) {
-    const styles = window.getComputedStyle(current);
-    if (styles.display === 'flex') {
-      // Check for centering that causes measurement issues
-      const justifyContent = styles.justifyContent;
-      if (justifyContent === 'space-between' || 
-          justifyContent === 'center' ||
-          justifyContent === 'space-around' ||
-          justifyContent === 'space-evenly') {
-        return true;
-      }
-    }
-    current = current.parentElement;
-    levels++;
-  }
-  return false;
-}
+const isPositive = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value) && value > 0;
 
-/**
- * Calculates available width using viewport-based approach for flex layouts
- */
-function calculateFlexAwareWidth(container: HTMLElement, isResize = false): number {
-  // Find the flex container that has space-between or similar
-  let flexContainer: HTMLElement | null = null;
-  let navAncestor: HTMLElement | null = null;
-  let current = container.parentElement;
-  let levels = 0;
-  const maxLevels = 5;
-  
-  // Traverse up to find the flex container
-  while (current && levels < maxLevels) {
-    const styles = window.getComputedStyle(current);
-    if (styles.display === 'flex') {
-      const justifyContent = styles.justifyContent;
-      if (justifyContent === 'space-between' || 
-          justifyContent === 'center' ||
-          justifyContent === 'space-around' ||
-          justifyContent === 'space-evenly') {
-        flexContainer = current;
-        // Find which child of this flex container contains our nav
-        let ancestor = container;
-        while (ancestor.parentElement && ancestor.parentElement !== flexContainer) {
-          ancestor = ancestor.parentElement;
-        }
-        navAncestor = ancestor;
-        break;
-      }
-    }
-    current = current.parentElement;
-    levels++;
+const getViewportWidth = (): number => {
+  if (typeof window === "undefined") return 0;
+  const doc = window.document;
+  const docEl = doc?.documentElement;
+  const widths: number[] = [];
+  const visual = window.visualViewport?.width;
+  if (isPositive(visual)) widths.push(visual);
+  const client = docEl?.clientWidth;
+  if (isPositive(client)) widths.push(client);
+  const rectWidth = docEl?.getBoundingClientRect().width;
+  if (isPositive(rectWidth)) widths.push(rectWidth);
+  if (isPositive(window.innerWidth)) widths.push(window.innerWidth);
+  if (!widths.length) {
+    return typeof window.innerWidth === "number" ? window.innerWidth : 0;
   }
-  
-  if (!flexContainer || !navAncestor) {
-    // Fallback to siblings calculation
-    return calculateSiblingsWidth(container);
-  }
-  
-  // Use viewport-based calculation with actual CSS viewport width
-  const viewportWidth = getActualViewportWidth(isResize);
-  const flexStyles = window.getComputedStyle(flexContainer);
-  const paddingLeft = parseFloat(flexStyles.paddingLeft || '0');
-  const paddingRight = parseFloat(flexStyles.paddingRight || '0');
-  const gap = parseFloat(flexStyles.gap || '0');
-  
-  // Calculate widths of sibling elements (excluding the nav ancestor)
-  const siblings = Array.from(flexContainer.children) as HTMLElement[];
-  let siblingWidths = 0;
-  let siblingCount = 0;
-  
-  for (const el of siblings) {
-    if (el === navAncestor) continue;
-    
-    const cs = window.getComputedStyle(el);
-    // Ignore hidden/absolute/inert measure elements
-    if (
-      el.hasAttribute('aria-hidden') ||
-      cs.visibility === 'hidden' ||
-      cs.display === 'none' ||
-      cs.position === 'absolute'
-    ) {
-      continue;
-    }
-    
-    const rect = el.getBoundingClientRect();
-    if (rect.width > 0) {
-      siblingWidths += rect.width;
-      siblingCount++;
-    }
-  }
-  
-  // Calculate total gaps between flex children
-  const totalGaps = siblingCount > 0 ? gap * siblingCount : 0;
-  
-  // Available width = viewport - siblings - paddings - gaps - buffer
-  const availableWidth = viewportWidth - siblingWidths - paddingLeft - paddingRight - totalGaps - 40; // 40px buffer
-  
-  return Math.max(100, availableWidth);
-}
+  return Math.min(...widths);
+};
 
-/**
- * Traditional siblings width calculation
- */
-function calculateSiblingsWidth(container: HTMLElement): number {
-  const barEl = container.parentElement as HTMLElement | null;
-  // Available width = bar width minus widths of siblings (logo, actions, etc.)
-  const barWidth = (barEl?.clientWidth || barEl?.offsetWidth || 0) || 0;
-  let sibsWidth = 0;
-  if (barEl) {
-    const siblings = Array.from(barEl.children) as HTMLElement[];
-    for (const el of siblings) {
-      if (el === container) continue;
-      const cs = window.getComputedStyle(el);
-      // Ignore hidden/absolute/inert measure elements (like our hidden measurer)
-      if (
-        el.hasAttribute('aria-hidden') ||
-        cs.visibility === 'hidden' ||
-        cs.display === 'none' ||
-        cs.position === 'absolute'
-      ) {
-        continue;
-      }
-      const rect = el.getBoundingClientRect();
-      const ml = parseFloat(cs.marginLeft || '0');
-      const mr = parseFloat(cs.marginRight || '0');
-      sibsWidth += rect.width + ml + mr;
-    }
-  }
-  return Math.max(0, barWidth - sibsWidth);
-}
+const getElementWidth = (el?: HTMLElement | null): number => {
+  if (!el) return 0;
+  const rect = el.getBoundingClientRect();
+  return rect?.width ?? 0;
+};
+
+const getNodeFullWidth = (el: HTMLElement): number => {
+  const rect = el.getBoundingClientRect();
+  const styles = window.getComputedStyle(el);
+  const marginLeft = parseFloat(styles.marginLeft || "0");
+  const marginRight = parseFloat(styles.marginRight || "0");
+  return rect.width + marginLeft + marginRight;
+};
+
 
 export default function Nav(props: NavProps) {
-  const { items, variant = "top", defaultOpenIds = [], className, styles, showBorder = true, as, linkProp, responsiveBreakpoint = 850, showActiveUnderline = true, disableOverflow = false, overflowMeasure = 'smart', overflowAvailableWidth } = props;
+  const { customLeft, customRight, ...baseProps } = props;
+  const {
+    items,
+    variant = "top",
+    defaultOpenIds = [],
+    className,
+    styles,
+    showBorder = true,
+    as,
+    linkProp,
+    responsiveBreakpoint = 850,
+    showActiveUnderline = true,
+    disableOverflow = false,
+    overflowAvailableWidth,
+  } = baseProps;
   const classes = useStyles();
-  // Responsive switch between full Nav and NavSmall
   const [isSmall, setIsSmall] = useState<boolean>(false);
-  // Overflow handling (top variant)
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const leftSlotRef = useRef<HTMLDivElement | null>(null);
+  const rightSlotRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const measureRef = useRef<HTMLDivElement | null>(null);
+  const [availableWidth, setAvailableWidth] = useState<number | null>(
+    typeof overflowAvailableWidth === "number" ? Math.max(0, overflowAvailableWidth) : null
+  );
   const [visibleCount, setVisibleCount] = useState<number>(items.length);
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const check = () => setIsSmall(window.innerWidth < responsiveBreakpoint);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    const update = () => setIsSmall(getViewportWidth() < responsiveBreakpoint);
+    update();
+    window.addEventListener("resize", update);
+    const visualViewport = window.visualViewport;
+    visualViewport?.addEventListener("resize", update);
+    visualViewport?.addEventListener("scroll", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      visualViewport?.removeEventListener("resize", update);
+      visualViewport?.removeEventListener("scroll", update);
+    };
   }, [responsiveBreakpoint]);
-  // Recalculate visible items on resize and when items change
+  // Track available width for the nav items container
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (disableOverflow) {
-      setVisibleCount(items.length);
+    if (variant !== 'top') {
+      setAvailableWidth(
+        typeof overflowAvailableWidth === 'number' ? Math.max(0, overflowAvailableWidth) : null
+      );
       return;
     }
-    if (variant !== 'top' || isSmall) {
+
+    if (typeof overflowAvailableWidth === 'number') {
+      setAvailableWidth(Math.max(0, overflowAvailableWidth));
+      return;
+    }
+
+    if (isSmall) {
+      setAvailableWidth(null);
+      return;
+    }
+
+    if (typeof window === 'undefined') return;
+    let frame: number | null = null;
+
+    const scheduleMeasure = () => {
+      if (frame !== null) {
+        window.cancelAnimationFrame(frame);
+      }
+      frame = window.requestAnimationFrame(() => {
+        const total = getElementWidth(wrapperRef.current);
+        const left = getElementWidth(leftSlotRef.current);
+        const right = getElementWidth(rightSlotRef.current);
+        const next = Math.max(0, total - left - right);
+        setAvailableWidth((prev) => (prev === next ? prev : next));
+      });
+    };
+
+    scheduleMeasure();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(scheduleMeasure);
+      const observed = [wrapperRef.current, leftSlotRef.current, rightSlotRef.current].filter(Boolean) as HTMLElement[];
+      observed.forEach((el) => observer.observe(el));
+      return () => {
+        if (frame !== null) {
+          window.cancelAnimationFrame(frame);
+        }
+        observer.disconnect();
+      };
+    }
+
+    window.addEventListener('resize', scheduleMeasure);
+    return () => {
+      if (frame !== null) {
+        window.cancelAnimationFrame(frame);
+      }
+      window.removeEventListener('resize', scheduleMeasure);
+    };
+  }, [variant, isSmall, overflowAvailableWidth, Boolean(customLeft), Boolean(customRight)]);
+
+  // Recalculate visible items when available space or items change
+  useEffect(() => {
+    if (disableOverflow || variant !== 'top' || isSmall) {
       setVisibleCount(items.length);
       return;
     }
 
-    const calc = (isResizeEvent = false) => {
-      const container = containerRef.current;
-      const measurer = measureRef.current;
-      if (!container || !measurer) {
-        setVisibleCount(items.length);
-        return;
-      }
-      let containerWidth = 0;
-      if (typeof overflowAvailableWidth === 'number') {
-        containerWidth = Math.max(0, overflowAvailableWidth);
-      } else if (overflowMeasure === 'self') {
-        containerWidth = (container.clientWidth || (container as any).offsetWidth || 0) || 0;
-      } else if (overflowMeasure === 'smart') {
-        // Smart detection: check if we're in a flex layout
-        if (isInFlexLayout(container)) {
-          containerWidth = calculateFlexAwareWidth(container, isResizeEvent);
-        } else {
-          containerWidth = calculateSiblingsWidth(container);
+    const widthLimit =
+      typeof overflowAvailableWidth === 'number'
+        ? Math.max(0, overflowAvailableWidth)
+        : availableWidth;
+
+    if (widthLimit == null) {
+      return;
+    }
+
+    const measurer = measureRef.current;
+    if (!measurer) {
+      setVisibleCount(items.length);
+      return;
+    }
+
+    const navEl = measurer.querySelector('nav') as HTMLElement | null;
+    let gap = 0;
+    if (navEl) {
+      const cs = window.getComputedStyle(navEl);
+      gap = parseFloat((cs.columnGap || (cs as any).gap) || '0') || 0;
+    }
+
+    const itemNodes = Array.from(measurer.querySelectorAll('[data-role="item"]')) as HTMLElement[];
+    const moreNode = measurer.querySelector('[data-role="more-btn"]') as HTMLElement | null;
+
+    if (!itemNodes.length) {
+      setVisibleCount(0);
+      return;
+    }
+
+    const widths = itemNodes.map(getNodeFullWidth);
+    const moreWidth = moreNode ? getNodeFullWidth(moreNode) : 0;
+
+    const totalWidth = widths.reduce((sum, width, index) => sum + width + (index > 0 ? gap : 0), 0);
+    if (totalWidth <= widthLimit) {
+      setVisibleCount(items.length);
+      return;
+    }
+
+    const prefix: number[] = [];
+    for (let i = 0; i < widths.length; i += 1) {
+      const prev = i === 0 ? 0 : prefix[i - 1];
+      prefix[i] = prev + widths[i] + (i > 0 ? gap : 0);
+    }
+
+    let best = 0;
+    for (let count = widths.length; count >= 0; count -= 1) {
+      if (count === widths.length) {
+        const usedAll = count > 0 ? prefix[count - 1] : 0;
+        if (usedAll <= widthLimit) {
+          best = count;
+          break;
         }
       } else {
-        // Default 'siblings' behavior
-        containerWidth = calculateSiblingsWidth(container);
-      }
-      const BUFFER_PX = 15; // Reserve a tiny buffer to avoid visual overflow
-      const effectiveWidth = Math.max(0, containerWidth - BUFFER_PX);
-      const csContainer = window.getComputedStyle(container);
-      const gap = parseFloat((csContainer.columnGap || (csContainer as any).gap) || '0') || 0;
-      const itemNodes = Array.from(measurer.querySelectorAll('[data-role="item"]')) as HTMLElement[];
-      const moreNode = measurer.querySelector('[data-role="more-btn"]') as HTMLElement | null;
-      const moreW = moreNode ? (moreNode.getBoundingClientRect().width + (() => { const cs = window.getComputedStyle(moreNode); return parseFloat(cs.marginLeft||'0') + parseFloat(cs.marginRight||'0'); })()) : 0;
-
-      // First, check if ALL items fit without a More button.
-      // This avoids the greedy-then-last transition trap where the reserved
-      // space for the More button prevents reaching the last item even
-      // though all items together would fit.
-      const totalUsed = itemNodes.reduce((acc, el, i) => {
-        const rectW = el.getBoundingClientRect().width;
-        const cs = window.getComputedStyle(el);
-        const ml = parseFloat(cs.marginLeft || '0');
-        const mr = parseFloat(cs.marginRight || '0');
-        const w = rectW + ml + mr;
-        const addGap = i > 0 ? gap : 0;
-        return acc + w + addGap;
-      }, 0);
-      if (totalUsed <= effectiveWidth) {
-        setVisibleCount(items.length);
-        return;
-      }
-
-      // Otherwise, choose the maximal count that fits. This checks both cases:
-      // - all items visible (no More)
-      // - some visible + More button (with gap before More when at least one item visible)
-      const widths = itemNodes.map((el) => {
-        const rectW = el.getBoundingClientRect().width;
-        const cs = window.getComputedStyle(el);
-        const ml = parseFloat(cs.marginLeft || '0');
-        const mr = parseFloat(cs.marginRight || '0');
-        return rectW + ml + mr;
-      });
-      // prefix[i] = total width of items 0..i including gaps between them
-      const prefix: number[] = [];
-      for (let i = 0; i < widths.length; i++) {
-        const prev = i === 0 ? 0 : prefix[i - 1];
-        const addGap = i > 0 ? gap : 0;
-        prefix[i] = prev + widths[i] + addGap;
-      }
-      let best = 0;
-      for (let c = itemNodes.length; c >= 0; c--) {
-        if (c === itemNodes.length) {
-          // No More button when all visible
-          const usedAll = c > 0 ? prefix[c - 1] : 0;
-          if (usedAll <= effectiveWidth) { best = c; break; }
-        } else {
-          const used = c > 0 ? prefix[c - 1] : 0;
-          const withMore = used + (c > 0 ? gap : 0) + moreW;
-          if (withMore <= effectiveWidth) { best = c; break; }
+        const used = count > 0 ? prefix[count - 1] : 0;
+        const withMore = used + (count > 0 ? gap : 0) + moreWidth;
+        if (withMore <= widthLimit) {
+          best = count;
+          break;
         }
       }
-      setVisibleCount(Math.max(0, best));
-      };
+    }
 
-    const handleResize = () => calc(true);
-
-    // Initial and on next paint for accuracy
-    const raf = window.requestAnimationFrame(() => calc(false));
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.cancelAnimationFrame(raf);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [items, variant, isSmall, disableOverflow, overflowMeasure, overflowAvailableWidth]);
+    setVisibleCount(best);
+  }, [availableWidth, items, variant, isSmall, disableOverflow, overflowAvailableWidth]);
   const [open, setOpen] = useState<Set<string>>(new Set(defaultOpenIds));
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -608,9 +571,7 @@ export default function Nav(props: NavProps) {
     return props;
   };
   if (isSmall) {
-    return (
-      <NavSmall {...props} />
-    );
+    return <NavSmall {...baseProps} />;
   }
 
   if (variant === "side") {
@@ -700,65 +661,70 @@ export default function Nav(props: NavProps) {
   // Top variant with hover/focus dropdowns
   return (
     <header className={`${classes.rootTop} ${showBorder ? classes.rootTopBorder : ""} ${className ?? ""}`} style={styles?.root}>
-      <div className={classes.bar} style={styles?.bar}>
-        <nav
-          className={classes.listTop}
-          style={styles?.menu}
-          ref={containerRef as any}
-        >
-          {((disableOverflow ? items : items.slice(0, visibleCount))).map((it, idx) => {
-            const hasChildren = !!it.items?.length;
-            const id = it.id ?? `i-${idx}`;
-            const isActive = activeId === id || (hasChildren && it.items?.some(sub => sub.id === activeId || sub.href === activeId));
-            return (
-              <div
-                key={id}
-                style={{ position: "relative", whiteSpace: 'nowrap', ...(styles?.item ?? {}), ...(isActive ? styles?.activeItem : {}) }}
-                onMouseEnter={() => setHoverIdx(idx)}
-                onMouseLeave={() => setHoverIdx(v => (v === idx ? null : v))}
-              >
-                {hasChildren && (it.href || it.to) ? (
-                  <>
-                    <LinkComponent
-                      className={`${classes.itemBtn} ${classes.link}`}
-                      style={{...styles?.link, ...(isActive ? styles?.activeLink : {})}}
-                      {...getLinkProps(it)}
-                      onClick={(e: React.MouseEvent) => {
-                        // Parent with submenu should not set active
-                        it.onClick?.(e);
-                      }}
-                      aria-current={isActive ? "page" : undefined}
-                    >
-                      <span>{it.label}</span>
-                      <span className={`${classes.chevron} ${hoverIdx === idx ? classes.chevronOpen : ''}`} style={{...styles?.chevron, ...(hoverIdx === idx ? styles?.chevronOpen : {})}} aria-hidden>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={styles?.chevronIcon}>
-                          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </span>
-                    </LinkComponent>
-                    {hoverIdx === idx && (
-                      <>
-                        <div
-                          style={{
-                            position: "absolute",
-                            left: 0,
-                            width: "100%",
-                            height: "16px",
-                            zIndex: 999,
-                            pointerEvents: "auto",
-                            background: "transparent",
-                          }}
-                        />
-                        <div className={classes.dropdown} style={styles?.subMenu}>
-                          {it.items!.map((sub, sidx) => {
-                            const subId = sub.id ?? `${id}-s-${sidx}`;
-                            const subActive = activeId === subId || activeId === sub.href;
-                            return (
-                              (sub.href || sub.to)
-                                ? <LinkComponent
+      <div className={classes.bar} style={styles?.bar} ref={wrapperRef}>
+        {customLeft ? (
+          <div className={classes.slotLeft} style={styles?.customLeftSlot} ref={leftSlotRef}>
+            {customLeft}
+          </div>
+        ) : null}
+        <div className={classes.itemsContainer} style={styles?.itemsWrapper}>
+          <nav
+            className={classes.listTop}
+            style={styles?.menu}
+            ref={containerRef as any}
+          >
+            {(disableOverflow ? items : items.slice(0, visibleCount)).map((it, idx) => {
+              const hasChildren = !!it.items?.length;
+              const id = it.id ?? `i-${idx}`;
+              const isActive = activeId === id || (hasChildren && it.items?.some(sub => sub.id === activeId || sub.href === activeId));
+              return (
+                <div
+                  key={id}
+                  style={{ position: "relative", whiteSpace: "nowrap", ...(styles?.item ?? {}), ...(isActive ? styles?.activeItem : {}) }}
+                  onMouseEnter={() => setHoverIdx(idx)}
+                  onMouseLeave={() => setHoverIdx(v => (v === idx ? null : v))}
+                >
+                  {hasChildren && (it.href || it.to) ? (
+                    <>
+                      <LinkComponent
+                        className={`${classes.itemBtn} ${classes.link}`}
+                        style={{ ...styles?.link, ...(isActive ? styles?.activeLink : {}) }}
+                        {...getLinkProps(it)}
+                        onClick={(e: React.MouseEvent) => {
+                          it.onClick?.(e);
+                        }}
+                        aria-current={isActive ? "page" : undefined}
+                      >
+                        <span>{it.label}</span>
+                        <span className={`${classes.chevron} ${hoverIdx === idx ? classes.chevronOpen : ""}`} style={{ ...styles?.chevron, ...(hoverIdx === idx ? styles?.chevronOpen : {}) }} aria-hidden>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={styles?.chevronIcon}>
+                            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </span>
+                      </LinkComponent>
+                      {hoverIdx === idx && (
+                        <>
+                          <div
+                            style={{
+                              position: "absolute",
+                              left: 0,
+                              width: "100%",
+                              height: "16px",
+                              zIndex: 999,
+                              pointerEvents: "auto",
+                              background: "transparent",
+                            }}
+                          />
+                          <div className={classes.dropdown} style={styles?.subMenu}>
+                            {it.items!.map((sub, sidx) => {
+                              const subId = sub.id ?? `${id}-s-${sidx}`;
+                              const subActive = activeId === subId || activeId === sub.href;
+                              return (sub.href || sub.to)
+                                ? (
+                                  <LinkComponent
                                     key={subId}
                                     className={classes.subLink}
-                                    style={{...styles?.subLink, ...(subActive ? styles?.activeSubLink : {})}}
+                                    style={{ ...styles?.subLink, ...(subActive ? styles?.activeSubLink : {}) }}
                                     {...getLinkProps(sub)}
                                     onClick={(e: React.MouseEvent) => {
                                       setActiveId(subId);
@@ -768,29 +734,31 @@ export default function Nav(props: NavProps) {
                                   >
                                     {sub.label}
                                   </LinkComponent>
-                                : <span key={subId} className={classes.plainTextItem} style={styles?.subLink}>{sub.label}</span>
-                            );
-                          })}
-                        </div>
-                      </>
-                    )}
-                  </>
-                ) : hasChildren ? (
-                  <Button
-                    appearance="transparent"
-                    pressEffect={false}
-                    className={classes.itemBtn}
-                    aria-current={isActive ? "page" : undefined}
-                    styles={{ content: styles?.link }}
-                    menuItems={it.items!.map((sub, sidx) => {
-                      const subId = sub.id ?? `${id}-s-${sidx}`;
-                      const subActive = activeId === subId || activeId === sub.href;
-                      return (sub.href || sub.to)
-                        ? (
+                                )
+                                : (
+                                  <span key={subId} className={classes.plainTextItem} style={styles?.subLink}>{sub.label}</span>
+                                );
+                            })}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  ) : hasChildren ? (
+                    <Button
+                      appearance="transparent"
+                      pressEffect={false}
+                      className={classes.itemBtn}
+                      aria-current={isActive ? "page" : undefined}
+                      styles={{ content: styles?.link }}
+                      menuItems={it.items!.map((sub, sidx) => {
+                        const subId = sub.id ?? `${id}-s-${sidx}`;
+                        const subActive = activeId === subId || activeId === sub.href;
+                        return (sub.href || sub.to)
+                          ? (
                             <LinkComponent
                               key={subId}
                               className={classes.subLink}
-                              style={{...styles?.subLink, ...(subActive ? styles?.activeSubLink : {})}}
+                              style={{ ...styles?.subLink, ...(subActive ? styles?.activeSubLink : {}) }}
                               {...getLinkProps(sub)}
                               onClick={(e: React.MouseEvent) => {
                                 setActiveId(subId);
@@ -801,48 +769,20 @@ export default function Nav(props: NavProps) {
                               {sub.label}
                             </LinkComponent>
                           )
-                        : (
+                          : (
                             <span key={subId} className={classes.plainTextItem} style={styles?.subLink}>{sub.label}</span>
                           );
-                    })}
-                    menuTrigger="hover"
-                  >
-                    {it.label}
-                  </Button>
-                ) : (
-                  (it.href || it.to)
-                  ? <LinkComponent
-                      className={`${classes.itemBtn} ${classes.link} ${!showActiveUnderline ? classes.noUnderline : ''}`}
-                      style={{...styles?.link, ...(isActive ? styles?.activeLink : {})}}
-                        {...getLinkProps(it)}
-                        onClick={(e: React.MouseEvent) => {
-                          if (!hasChildren) {
-                            setActiveId(id);
-                          }
-                          it.onClick?.(e);
-                        }}
-                        aria-current={isActive ? "page" : undefined}
-                      >
-                        <span>{it.label}</span>
-                      </LinkComponent>
-                    : <span className={classes.plainTextItem} style={styles?.link}>{it.label}</span>
-                )}
-              </div>
-            );
-          })}
-          {!disableOverflow && visibleCount < items.length && (
-            <div className={classes.moreWrapper} style={styles?.moreWrapper}>
-              {renderMoreButton(
-                items.slice(visibleCount).map((it, idx) => {
-                  const hasChildren = !!it.items?.length;
-                  const id = it.id ?? `overflow-i-${idx}`;
-                  const isActive = activeId === id || (hasChildren && it.items?.some(sub => sub.id === activeId || sub.href === activeId));
-                  return (
+                      })}
+                      menuTrigger="hover"
+                    >
+                      {it.label}
+                    </Button>
+                  ) : (
                     (it.href || it.to)
-                      ? <LinkComponent
-                          key={id}
-                          className={classes.subLink}
-                          style={{...styles?.subLink, ...(isActive ? styles?.activeSubLink : {})}}
+                      ? (
+                        <LinkComponent
+                          className={`${classes.itemBtn} ${classes.link} ${!showActiveUnderline ? classes.noUnderline : ""}`}
+                          style={{ ...styles?.link, ...(isActive ? styles?.activeLink : {}) }}
                           {...getLinkProps(it)}
                           onClick={(e: React.MouseEvent) => {
                             if (!hasChildren) {
@@ -852,50 +792,87 @@ export default function Nav(props: NavProps) {
                           }}
                           aria-current={isActive ? "page" : undefined}
                         >
-                          {it.label}
-                        </LinkComponent>
-                      : <span key={id} className={classes.plainTextItem} style={styles?.subLink}>{it.label}</span>
-                  );
-                })
-              )}
-            </div>
-          )}
-        </nav>
-        {/* Hidden measurer for computing widths (skip via disableOverflow, e.g. in tests) */}
-        {!disableOverflow && (
-          <div
-            className={classes.hiddenMeasure}
-            ref={measureRef as any}
-            aria-hidden
-          >
-            <nav className={classes.listTop} style={styles?.menu}>
-              {items.map((it, idx) => {
-                const hasChildren = !!it.items?.length;
-                const id = it.id ?? `m-i-${idx}`;
-                return (
-                  <div key={id} style={{ position: 'relative', whiteSpace: 'nowrap', ...(styles?.item ?? {}) }}>
-                    {(it.href || it.to)
-                      ? <LinkComponent className={`${classes.itemBtn} ${classes.link}`} style={styles?.link} {...getLinkProps(it)} data-role="item">
                           <span>{it.label}</span>
-                          {hasChildren && (
-                            <span className={classes.chevron} style={styles?.chevron} aria-hidden>
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={styles?.chevronIcon}>
-                                <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                            </span>
-                          )}
                         </LinkComponent>
-                      : <span className={classes.plainTextItem} style={styles?.link} data-role="item">{it.label}</span>
-                    }
-                  </div>
-                );
-              })}
-              {/* more button width (single source via renderMoreButton) */}
-              {renderMoreButton([<span key="_dummy" />], { 'data-role': 'more-btn' })}
-            </nav>
+                      )
+                      : <span className={classes.plainTextItem} style={styles?.link}>{it.label}</span>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
+        </div>
+        
+        {!disableOverflow && visibleCount < items.length && (
+          <div className={classes.moreWrapper} style={styles?.moreWrapper}>
+            {renderMoreButton(
+              items.slice(visibleCount).map((it, idx) => {
+                const hasChildren = !!it.items?.length;
+                const id = it.id ?? `overflow-i-${idx}`;
+                const isActive = activeId === id || (hasChildren && it.items?.some(sub => sub.id === activeId || sub.href === activeId));
+                return (it.href || it.to)
+                  ? (
+                    <LinkComponent
+                      key={id}
+                      className={classes.subLink}
+                      style={{ ...styles?.subLink, ...(isActive ? styles?.activeSubLink : {}) }}
+                      {...getLinkProps(it)}
+                      onClick={(e: React.MouseEvent) => {
+                        if (!hasChildren) {
+                          setActiveId(id);
+                        }
+                        it.onClick?.(e);
+                      }}
+                      aria-current={isActive ? "page" : undefined}
+                    >
+                      {it.label}
+                    </LinkComponent>
+                  )
+                  : <span key={id} className={classes.plainTextItem} style={styles?.subLink}>{it.label}</span>;
+              })
+            )}
           </div>
         )}
+        {customRight ? (
+          <div className={classes.slotRight} style={styles?.customRightSlot} ref={rightSlotRef}>
+            {customRight}
+          </div>
+        ) : null}
       </div>
+      {!disableOverflow && (
+        <div
+          className={classes.hiddenMeasure}
+          ref={measureRef as any}
+          aria-hidden
+        >
+          <nav className={classes.listTop} style={styles?.menu}>
+            {items.map((it, idx) => {
+              const hasChildren = !!it.items?.length;
+              const id = it.id ?? `m-i-${idx}`;
+              return (
+                <div key={id} style={{ position: "relative", whiteSpace: "nowrap", ...(styles?.item ?? {}) }}>
+                  {(it.href || it.to)
+                    ? (
+                      <LinkComponent className={`${classes.itemBtn} ${classes.link}`} style={styles?.link} {...getLinkProps(it)} data-role="item">
+                        <span>{it.label}</span>
+                        {hasChildren && (
+                          <span className={classes.chevron} style={styles?.chevron} aria-hidden>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={styles?.chevronIcon}>
+                              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </span>
+                        )}
+                      </LinkComponent>
+                    )
+                    : <span className={classes.plainTextItem} style={styles?.link} data-role="item">{it.label}</span>
+                  }
+                </div>
+              );
+            })}
+            {renderMoreButton([<span key="_dummy" />], { 'data-role': 'more-btn' })}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
