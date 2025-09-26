@@ -212,8 +212,7 @@ export const MobileOverlayNoContainer: Story = {
 };
 
 export const CustomLeftItemsLayout: Story = {
-  args: { items: sample, variant: 'top', as: NavLink },
-  render: (args) => {
+  render: () => {
     return (
       <MemoryRouter initialEntries={['/home']}>
         <style>{`
@@ -233,7 +232,7 @@ export const CustomLeftItemsLayout: Story = {
           `}
         </style>
         <Nav
-          {...args}
+          as={NavLink}
           items={sample}
           responsiveBreakpoint={700}
           showBorder={false}
@@ -263,7 +262,6 @@ export const CustomLeftItemsLayout: Story = {
 }
 
 export const CustomItemsLayout: Story = {
-  args: { items: sample, variant: 'top', as: NavLink },
   render: (args) => {
     return (
       <MemoryRouter initialEntries={['/home']}>
@@ -275,7 +273,7 @@ export const CustomItemsLayout: Story = {
           `}
         </style>
         <Nav
-          {...args}
+          as={NavLink}
           items={sample}
           responsiveBreakpoint={700}
           showBorder={false}

@@ -14,9 +14,12 @@ const useStyles = makeStyles({
     boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
   },
   inner: {
-    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    gap: "1rem",
     width: "100%",
     height: "3.5rem",
+    padding: "0 1rem",
   },
   burgerIcon: {
     display: "flex",
@@ -204,11 +207,21 @@ const useStyles = makeStyles({
       color: "color-mix(in srgb, var(--pc-fg, currentColor) 75%, var(--pc-bg, #fff))"
     }
   },
+  customLeftSlot: {
+    display: "flex",
+    alignItems: "center",
+    flex: "0 0 auto",
+  },
+  customRightSlot: {
+    display: "flex",
+    alignItems: "center",
+    flex: "0 0 auto",
+  },
 });
 
 type NavSmallProps = Omit<NavProps, 'variant' | 'defaultOpenIds' | 'showBorder' | 'responsiveBreakpoint'>;
 
-export default function NavSmall({ items, as, linkProp, className, styles }: NavSmallProps) {
+export default function NavSmall({ items, as, linkProp, className, styles, customLeft, customRight }: NavSmallProps) {
   const classes = useStyles();
   const [menuOpen, setMenuOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
@@ -259,7 +272,12 @@ export default function NavSmall({ items, as, linkProp, className, styles }: Nav
 
   return (
     <header className={className ? classes.root + " " + className : classes.root} style={styles?.root}>
-      <div className={classes.inner} style={styles?.bar}>
+      <div className={classes.inner} style={styles?.barSmall}>
+        {customLeft ? (
+          <div className={classes.customLeftSlot} style={styles?.customLeftSlot}>{customLeft}</div>
+        ) : (
+          <div></div>
+        )}
         <Button
           className={classes.burgerBtn}
           style={styles?.burgerButton}
@@ -274,6 +292,11 @@ export default function NavSmall({ items, as, linkProp, className, styles }: Nav
             setOpenSubmenu(null);
           }}
         />
+        {customRight ? (
+          <div className={classes.customRightSlot} style={styles?.customRightSlot}>{customRight}</div>
+        ) : (
+          <div></div>
+        )}
       </div>
       <div
         aria-hidden={!menuOpen}

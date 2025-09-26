@@ -17,6 +17,7 @@ export type NavItem = {
 export type NavStyleOverrides = Partial<{
   root: CSSProperties;
   bar: CSSProperties;
+  barSmall: CSSProperties;
   customLeftSlot: CSSProperties;
   customRightSlot: CSSProperties;
   itemsWrapper: CSSProperties;
@@ -357,7 +358,6 @@ const getNodeFullWidth = (el: HTMLElement): number => {
 
 
 export default function Nav(props: NavProps) {
-  const { customLeft, customRight, ...baseProps } = props;
   const {
     items,
     variant = "top",
@@ -371,7 +371,9 @@ export default function Nav(props: NavProps) {
     showActiveUnderline = true,
     disableOverflow = false,
     overflowAvailableWidth,
-  } = baseProps;
+    customLeft,
+    customRight
+  } = props;
   const classes = useStyles();
   const [isSmall, setIsSmall] = useState<boolean>(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -571,7 +573,7 @@ export default function Nav(props: NavProps) {
     return props;
   };
   if (isSmall) {
-    return <NavSmall {...baseProps} />;
+    return <NavSmall {...props} />;
   }
 
   if (variant === "side") {
