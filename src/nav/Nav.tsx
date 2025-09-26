@@ -560,8 +560,25 @@ export default function Nav(props: NavProps) {
       props[linkProp] = navTarget;
     } else {
       const comp: any = LinkComponent;
-      const isNavLink = comp?.displayName === 'NavLink' || comp?.name === 'NavLink';
-      if (isNavLink) {
+      
+      // Robust router-aware link detection using feature detection
+      // Instead of relying on component names, we detect router-style components
+      const isRouterLink = 
+        // Standard checks for development
+        comp?.displayName === 'NavLink' ||
+        comp?.name === 'NavLink' ||
+        comp?.displayName === 'Link' ||
+        // Feature detection: if we have items with 'to' property, assume router links
+        (items.some(item => item.to !== undefined)) ||
+        // Check for router-specific props in the component
+        (typeof comp === 'function' && (
+          comp?.propTypes?.to ||
+          comp?.defaultProps?.to !== undefined ||
+          // ForwardRef detection for newer React Router versions
+          (comp?.$$typeof === Symbol.for('react.forward_ref'))
+        ));
+      
+      if (isRouterLink) {
         props.to = navTarget;
       } else {
         props.href = navTarget;
