@@ -561,27 +561,31 @@ export default function Nav(props: NavProps) {
     } else {
       const comp: any = LinkComponent;
       
-      // Robust router-aware link detection using feature detection
-      // Instead of relying on component names, we detect router-style components
-      const isRouterLink = 
-        // Standard checks for development
-        comp?.displayName === 'NavLink' ||
-        comp?.name === 'NavLink' ||
-        comp?.displayName === 'Link' ||
-        // Feature detection: if we have items with 'to' property, assume router links
-        (items.some(item => item.to !== undefined)) ||
-        // Check for router-specific props in the component
-        (typeof comp === 'function' && (
-          comp?.propTypes?.to ||
-          comp?.defaultProps?.to !== undefined ||
-          // ForwardRef detection for newer React Router versions
-          (comp?.$$typeof === Symbol.for('react.forward_ref'))
-        ));
-      
-      if (isRouterLink) {
-        props.to = navTarget;
-      } else {
+      // Per-item navigation type detection respecting precedence
+      // If item has href, use regular anchor navigation regardless of component
+      if (item.href) {
         props.href = navTarget;
+      } else if (item.to) {
+        // Only use router navigation if item uses 'to' and no 'href'
+        // Detect if this should be a router link
+        const isRouterLink = 
+          // Standard checks for development
+          comp?.displayName === 'NavLink' ||
+          comp?.name === 'NavLink' ||
+          comp?.displayName === 'Link' ||
+          // Check for router-specific props in the component
+          (typeof comp === 'function' && (
+            comp?.propTypes?.to ||
+            comp?.defaultProps?.to !== undefined ||
+            // ForwardRef detection for newer React Router versions
+            (comp?.$$typeof === Symbol.for('react.forward_ref'))
+          ));
+        
+        if (isRouterLink) {
+          props.to = navTarget;
+        } else {
+          props.href = navTarget;
+        }
       }
     }
     if (item.end !== undefined) {
