@@ -6,9 +6,10 @@ type Props = {
   shape?: "rounded" | "square" | "circular";
   size?: "small" | "medium" | "large";
   className?: string;
+  pressEffect?: boolean;
 };
 
-export default function ThemeToggle({ appearance = "outline", size = "medium", shape = "rounded", className }: Props) {
+export default function ThemeToggle({ appearance = "outline", size = "medium", shape = "rounded", className, pressEffect }: Props) {
   const { theme, setTheme } = useTheme();
   const isLight = theme === "light";
   const label = isLight ? "Switch to dark theme" : "Switch to light theme";
@@ -34,6 +35,7 @@ export default function ThemeToggle({ appearance = "outline", size = "medium", s
       icon={icon}
       iconOnly
       className={className}
+      pressEffect={pressEffect}
       type="button"
     />
   );
