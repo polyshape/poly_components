@@ -187,7 +187,7 @@ interface ToastComponentProps {
 function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoadingBar = true, pauseOnHover = false, theme = 'light', paused: globalPaused, draggable = 'touch' }: ToastComponentProps) {
   const classes = useStyles();
   const [isExiting, setIsExiting] = useState(false);
-  const exitTimeout = useRef<NodeJS.Timeout | null>(null);
+  const exitTimeout = useRef<number | null>(null);
   const [localPaused, setLocalPaused] = useState(false);
   const [barScale, setBarScale] = useState(1);
   const [barTransition, setBarTransition] = useState('none');
@@ -412,7 +412,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
       setIsExiting(true);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       removedRef.current = true;
-      exitTimeout.current = setTimeout(() => {
+      exitTimeout.current = window.setTimeout(() => {
         onRemove(toast.id);
       }, 200);
     }
@@ -504,7 +504,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
     }
   }
 
-  const cursorStyle = isDragEnabled ? (isDragging ? 'grabbing' : 'grab') : toast.dismissOnClick ? 'pointer' : 'default';
+  const cursorStyle = draggable === 'always' ? (isDragging ? 'grabbing' : 'grab') : toast.dismissOnClick ? 'pointer' : 'default';
 
   return (
     <div
