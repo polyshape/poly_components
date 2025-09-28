@@ -221,6 +221,154 @@ Notes
 
 - The small arrow aligns under the chevron; if you set `hideChevron`, it centers under the button. You can nudge it with `styles.dropdownArrow.offsetX` or fully override using `left`/`right`.
 
+### Example: Toast Notifications
+
+Toast notifications for displaying temporary messages to users. Add the `Toast` component once to your app, then use the `toast` function anywhere to trigger notifications.
+
+#### Basic Usage
+
+```tsx
+import { Toast, toast } from "@polyutils/components";
+
+// 1. Add Toast component once to your app (e.g. App.tsx or main.tsx)
+export function App() {
+  return (
+    <div>
+      {/* Your app content */}
+      <main>
+        <h1>My Application</h1>
+        {/* ... rest of your app */}
+      </main>
+      
+      {/* Add Toast component once and forget about it */}
+      <Toast />
+    </div>
+  );
+}
+
+// 2. Use toast function anywhere in your app
+export function ExampleComponent() {
+  const handleSuccess = () => {
+    toast.success('Operation completed successfully!');
+  };
+
+  const handleError = () => {
+    toast.error('Something went wrong. Please try again.');
+  };
+
+  const handleWarning = () => {
+    toast.warning('Please check your input before continuing.');
+  };
+
+  const handleInfo = () => {
+    toast.info('New features are now available!');
+  };
+
+  const handleCustom = () => {
+    toast.success('File uploaded successfully!', {
+      title: 'Upload Complete',
+      duration: 8000 // 8 seconds
+    });
+  };
+
+  const handlePersistent = () => {
+    toast.warning('Your session will expire soon', {
+      duration: 0 // Won't auto-close
+    });
+  };
+
+  return (
+    <div>
+      <button onClick={handleSuccess}>Success Toast</button>
+      <button onClick={handleError}>Error Toast</button>
+      <button onClick={handleWarning}>Warning Toast</button>
+      <button onClick={handleInfo}>Info Toast</button>
+      <button onClick={handleCustom}>Custom Options</button>
+      <button onClick={handlePersistent}>Persistent Toast</button>
+      
+      <button onClick={() => toast.clear()}>Clear All Toasts</button>
+    </div>
+  );
+}
+
+// Custom icon and close button
+<Toast
+  icons={{ success: <i className="fa-solid fa-thumbs-up" style={{ color: 'lime' }} /> }}
+  closeIcon={<i className="fa-solid fa-circle-xmark" />}
+  showLoadingBar={false}
+  pauseOnHover
+  theme="colored"
+/>
+
+// Custom styles
+<Toast
+  styles={{
+    toast: { borderRadius: 16, fontSize: 16 },
+    closeButton: { color: '#333' },
+  }}
+/>
+```
+
+**Features:**
+
+- **Simple API**: Just call `toast.success()`, `toast.error()`, `toast.warning()`, or `toast.info()`
+- **Flexible positioning**: Render toasts in any corner with the `position` prop
+- **Auto-removal**: Configurable duration (default 5 seconds)
+- **Manual dismissal**: Built-in close button (hidden automatically when `dismissOnClick` is true)
+- **Drag-to-dismiss**: Enable swipe gestures with `draggable="touch"` (default) or `draggable="always"`
+- **Stacking**: Turn on `stacked` for a deck-style presentation
+- **Optional titles**: Add context with custom titles
+- **Persistent toasts**: Set `duration: 0` to prevent auto-close
+- **Animations**: Smooth slide-in/slide-out transitions
+- **Pause on hover**: Set `pauseOnHover` to pause both the loading bar and dismiss countdown
+- **Custom icons and close button**: Pass `icons` and `closeIcon` props to customize
+- **Theme prop**: Use the `theme` prop to control the toast appearance. Options:
+
+  - `sync` (default): Syncs the toaster colors with the poly-components library
+  - `dark`: Dark background, light text
+  - `light`: Light background, dark text
+  - `colored`: Type-based background and white icons
+- **Show/hide loading bar**: Use `showLoadingBar` to toggle the progress bar
+- **Imperative helpers**: Call `toast.pause(id)`, `toast.play(id)`, and `toast.isActive(id)` for fine-grained control
+
+#### Toast component props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `position` | `'topRight' \| 'topCenter' \| 'topLeft' \| 'bottomRight' \| 'bottomCenter' \| 'bottomLeft'` | `topRight` | Where the toast stack appears. |
+| `stacked` | `boolean` | `false` | Enables a deck-style cluster with hover expansion. |
+| `draggable` | `'touch' \| 'always' \| 'never'` | `touch` | Allows swipe-to-dismiss gestures (`touch` targets touch/pen devices). |
+| `showLoadingBar` | `boolean` | `true` | Toggles the progress bar for timed toasts. |
+| `pauseOnHover` | `boolean` | `false` | Suspends the dismiss timer while hovered. |
+| `theme` | `'sync' \| 'dark' \| 'light' \| 'colored'` | `sync` | Controls the toast color palette. |
+| `styles` | `ToastStyleOverrides` | - | Fine-grained style overrides for the container, title, message, etc. |
+| `icons` | `ToastIconOverrides` | - | Override the default icon per toast type (or hide with `null`). |
+| `closeIcon` | `ReactNode \| null` | - | Provide a custom close icon or `null` to remove the button. |
+| `role` | `string` | - | Override the ARIA role on the container (e.g., `status` or `alert`). |
+
+#### Toast options (used with `toast.success`, `toast.error`, etc.)
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `string` | - | Optional headline displayed above the message. |
+| `duration` | `number` | `5000` | Auto-dismiss after the given milliseconds (`0` means persistent). |
+| `dismissOnClick` | `boolean` | `false` | Allow clicking the body of the toast to dismiss it (hides the close button). |
+| `paused` | `boolean` | `false` | Start the toast in a paused state until you call `toast.play(id)`. |
+
+#### Imperative helpers
+
+```tsx
+const id = toast.success('Saved!');
+
+toast.pause(id);            // freeze the countdown
+// ...later
+toast.play(id);      // resume the timer
+
+if (!toast.isActive(id)) {
+  console.log('Toast already dismissed');
+}
+```
+
 ### Example: Nav (top/side) and NavSmall (mobile)
 
 Nav with `variant="top"` automatically switches to the mobile overlay navigation below the configured breakpoint. By default, `responsiveBreakpoint` is `850` (px). You usually do not need to import or render `NavSmall` yourself — just use `Nav` and adjust `responsiveBreakpoint` if needed.

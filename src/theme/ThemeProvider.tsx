@@ -67,6 +67,7 @@ function applyTheme(theme: Theme, overrides?: ThemeTokens, scope?: string) {
           "--pc-muted": "#6e6e6e",
           "--pc-card": "#f5f7fb",
           "--pc-nav-bg": "color-mix(in srgb, var(--pc-primary-base, #000) 8%, var(--pc-bg))",
+          "--pc-toast-bg": "color-mix(in srgb, var(--pc-bg, #fff) 92%, #000)",
           // Form field tokens
           "--pc-field-bg": "color-mix(in srgb, var(--pc-fg) 6%, var(--pc-bg))",
           "--pc-field-border": "var(--pc-border)",
@@ -77,6 +78,7 @@ function applyTheme(theme: Theme, overrides?: ThemeTokens, scope?: string) {
           "--pc-page-hover-bg": "color-mix(in srgb, var(--primary-link, var(--pc-accent)) 12%, var(--arrow-bg, rgba(255,255,255,0.5)))",
           "--pc-page-active-bg": "color-mix(in srgb, var(--primary-link, var(--pc-accent)) 18%, var(--arrow-bg, rgba(255,255,255,0.5)))",
           "--pc-page-active-border": "color-mix(in srgb, var(--primary-link, var(--pc-accent)) 40%, var(--border, rgba(0,0,0,0.12)))",
+          "--pc-shadow": "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)",
         }
       : {
           // Keep existing dark palette for non-tabs tokens
@@ -89,6 +91,7 @@ function applyTheme(theme: Theme, overrides?: ThemeTokens, scope?: string) {
           "--pc-muted": "#b8b8b8",
           "--pc-card": "#646464",
           "--pc-nav-bg": "color-mix(in srgb, var(--pc-primary-base, #000) 25%, var(--pc-bg))",
+          "--pc-toast-bg": "color-mix(in srgb, var(--pc-bg, #fff) 60%, #000)",
           // Form field tokens
           "--pc-field-bg": "color-mix(in srgb, var(--pc-fg) 10%, var(--pc-bg))",
           "--pc-field-border": "var(--pc-border)",
@@ -99,6 +102,7 @@ function applyTheme(theme: Theme, overrides?: ThemeTokens, scope?: string) {
           "--pc-page-hover-bg": "color-mix(in srgb, var(--primary-link, var(--pc-accent)) 12%, var(--arrow-bg, rgba(255,255,255,0.04)))",
           "--pc-page-active-bg": "color-mix(in srgb, var(--primary-link, var(--pc-accent)) 18%, var(--arrow-bg, rgba(255,255,255,0.04)))",
           "--pc-page-active-border": "color-mix(in srgb, var(--primary-link, var(--pc-accent)) 40%, var(--border, rgba(255,255,255,0.08)))",
+          "--pc-shadow": "0 4px 24px 0 rgba(0,0,0,0.5)",
         };
   // Respect consumer CSS overrides: if the custom property is already defined by
   // author styles (computed value present) and we have not previously set an

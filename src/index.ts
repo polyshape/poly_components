@@ -4,3 +4,4 @@ export * from "./theme";
 export * from "./tabs";
 export * from "./spinner";
 export * from "./nav";
+export * from "./toast";
