@@ -199,7 +199,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
   const dragStartXRef = useRef(0);
   const toastWidthRef = useRef(0);
   const pausedByDragRef = useRef(false);
-  const dragResetTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const dragResetTimeoutRef = useRef<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
@@ -285,7 +285,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
     if (dragResetTimeoutRef.current) {
       clearTimeout(dragResetTimeoutRef.current);
     }
-    dragResetTimeoutRef.current = setTimeout(() => {
+    dragResetTimeoutRef.current = window.setTimeout(() => {
       setDragActive(false);
       dragResetTimeoutRef.current = null;
     }, 200);
