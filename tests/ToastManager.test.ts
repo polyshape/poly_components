@@ -11,6 +11,9 @@ function getLastToast(): ToastItem | undefined {
 describe('toastManager', () => {
   beforeEach(() => {
     toastManager.clear();
+    if ('clearDefaults' in toastManager) {
+      toastManager.clearDefaults();
+    }
   });
 
   it('adds a success toast', () => {
@@ -73,5 +76,34 @@ describe('toastManager', () => {
     const id = toast.warning('Hold position', { duration: 1500, paused: true });
     const stored = toastManager.getToasts().find(t => t.id === id);
     expect(stored?.paused).toBe(true);
+  });
+
+  it('per-toast options take precedence over global defaults', () => {
+    // Set global defaults via manager (as Toast component would)
+    toastManager.setDefaults({ duration: 8000, dismissOnClick: true });
+
+    const id = toast.success('Custom', { duration: 1000, dismissOnClick: false });
+    const t = toastManager.getToasts().find(x => x.id === id)!;
+    expect(t.duration).toBe(1000);
+    expect(t.dismissOnClick).toBe(false);
+  });
+
+  it('uses global defaults when per-toast options are not provided', () => {
+    toastManager.setDefaults({ duration: 8000, dismissOnClick: true });
+
+    const id = toast.info('No per-toast options');
+    const t = toastManager.getToasts().find(x => x.id === id)!;
+    expect(t.duration).toBe(8000);
+    expect(t.dismissOnClick).toBe(true);
+  });
+
+  it('falls back to hard defaults when neither per-toast nor global provided', () => {
+    // Make sure defaults are cleared
+    toastManager.clearDefaults();
+
+    const id = toast.info('Hard defaults');
+    const t = toastManager.getToasts().find(x => x.id === id)!;
+    expect(t.duration).toBe(5000);
+    expect(t.dismissOnClick).toBe(false);
   });
 });

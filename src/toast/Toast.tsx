@@ -598,6 +598,8 @@ export interface ToastProps {
   role?: string;
   stacked?: boolean;
   draggable?: ToastDraggable;
+  duration?: number;
+  dismissOnClick?: boolean;
 }
 
 export default function Toast(props: ToastProps = {}) {
@@ -612,6 +614,8 @@ export default function Toast(props: ToastProps = {}) {
     role,
     stacked = false,
     draggable = 'touch',
+    duration: defaultDuration,
+    dismissOnClick: defaultDismissOnClick,
   } = props;
   const [paused, setPaused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -624,6 +628,15 @@ export default function Toast(props: ToastProps = {}) {
     const unsubscribe = toastManager.subscribe(setToasts);
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    const defaults: Partial<{ duration: number; dismissOnClick: boolean }> = {};
+    if (defaultDuration !== undefined) defaults.duration = defaultDuration;
+    if (defaultDismissOnClick !== undefined) defaults.dismissOnClick = defaultDismissOnClick;
+    if (Object.keys(defaults).length > 0) {
+      toastManager.setDefaults(defaults);
+    }
+  }, [defaultDuration, defaultDismissOnClick]);
 
   const handleRemove = (id: string) => {
     setExiting((prev) => ({ ...prev, [id]: true }));

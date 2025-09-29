@@ -341,6 +341,8 @@ export function ExampleComponent() {
 | `showLoadingBar` | `boolean` | `true` | Toggles the progress bar for timed toasts. |
 | `pauseOnHover` | `boolean` | `false` | Suspends the dismiss timer while hovered. |
 | `theme` | `'sync' \| 'dark' \| 'light' \| 'colored'` | `sync` | Controls the toast color palette. |
+| `duration` | `number` | — | Global default auto-dismiss duration (ms). Used when a toast is created without a per-call `duration`. `0` makes a toast persistent. |
+| `dismissOnClick` | `boolean` | — | Global default to allow dismissing by clicking the body (hides the close button). Used when a toast is created without a per-call `dismissOnClick`. |
 | `styles` | `ToastStyleOverrides` | - | Fine-grained style overrides for the container, title, message, etc. |
 | `icons` | `ToastIconOverrides` | - | Override the default icon per toast type (or hide with `null`). |
 | `closeIcon` | `ReactNode \| null` | - | Provide a custom close icon or `null` to remove the button. |
@@ -354,6 +356,26 @@ export function ExampleComponent() {
 | `duration` | `number` | `5000` | Auto-dismiss after the given milliseconds (`0` means persistent). |
 | `dismissOnClick` | `boolean` | `false` | Allow clicking the body of the toast to dismiss it (hides the close button). |
 | `paused` | `boolean` | `false` | Start the toast in a paused state until you call `toast.play(id)`. |
+
+#### Global defaults and precedence
+
+You can set global defaults for new toasts via `<Toast />` props and still override them per toast. Precedence is:
+
+- Per-toast options passed to `toast.success|error|warning|info()` take precedence.
+- If not provided per toast, `<Toast duration />` and `<Toast dismissOnClick />` act as global defaults.
+- If neither is provided, hard defaults are used: `duration = 5000`, `dismissOnClick = false`.
+
+Example:
+
+```tsx
+// App shell
+<Toast duration={8000} dismissOnClick />
+
+// Anywhere in your app
+toast.success('Overrides global', { duration: 1000 });     // uses 1000ms, dismissOnClick = true (from global)
+toast.info('Uses global defaults');                         // uses 8000ms and dismissOnClick = true
+toast.warning('Hard defaults apply', { dismissOnClick: false }); // uses 5000ms (hard), dismissOnClick = false
+```
 
 #### Imperative helpers
 

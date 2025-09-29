@@ -4,6 +4,7 @@ class ToastManager {
   private listeners: Set<(toasts: ToastItem[]) => void> = new Set();
   private toasts: ToastItem[] = [];
   private counter = 0;
+  private defaultOptions: Partial<ToastOptions> = {};
 
   private generateId(): string {
     return `toast-${++this.counter}-${Date.now()}`;
@@ -16,9 +17,9 @@ class ToastManager {
       type,
       message,
       title: options?.title,
-      duration: options?.duration ?? 5000,
+      duration: options?.duration ?? this.defaultOptions.duration ?? 5000,
       paused: options?.paused ?? false,
-      dismissOnClick: options?.dismissOnClick ?? false,
+      dismissOnClick: options?.dismissOnClick ?? this.defaultOptions.dismissOnClick ?? false,
     };
 
     this.toasts = [...this.toasts, toast];
@@ -100,6 +101,15 @@ class ToastManager {
 
   getToasts(): ToastItem[] {
     return [...this.toasts];
+  }
+
+  setDefaults(defaults: Partial<ToastOptions>): void {
+    this.defaultOptions = { ...this.defaultOptions, ...defaults };
+  }
+
+  // Clear all configured defaults (mainly for tests)
+  clearDefaults(): void {
+    this.defaultOptions = {};
   }
 }
 
