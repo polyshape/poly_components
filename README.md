@@ -271,6 +271,28 @@ export function ExampleComponent() {
     });
   };
 
+  const handleWithAction = () => {
+    toast.success(
+      (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ flex: 1 }}>Draft saved successfully.</span>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              toast.info('Undo clicked', { duration: 2000 });
+            }}
+          >
+            Undo
+          </button>
+        </div>
+      ),
+      {
+        title: 'Saved',
+        duration: 6000,
+      }
+    );
+  };
   const handlePersistent = () => {
     toast.warning('Your session will expire soon', {
       duration: 0 // Won't auto-close
@@ -284,6 +306,7 @@ export function ExampleComponent() {
       <button onClick={handleWarning}>Warning Toast</button>
       <button onClick={handleInfo}>Info Toast</button>
       <button onClick={handleCustom}>Custom Options</button>
+      <button onClick={handleWithAction}>Toast With Action</button>
       <button onClick={handlePersistent}>Persistent Toast</button>
       
       <button onClick={() => toast.clear()}>Clear All Toasts</button>
@@ -309,9 +332,12 @@ export function ExampleComponent() {
 />
 ```
 
+The first argument to each `toast.*` helper accepts either a string or any ReactNode. Existing string-based calls keep working, and you can now pass JSX when you need richer markup (see `handleWithAction` above).
+
 **Features:**
 
 - **Simple API**: Just call `toast.success()`, `toast.error()`, `toast.warning()`, or `toast.info()`
+- **Flexible message content**: Pass either a plain string or any ReactNode (e.g., buttons, links, inline forms).
 - **Flexible positioning**: Render toasts in any corner with the `position` prop
 - **Auto-removal**: Configurable duration (default 5 seconds)
 - **Manual dismissal**: Built-in close button (hidden automatically when `dismissOnClick` is true)
@@ -329,6 +355,7 @@ export function ExampleComponent() {
   - `light`: Light background, dark text
   - `colored`: Type-based background and white icons
 - **Show/hide loading bar**: Use `showLoadingBar` to toggle the progress bar
+- **Per-toast overrides**: Control `icons`, `closeIcon`, `showLoadingBar`, `pauseOnHover`, `position`, `theme`, and `draggable` globally or per notification.
 - **Imperative helpers**: Call `toast.pause(id)`, `toast.play(id)`, and `toast.isActive(id)` for fine-grained control
 
 #### Toast component props
@@ -353,17 +380,24 @@ export function ExampleComponent() {
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `title` | `string` | - | Optional headline displayed above the message. |
-| `duration` | `number` | `5000` | Auto-dismiss after the given milliseconds (`0` means persistent). |
-| `dismissOnClick` | `boolean` | `false` | Allow clicking the body of the toast to dismiss it (hides the close button). |
+| `duration` | `number` | Inherits `<Toast />` `duration` prop (default `5000`) | Auto-dismiss after the given milliseconds (`0` means persistent). |
+| `dismissOnClick` | `boolean` | Inherits `<Toast />` `dismissOnClick` prop (default `false`) | Allow clicking the body of the toast to dismiss it (hides the close button). |
 | `paused` | `boolean` | `false` | Start the toast in a paused state until you call `toast.play(id)`. |
+| `icons` | `ToastIconOverrides` | Inherits `<Toast />` `icons` prop | Override icons for this toast only (use `null` to hide a type icon). |
+| `closeIcon` | `ReactNode \| null` | Inherits `<Toast />` `closeIcon` prop | Provide a custom close icon or `null` to remove it for this toast. |
+| `showLoadingBar` | `boolean` | Inherits `<Toast />` `showLoadingBar` prop (default `true`) | Control whether this toast renders the progress/loading bar. |
+| `pauseOnHover` | `boolean` | Inherits `<Toast />` `pauseOnHover` prop (default `false`) | Enable or disable hover-to-pause for this toast. |
+| `position` | `'topRight' \| 'topCenter' \| 'topLeft' \| 'bottomRight' \| 'bottomCenter' \| 'bottomLeft'` | Inherits `<Toast />` `position` prop (default `'topRight'`) | Override where this toast appears. |
+| `theme` | `'sync' \| 'dark' \| 'light' \| 'colored'` | Inherits `<Toast />` `theme` prop (default `'sync'`) | Override this toast's color theme. |
+| `draggable` | `'touch' \| 'always' \| 'never'` | Inherits `<Toast />` `draggable` prop (default `'touch'`) | Override swipe-to-dismiss behavior for this toast. |
 
 #### Global defaults and precedence
 
 You can set global defaults for new toasts via `<Toast />` props and still override them per toast. Precedence is:
 
 - Per-toast options passed to `toast.success|error|warning|info()` take precedence.
-- If not provided per toast, `<Toast duration />` and `<Toast dismissOnClick />` act as global defaults.
-- If neither is provided, hard defaults are used: `duration = 5000`, `dismissOnClick = false`.
+- If an option is omitted per toast, the matching `<Toast />` prop acts as the global default.
+- If neither supplies a value, library defaults apply (duration `5000`, dismissOnClick `false`, showLoadingBar `true`, pauseOnHover `false`, position 'topRight', theme 'sync', draggable 'touch', built-in icons, Font Awesome close button).
 
 Example:
 

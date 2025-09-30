@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { ToastItem, ToastType, ToastOptions } from './ToastTypes';
 
 class ToastManager {
@@ -10,16 +11,29 @@ class ToastManager {
     return `toast-${++this.counter}-${Date.now()}`;
   }
 
-  private addToast(type: ToastType, message: string, options?: ToastOptions): string {
+  private addToast(type: ToastType, message: ReactNode, options?: ToastOptions): string {
     const id = this.generateId();
+
+    const resolvedCloseIcon =
+      options?.closeIcon !== undefined
+        ? options.closeIcon
+        : this.defaultOptions.closeIcon;
+
     const toast: ToastItem = {
       id,
       type,
       message,
       title: options?.title,
       duration: options?.duration ?? this.defaultOptions.duration ?? 5000,
-      paused: options?.paused ?? false,
+      paused: options?.paused ?? this.defaultOptions.paused ?? false,
       dismissOnClick: options?.dismissOnClick ?? this.defaultOptions.dismissOnClick ?? false,
+      icons: options?.icons ?? this.defaultOptions.icons,
+      closeIcon: resolvedCloseIcon,
+      showLoadingBar: options?.showLoadingBar ?? this.defaultOptions.showLoadingBar,
+      pauseOnHover: options?.pauseOnHover ?? this.defaultOptions.pauseOnHover,
+      position: options?.position ?? this.defaultOptions.position,
+      theme: options?.theme ?? this.defaultOptions.theme,
+      draggable: options?.draggable ?? this.defaultOptions.draggable,
     };
 
     this.toasts = [...this.toasts, toast];
@@ -41,19 +55,19 @@ class ToastManager {
     };
   }
 
-  success(message: string, options?: ToastOptions): string {
+  success(message: ReactNode, options?: ToastOptions): string {
     return this.addToast('success', message, options);
   }
 
-  error(message: string, options?: ToastOptions): string {
+  error(message: ReactNode, options?: ToastOptions): string {
     return this.addToast('error', message, options);
   }
 
-  warning(message: string, options?: ToastOptions): string {
+  warning(message: ReactNode, options?: ToastOptions): string {
     return this.addToast('warning', message, options);
   }
 
-  info(message: string, options?: ToastOptions): string {
+  info(message: ReactNode, options?: ToastOptions): string {
     return this.addToast('info', message, options);
   }
 
@@ -117,13 +131,17 @@ export const toastManager = new ToastManager();
 
 // Export the toast function that users will call
 export const toast = {
-  success: (message: string, options?: ToastOptions) => toastManager.success(message, options),
-  error: (message: string, options?: ToastOptions) => toastManager.error(message, options),
-  warning: (message: string, options?: ToastOptions) => toastManager.warning(message, options),
-  info: (message: string, options?: ToastOptions) => toastManager.info(message, options),
+  success: (message: ReactNode, options?: ToastOptions) => toastManager.success(message, options),
+  error: (message: ReactNode, options?: ToastOptions) => toastManager.error(message, options),
+  warning: (message: ReactNode, options?: ToastOptions) => toastManager.warning(message, options),
+  info: (message: ReactNode, options?: ToastOptions) => toastManager.info(message, options),
   pause: (id: string) => toastManager.pause(id),
   play: (id: string) => toastManager.play(id),
   isActive: (id: string) => toastManager.isActive(id),
   remove: (id: string) => toastManager.remove(id),
   clear: () => toastManager.clear(),
 };
+
+
+
+
