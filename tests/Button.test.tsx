@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { Button } from "../src/button";
+import { userEvent } from "@testing-library/user-event";
+import { Button } from "../src/button/index.js";
 
 describe("Button", () => {
   it("renders children", () => {
@@ -104,7 +104,7 @@ describe("Button", () => {
         menuTrigger="click"
         styles={{
           dropdown: { minWidth: 240 },
-          dropdownArrow: { size: 10, top: 4, right: 12, background: 'red', borderColor: 'blue' },
+          dropdownArrow: { size: 10, top: 4, right: 12, background: "red", borderColor: "blue" },
         }}
         menuItems={[<a href="#x" key="x">X</a>]}
       >
@@ -113,12 +113,12 @@ describe("Button", () => {
     );
     await user.click(screen.getByRole("button", { name: /styled/i }));
     const menu = screen.getByRole("menu") as HTMLElement & { style: CSSStyleDeclaration };
-    expect(menu.style.getPropertyValue('--pc-dd-arrow-size')).toBe('10px');
-    expect(menu.style.getPropertyValue('--pc-dd-arrow-top')).toBe('4px');
-    expect(menu.style.getPropertyValue('--pc-dd-arrow-right')).toBe('12px');
-    expect(menu.style.getPropertyValue('--pc-dd-arrow-bg')).toBe('red');
-    expect(menu.style.getPropertyValue('--pc-dd-arrow-border-color')).toBe('blue');
-    expect(menu.style.minWidth).toBe('240px');
+    expect(menu.style.getPropertyValue("--pc-dd-arrow-size")).toBe("10px");
+    expect(menu.style.getPropertyValue("--pc-dd-arrow-top")).toBe("4px");
+    expect(menu.style.getPropertyValue("--pc-dd-arrow-right")).toBe("12px");
+    expect(menu.style.getPropertyValue("--pc-dd-arrow-bg")).toBe("red");
+    expect(menu.style.getPropertyValue("--pc-dd-arrow-border-color")).toBe("blue");
+    expect(menu.style.minWidth).toBe("240px");
   });
 
   it("closes dropdown on outside click when trigger is click", async () => {

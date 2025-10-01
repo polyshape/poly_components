@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readdir, stat, readFile, writeFile, access } from 'node:fs/promises';
+import { readdir, readFile, writeFile, access } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = process.cwd();

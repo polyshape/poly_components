@@ -1,7 +1,7 @@
 import { makeStyles, mergeClasses } from "@griffel/react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import type { CSSProperties } from "react";
-import { toastManager } from "./ToastManager";
+import { toastManager } from "./ToastManager.js";
 import type {
   ToastItem,
   ToastType,
@@ -9,8 +9,8 @@ import type {
   ToastPosition,
   ToastTheme,
   ToastDraggable,
-} from "./ToastTypes";
-import { Button } from "../button";
+} from "./ToastTypes.js";
+import { Button } from "../button/index.js";
 import type { ReactNode, PointerEvent as ReactPointerEvent } from "react";
 
 const useStyles = makeStyles({
@@ -37,44 +37,44 @@ const useStyles = makeStyles({
     flexDirection: "column",
     gap: "8px",
     pointerEvents: "none",
-    width: 'auto',
-    left: 'unset',
-    right: 'unset',
-    top: 'unset',
-    bottom: 'unset',
-    alignItems: 'flex-end', // default for topRight
+    width: "auto",
+    left: "unset",
+    right: "unset",
+    top: "unset",
+    bottom: "unset",
+    alignItems: "flex-end", // default for topRight
   },
   toastContainerTopRight: {
-    top: '20px',
-    right: '20px',
-    alignItems: 'flex-end',
+    top: "20px",
+    right: "20px",
+    alignItems: "flex-end",
   },
   toastContainerTopCenter: {
-    top: '20px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    alignItems: 'center',
+    top: "20px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    alignItems: "center",
   },
   toastContainerTopLeft: {
-    top: '20px',
-    left: '20px',
-    alignItems: 'flex-start',
+    top: "20px",
+    left: "20px",
+    alignItems: "flex-start",
   },
   toastContainerBottomRight: {
-    bottom: '20px',
-    right: '20px',
-    alignItems: 'flex-end',
+    bottom: "20px",
+    right: "20px",
+    alignItems: "flex-end",
   },
   toastContainerBottomCenter: {
-    bottom: '20px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    alignItems: 'center',
+    bottom: "20px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    alignItems: "center",
   },
   toastContainerBottomLeft: {
-    bottom: '20px',
-    left: '20px',
-    alignItems: 'flex-start',
+    bottom: "20px",
+    left: "20px",
+    alignItems: "flex-start",
   },
   toast: {
     backgroundColor: "var(--pc-bg, #fff)",
@@ -158,11 +158,11 @@ const useStyles = makeStyles({
     minHeight: "32px",
   },
   closeBtnFullyColored: {
-    color: '#fff',
+    color: "#fff",
     opacity: 0.8,
-    transition: 'opacity 0.2s',
-    ':hover': {
-      color: '#fff',
+    transition: "opacity 0.2s",
+    ":hover": {
+      color: "#fff",
       opacity: 1,
     },
   },
@@ -176,7 +176,7 @@ export type ToastStyleOverrides = Partial<{
   closeButton: CSSProperties;
 }> & Partial<Record<ToastType, CSSProperties>>;
 
-export type { ToastPosition, ToastTheme, ToastDraggable, ToastIconOverrides } from "./ToastTypes";
+export type { ToastPosition, ToastTheme, ToastDraggable, ToastIconOverrides } from "./ToastTypes.js";
 
 
 interface ToastComponentProps {
@@ -192,13 +192,13 @@ interface ToastComponentProps {
   paused?: boolean;
 }
 
-function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoadingBar = true, pauseOnHover = false, theme = 'light', paused: globalPaused, draggable = 'touch' }: ToastComponentProps) {
+function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoadingBar = true, pauseOnHover = false, theme = "light", paused: globalPaused, draggable = "touch" }: ToastComponentProps) {
   const classes = useStyles();
   const [isExiting, setIsExiting] = useState(false);
   const exitTimeout = useRef<number | null>(null);
   const [localPaused, setLocalPaused] = useState(false);
   const [barScale, setBarScale] = useState(1);
-  const [barTransition, setBarTransition] = useState('none');
+  const [barTransition, setBarTransition] = useState("none");
   const elapsedRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
   const removedRef = useRef(false);
@@ -225,12 +225,23 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
   const resolvedDraggable = toast.draggable ?? draggable;
 
   // Use globalPaused if provided, otherwise fallback to localPaused
-  const paused = toast.paused || (typeof globalPaused === 'boolean' ? globalPaused : localPaused);
+  const paused = toast.paused || (typeof globalPaused === "boolean" ? globalPaused : localPaused);
+
+  const handleRemove = useCallback(() => {
+    if (!isExiting) {
+      setIsExiting(true);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      removedRef.current = true;
+      exitTimeout.current = window.setTimeout(() => {
+        onRemove(toast.id);
+      }, 200);
+    }
+  }, [isExiting, setIsExiting, onRemove, toast.id]);
 
   useEffect(() => {
     if (!toast.duration || toast.duration <= 0) {
       setBarScale(1);
-      setBarTransition('none');
+      setBarTransition("none");
       return;
     }
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -259,7 +270,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
       }
       rafRef.current = requestAnimationFrame(step);
     }
-    setBarTransition('none');
+    setBarTransition("none");
     setBarScale(Math.max(0, 1 - elapsedRef.current / toast.duration));
     rafRef.current = requestAnimationFrame(step);
 
@@ -267,7 +278,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       removedRef.current = true;
     };
-  }, [toast.duration, paused]);
+  }, [toast.duration, paused, handleRemove]);
 
   useEffect(() => {
     dragOffsetRef.current = dragOffset;
@@ -275,23 +286,23 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
 
   // Pause/resume handlers
   const handleMouseEnter = () => {
-    if (shouldPauseOnHover && toast.duration && toast.duration > 0 && typeof globalPaused !== 'boolean') {
+    if (shouldPauseOnHover && toast.duration && toast.duration > 0 && typeof globalPaused !== "boolean") {
       setLocalPaused(true);
     }
   };
   const handleMouseLeave = () => {
-    if (shouldPauseOnHover && toast.duration && toast.duration > 0 && typeof globalPaused !== 'boolean') {
+    if (shouldPauseOnHover && toast.duration && toast.duration > 0 && typeof globalPaused !== "boolean") {
       setLocalPaused(false);
     }
   };
 
-  const isDragEnabled = resolvedDraggable !== 'never';
+  const isDragEnabled = resolvedDraggable !== "never";
   const shouldHandlePointer = (pointerType: string) => {
-    if (resolvedDraggable === 'always') {
-      return pointerType === 'mouse' || pointerType === 'touch' || pointerType === 'pen';
+    if (resolvedDraggable === "always") {
+      return pointerType === "mouse" || pointerType === "touch" || pointerType === "pen";
     }
-    if (resolvedDraggable === 'touch') {
-      return pointerType === 'touch' || pointerType === 'pen';
+    if (resolvedDraggable === "touch") {
+      return pointerType === "touch" || pointerType === "pen";
     }
     return false;
   };
@@ -309,7 +320,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!isDragEnabled || isSwipingOut || isExiting) return;
     if (!shouldHandlePointer(event.pointerType)) return;
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
 
     const target = event.target as HTMLElement | null;
     if (target && target.closest('button, a, input, textarea, select, [role="button"], [data-toast-no-drag]')) {
@@ -338,7 +349,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
     } catch {
       // Pointer capture not supported; safe to ignore.
     }
-    if (toast.duration && toast.duration > 0 && typeof globalPaused !== 'boolean') {
+    if (toast.duration && toast.duration > 0 && typeof globalPaused !== "boolean") {
       setLocalPaused(true);
       pausedByDragRef.current = true;
     } else {
@@ -405,7 +416,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
       setDragProgress(0);
       scheduleDragReset();
       skipClickRef.current = dragMovedRef.current;
-      if (pausedByDragRef.current && toast.duration && toast.duration > 0 && typeof globalPaused !== 'boolean') {
+      if (pausedByDragRef.current && toast.duration && toast.duration > 0 && typeof globalPaused !== "boolean") {
         setLocalPaused(false);
       }
     }
@@ -422,16 +433,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
     completeDrag(event.pointerId);
   };
 
-  const handleRemove = () => {
-    if (!isExiting) {
-      setIsExiting(true);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      removedRef.current = true;
-      exitTimeout.current = window.setTimeout(() => {
-        onRemove(toast.id);
-      }, 200);
-    }
-  };
+
   useEffect(() => {
     return () => {
       if (exitTimeout.current) clearTimeout(exitTimeout.current);
@@ -458,7 +460,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
   if (iconOverrides && Object.prototype.hasOwnProperty.call(iconOverrides, toast.type)) {
     iconElem = iconOverrides[toast.type];
   } else {
-    iconElem = <i className={iconData.icon} style={{ color: resolvedTheme === 'colored' ? '#fff' : iconData.color, fontSize: 22 }} aria-hidden="true" />;
+    iconElem = <i className={iconData.icon} style={{ color: resolvedTheme === "colored" ? "#fff" : iconData.color, fontSize: 22 }} aria-hidden="true" />;
   }
   // Bar color
   const barColorMap: Record<ToastType, string> = {
@@ -470,24 +472,24 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
   let barColor = barColorMap[toast.type];
   // Style override for theme
   let styleOverride: React.CSSProperties;
-  if (resolvedTheme === 'colored') {
-    barColor = '#fff';
+  if (resolvedTheme === "colored") {
+    barColor = "#fff";
     styleOverride = {
       backgroundColor: barColorMap[toast.type],
-      color: '#fff',
-      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
+      color: "#fff",
+      boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)",
     };
-  } else if (resolvedTheme === 'dark') {
+  } else if (resolvedTheme === "dark") {
     styleOverride = {
-      backgroundColor: '#18181b',
-      color: '#f3f4f6',
-      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
+      backgroundColor: "#18181b",
+      color: "#f3f4f6",
+      boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)",
     };
-  } else if (resolvedTheme === 'light') {
+  } else if (resolvedTheme === "light") {
     styleOverride = {
-      backgroundColor: '#fff',
-      color: '#1f2937',
-      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
+      backgroundColor: "#fff",
+      color: "#1f2937",
+      boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)",
     };
   } else {
     // sync (default)
@@ -498,16 +500,16 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
     };
   }
   const dragStyles: React.CSSProperties = {
-    pointerEvents: 'auto',
+    pointerEvents: "auto",
   };
   if (isDragEnabled) {
-    dragStyles.touchAction = 'pan-y';
-    dragStyles.willChange = 'transform';
+    dragStyles.touchAction = "pan-y";
+    dragStyles.willChange = "transform";
     if (isDragging || dragActive || dragOffset !== 0) {
       dragStyles.transform = `translateX(${dragOffset}px)`;
-      dragStyles.transition = isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.2,0.61,0.355,1), opacity 0.2s ease';
-      dragStyles.animationPlayState = 'paused';
-      dragStyles.userSelect = 'none';
+      dragStyles.transition = isDragging ? "none" : "transform 0.2s cubic-bezier(0.2,0.61,0.355,1), opacity 0.2s ease";
+      dragStyles.animationPlayState = "paused";
+      dragStyles.userSelect = "none";
       if (isSwipingOut) {
         dragStyles.opacity = 0;
       } else if (dragProgress > 0) {
@@ -519,7 +521,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
     }
   }
 
-  const cursorStyle = resolvedDraggable === 'always' ? (isDragging ? 'grabbing' : 'grab') : toast.dismissOnClick ? 'pointer' : 'default';
+  const cursorStyle = resolvedDraggable === "always" ? (isDragging ? "grabbing" : "grab") : toast.dismissOnClick ? "pointer" : "default";
 
   return (
     <div
@@ -579,7 +581,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
             pressEffect={false}
             icon={resolvedCloseIcon !== undefined ? resolvedCloseIcon : <i className="fa-solid fa-xmark"></i>}
             iconOnly
-            className={mergeClasses(classes.closeBtn, resolvedTheme === 'colored' && classes.closeBtnFullyColored)}
+            className={mergeClasses(classes.closeBtn, resolvedTheme === "colored" && classes.closeBtnFullyColored)}
             style={styles?.closeButton}
             aria-label="Close notification"
             onClick={handleRemove}
@@ -612,11 +614,11 @@ export default function Toast(props: ToastProps = {}) {
     closeIcon,
     showLoadingBar = true,
     pauseOnHover = false,
-    position = 'topRight',
-    theme = 'sync',
+    position = "topRight",
+    theme = "sync",
     role,
     stacked = false,
-    draggable = 'touch',
+    draggable = "touch",
     duration: defaultDuration,
     dismissOnClick: defaultDismissOnClick,
   } = props;
@@ -673,7 +675,7 @@ export default function Toast(props: ToastProps = {}) {
     bottomLeft: classes.toastContainerBottomLeft,
   };
 
-  const allPositions: ToastPosition[] = ['topRight', 'topCenter', 'topLeft', 'bottomRight', 'bottomCenter', 'bottomLeft'];
+  const allPositions: ToastPosition[] = ["topRight", "topCenter", "topLeft", "bottomRight", "bottomCenter", "bottomLeft"];
 
   const handleContainerMouseEnter = (containerPosition: ToastPosition) => {
     if (!stacked) return;
@@ -717,8 +719,8 @@ export default function Toast(props: ToastProps = {}) {
               ...styleOverrides?.root,
               ...(stacked
                 ? {
-                    pointerEvents: 'auto',
-                    background: 'rgba(0,0,0,0.01)', // invisible but ensures hover area
+                    pointerEvents: "auto",
+                    background: "rgba(0,0,0,0.01)", // invisible but ensures hover area
                     paddingTop: 45,
                     paddingBottom: 45,
                     marginTop: -45,
@@ -739,16 +741,16 @@ export default function Toast(props: ToastProps = {}) {
                   zIndex: 100 - index,
                   transform: `scale(${1 - index * 0.05})`,
                   opacity: 1 - index * 0.04,
-                  transition: 'all 0.2s cubic-bezier(0.2,0.61,0.355,1)',
+                  transition: "all 0.2s cubic-bezier(0.2,0.61,0.355,1)",
                 };
               } else if (stacked && isContainerHovered) {
                 stackStyle = {
                   marginTop: index === 0 ? 0 : 8,
-                  boxShadow: `0 4px 12px 0 rgba(0,0,0,0.10)`,
+                  boxShadow: "0 4px 12px 0 rgba(0,0,0,0.10)",
                   zIndex: 100 - index,
-                  transform: 'none',
+                  transform: "none",
                   opacity: 1,
-                  transition: 'all 0.2s cubic-bezier(0.2,0.61,0.355,1)',
+                  transition: "all 0.2s cubic-bezier(0.2,0.61,0.355,1)",
                 };
               }
 

@@ -1,3 +1,3 @@
-export { default as Nav } from './Nav';
-export type { NavProps, NavItem } from './Nav';
-export { default as NavSmall } from './NavSmall';
+export { default as Nav } from "./Nav.js";
+export type { NavProps, NavItem } from "./Nav.js";
+export { default as NavSmall } from "./NavSmall.js";

@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { Tabs, type Tab } from "../src/tabs";
+import { userEvent } from "@testing-library/user-event";
+import { useState } from "react";
+import { Tabs, type Tab } from "../src/tabs/index.js";
 
 describe("Tabs", () => {
   const sampleTabs: Tab[] = [
@@ -44,7 +45,7 @@ describe("Tabs", () => {
     const user = userEvent.setup();
 
     function Wrapper() {
-      const [active, setActive] = (require('react') as typeof import('react')).useState("one");
+      const [active, setActive] = useState("one");
       return <Tabs tabs={sampleTabs} active={active} onChange={setActive} />;
     }
 

@@ -1,8 +1,8 @@
 import { makeStyles } from "@griffel/react";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
-import { Button } from "../button";
-import NavSmall from "./NavSmall";
+import { Button } from "../button/index.js";
+import NavSmall from "./NavSmall.js";
 
 export type NavItem = {
   id: string;
@@ -71,7 +71,7 @@ export type NavProps = {
   /**
    * @deprecated Width is measured automatically; this option is ignored.
    */
-  overflowMeasure?: 'smart' | 'siblings' | 'self';
+  overflowMeasure?: "smart" | "siblings" | "self";
   /**
    * Explicit available width (in px) for the navigation items area. When provided,
    * this takes precedence over overflowMeasure.
@@ -119,7 +119,7 @@ const useStyles = makeStyles({
   plainTextItem: {
     color: "var(--pc-fg, currentColor)",
   },
-  listTop: { display: "flex", alignItems: "center", gap: "8px", flexWrap: 'nowrap' },
+  listTop: { display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap" },
   itemBtn: {
     display: "inline-flex",
     alignItems: "center",
@@ -243,8 +243,8 @@ const useStyles = makeStyles({
   },
   noUnderline: {
     ":after": {
-      display: 'none !important',
-      content: 'none !important',
+      display: "none !important",
+      content: "none !important",
     },
   },
   dropdown: {
@@ -277,7 +277,7 @@ const useStyles = makeStyles({
     },
   },
   // Overflow handling (top variant only)
-  moreWrapper: { position: "relative", display: 'flex', alignItems: 'center' },
+  moreWrapper: { position: "relative", display: "flex", alignItems: "center" },
   moreBtn: {
     height: "24px",
   },
@@ -299,10 +299,10 @@ const useStyles = makeStyles({
   },
   listSide: { display: "grid", gap: "4px", padding: "8px" },
   itemBtnSide: {
-    composes: '$itemBtn',
-    width: '100%',
-    justifyContent: 'flex-start',
-    textAlign: 'left',
+    composes: "$itemBtn",
+    width: "100%",
+    justifyContent: "flex-start",
+    textAlign: "left",
     paddingRight: 0,
   },
   subListSide: { display: "grid", gap: "2px", paddingLeft: "14px", borderLeft: "2px solid var(--pc-border)" },
@@ -311,7 +311,7 @@ const useStyles = makeStyles({
     textDecoration: "none",
     display: "block",
     padding: "6px 4px",
-    borderRadius: '6px',
+    borderRadius: "6px",
     transition: "background 0.2s",
     ":hover, :focus, :active": {
       background: "color-mix(in srgb, var(--pc-bg) 80%, var(--pc-border) 20%)",
@@ -400,15 +400,17 @@ export default function Nav(props: NavProps) {
     };
   }, [responsiveBreakpoint]);
   // Track available width for the nav items container
+  const hasCustomLeft = !!customLeft;
+  const hasCustomRight = !!customRight;
   useEffect(() => {
-    if (variant !== 'top') {
+    if (variant !== "top") {
       setAvailableWidth(
-        typeof overflowAvailableWidth === 'number' ? Math.max(0, overflowAvailableWidth) : null
+        typeof overflowAvailableWidth === "number" ? Math.max(0, overflowAvailableWidth) : null
       );
       return;
     }
 
-    if (typeof overflowAvailableWidth === 'number') {
+    if (typeof overflowAvailableWidth === "number") {
       setAvailableWidth(Math.max(0, overflowAvailableWidth));
       return;
     }
@@ -418,7 +420,7 @@ export default function Nav(props: NavProps) {
       return;
     }
 
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     let frame: number | null = null;
 
     const scheduleMeasure = () => {
@@ -436,7 +438,7 @@ export default function Nav(props: NavProps) {
 
     scheduleMeasure();
 
-    if (typeof ResizeObserver !== 'undefined') {
+    if (typeof ResizeObserver !== "undefined") {
       const observer = new ResizeObserver(scheduleMeasure);
       const observed = [wrapperRef.current, leftSlotRef.current, rightSlotRef.current].filter(Boolean) as HTMLElement[];
       observed.forEach((el) => observer.observe(el));
@@ -448,24 +450,24 @@ export default function Nav(props: NavProps) {
       };
     }
 
-    window.addEventListener('resize', scheduleMeasure);
+    window.addEventListener("resize", scheduleMeasure);
     return () => {
       if (frame !== null) {
         window.cancelAnimationFrame(frame);
       }
-      window.removeEventListener('resize', scheduleMeasure);
+      window.removeEventListener("resize", scheduleMeasure);
     };
-  }, [variant, isSmall, overflowAvailableWidth, Boolean(customLeft), Boolean(customRight)]);
+  }, [variant, isSmall, overflowAvailableWidth, hasCustomLeft, hasCustomRight]);
 
   // Recalculate visible items when available space or items change
   useEffect(() => {
-    if (disableOverflow || variant !== 'top' || isSmall) {
+    if (disableOverflow || variant !== "top" || isSmall) {
       setVisibleCount(items.length);
       return;
     }
 
     const widthLimit =
-      typeof overflowAvailableWidth === 'number'
+      typeof overflowAvailableWidth === "number"
         ? Math.max(0, overflowAvailableWidth)
         : availableWidth;
 
@@ -479,11 +481,11 @@ export default function Nav(props: NavProps) {
       return;
     }
 
-    const navEl = measurer.querySelector('nav') as HTMLElement | null;
+    const navEl = measurer.querySelector("nav") as HTMLElement | null;
     let gap = 0;
     if (navEl) {
       const cs = window.getComputedStyle(navEl);
-      gap = parseFloat((cs.columnGap || (cs as any).gap) || '0') || 0;
+      gap = parseFloat((cs.columnGap || (cs as CSSStyleDeclaration & { gap?: string }).gap) || "0") || 0;
     }
 
     const itemNodes = Array.from(measurer.querySelectorAll('[data-role="item"]')) as HTMLElement[];
@@ -532,8 +534,8 @@ export default function Nav(props: NavProps) {
   const [open, setOpen] = useState<Set<string>>(new Set(defaultOpenIds));
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const LinkComponent = as || 'a';
-  const renderMoreButton = (menuItemsForButton: ReactNode[], extraProps?: Record<string, any>) => (
+  const LinkComponent = as || "a";
+  const renderMoreButton = (menuItemsForButton: ReactNode[], extraProps?: Record<string, unknown>) => (
     <Button
       appearance="transparent"
       size="small"
@@ -555,11 +557,11 @@ export default function Nav(props: NavProps) {
     // Precedence: href > to
     const navTarget = item.href ?? item.to;
     if (!navTarget) return {};
-    const props: Record<string, any> = {};
+    const props: Record<string, unknown> = {};
     if (linkProp) {
       props[linkProp] = navTarget;
     } else {
-      const comp: any = LinkComponent;
+      const comp = LinkComponent as React.ComponentType<Record<string, unknown>> & { defaultProps?: { to?: unknown }; $$typeof?: symbol };
       
       // Per-item navigation type detection respecting precedence
       // If item has href, use regular anchor navigation regardless of component
@@ -570,15 +572,15 @@ export default function Nav(props: NavProps) {
         // Detect if this should be a router link
         const isRouterLink = 
           // Standard checks for development
-          comp?.displayName === 'NavLink' ||
-          comp?.name === 'NavLink' ||
-          comp?.displayName === 'Link' ||
+          comp?.displayName === "NavLink" ||
+          comp?.name === "NavLink" ||
+          comp?.displayName === "Link" ||
           // Check for router-specific props in the component
-          (typeof comp === 'function' && (
+          (typeof comp === "function" && (
             comp?.propTypes?.to ||
             comp?.defaultProps?.to !== undefined ||
             // ForwardRef detection for newer React Router versions
-            (comp?.$$typeof === Symbol.for('react.forward_ref'))
+            (comp?.$$typeof === Symbol.for("react.forward_ref"))
           ));
         
         if (isRouterLink) {
@@ -613,9 +615,17 @@ export default function Nav(props: NavProps) {
                   pressEffect={false}
                   className={classes.itemBtnSide}
                     style={{...styles?.item, ...(isActive ? styles?.activeItem : {})}}
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent) => {
                     if (hasChildren) {
-                      setOpen(prev => { const next = new Set(prev); opened ? next.delete(id) : next.add(id); return next; });
+                      setOpen(prev => {
+                        const next = new Set(prev);
+                        if (opened) {
+                          next.delete(id);
+                        } else {
+                          next.add(id);
+                        }
+                        return next;
+                      });
                     } else {
                       setActiveId(id);
                       it.onClick?.(e);
@@ -626,7 +636,7 @@ export default function Nav(props: NavProps) {
                 >
                   {(it.href || it.to)
                     ? <LinkComponent
-                        className={`${classes.linkSide} ${!showActiveUnderline ? classes.noUnderline : ''}`}
+                        className={`${classes.linkSide} ${!showActiveUnderline ? classes.noUnderline : ""}`}
                           style={{...styles?.link, ...(isActive ? styles?.activeLink : {})}}
                         {...getLinkProps(it)}
                         onClick={(e: React.MouseEvent) => {
@@ -639,7 +649,7 @@ export default function Nav(props: NavProps) {
                       >
                         <span>{it.label}</span>
                         {hasChildren && (
-                        <span className={`${classes.chevronSide} ${opened ? classes.chevronOpenSide : ''}`} style={{...styles?.chevronSide, ...(opened ? styles?.chevronOpen : {})}} aria-hidden>
+                        <span className={`${classes.chevronSide} ${opened ? classes.chevronOpenSide : ""}`} style={{...styles?.chevronSide, ...(opened ? styles?.chevronOpen : {})}} aria-hidden>
                           <svg className={classes.chevronIcon} width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={styles?.chevronIcon}>
                             <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
@@ -694,7 +704,7 @@ export default function Nav(props: NavProps) {
           <nav
             className={classes.listTop}
             style={styles?.menu}
-            ref={containerRef as any}
+            ref={containerRef as React.RefObject<HTMLElement>}
           >
             {(disableOverflow ? items : items.slice(0, visibleCount)).map((it, idx) => {
               const hasChildren = !!it.items?.length;
@@ -865,7 +875,7 @@ export default function Nav(props: NavProps) {
       {!disableOverflow && (
         <div
           className={classes.hiddenMeasure}
-          ref={measureRef as any}
+          ref={measureRef}
           aria-hidden
         >
           <nav className={classes.listTop} style={styles?.menu}>
@@ -892,7 +902,7 @@ export default function Nav(props: NavProps) {
                 </div>
               );
             })}
-            {renderMoreButton([<span key="_dummy" />], { 'data-role': 'more-btn' })}
+            {renderMoreButton([<span key="_dummy" />], { "data-role": "more-btn" })}
           </nav>
         </div>
       )}

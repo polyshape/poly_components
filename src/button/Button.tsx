@@ -1,5 +1,5 @@
 import { makeStyles, mergeClasses, shorthands } from "@griffel/react";
-import { normalizeBorderStyles } from "../utils/style";
+import { normalizeBorderStyles } from "../utils/style.js";
 import { forwardRef, useEffect, useRef, useState, cloneElement } from "react";
 import type { CSSProperties, ReactNode, ButtonHTMLAttributes } from "react";
 
@@ -167,6 +167,7 @@ const useStyles = makeStyles({
   icon: { display: "inline-flex", alignItems: "center" },
   spinner: { display: "inline-flex", alignItems: "center" },
   chevron: {
+    paddingTop: "4px",
     display: "inline-flex",
     verticalAlign: "middle",
   },
@@ -249,9 +250,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
       if (!w) return;
       if (!w.contains(e.target as Node)) setOpen(false);
     };
-    if (menuTrigger === 'click' || menuTrigger === 'both') {
-      document.addEventListener('mousedown', onDocClick);
-      return () => document.removeEventListener('mousedown', onDocClick);
+    if (menuTrigger === "click" || menuTrigger === "both") {
+      document.addEventListener("mousedown", onDocClick);
+      return () => document.removeEventListener("mousedown", onDocClick);
     }
   }, [open, menuTrigger]);
 
@@ -275,14 +276,14 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
       // Clamp within dropdown bounds (with small padding)
       const PAD = 8;
       left = Math.max(PAD, Math.min(left, ddRect.width - PAD));
-      dd.style.setProperty('--pc-dd-arrow-left', `${left}px`);
-      dd.style.setProperty('--pc-dd-arrow-right', `auto`);
+      dd.style.setProperty("--pc-dd-arrow-left", `${left}px`);
+      dd.style.setProperty("--pc-dd-arrow-right", "auto");
     };
     const raf = requestAnimationFrame(align);
-    window.addEventListener('resize', align);
+    window.addEventListener("resize", align);
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener('resize', align);
+      window.removeEventListener("resize", align);
     };
   }, [open, hideChevron, styles?.dropdownArrow]);
 
@@ -343,19 +344,19 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
 
   const onEnter = () => {
     if (isDisabled) return;
-    if (menuTrigger === 'hover' || menuTrigger === 'both') setOpen(true);
+    if (menuTrigger === "hover" || menuTrigger === "both") setOpen(true);
   };
   const onLeave = () => {
-    if (menuTrigger === 'hover' || menuTrigger === 'both') setOpen(false);
+    if (menuTrigger === "hover" || menuTrigger === "both") setOpen(false);
   };
   const onClick = (e: React.MouseEvent) => {
     if (isDisabled) return;
-    if (menuTrigger === 'click' || menuTrigger === 'both') {
+    if (menuTrigger === "click" || menuTrigger === "both") {
       e.preventDefault();
       setOpen(o => !o);
     }
     // let user onClick run too
-    rest.onClick?.(e as any);
+    rest.onClick?.(e as React.MouseEvent<HTMLButtonElement>);
   };
 
   return (
@@ -367,8 +368,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
       // Stop hover flicker when moving to dropdown
       style={{}}
     >
-      {content && cloneElement(content as any, { onClick })}
-      {(menuTrigger === 'hover' || menuTrigger === 'both') && (
+      {content && cloneElement(content as React.ReactElement<{ onClick?: (e: React.MouseEvent) => void }>, { onClick })}
+      {(menuTrigger === "hover" || menuTrigger === "both") && (
         <div className={classes.hoverBuffer} onMouseEnter={onEnter} />
       )}
       {open && (
@@ -378,12 +379,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
           style={{
             ...(styles?.dropdown || {}),
             ...(styles?.dropdownArrow ? {
-              ['--pc-dd-arrow-size' as any]: styles.dropdownArrow.size != null ? `${styles.dropdownArrow.size}px` : undefined,
-              ['--pc-dd-arrow-top' as any]: styles.dropdownArrow.top != null ? `${styles.dropdownArrow.top}px` : undefined,
-              ['--pc-dd-arrow-left' as any]: styles.dropdownArrow.left != null ? (typeof styles.dropdownArrow.left === 'number' ? `${styles.dropdownArrow.left}px` : styles.dropdownArrow.left) : undefined,
-              ['--pc-dd-arrow-right' as any]: styles.dropdownArrow.right != null ? (typeof styles.dropdownArrow.right === 'number' ? `${styles.dropdownArrow.right}px` : styles.dropdownArrow.right) : undefined,
-              ['--pc-dd-arrow-bg' as any]: styles.dropdownArrow.background,
-              ['--pc-dd-arrow-border-color' as any]: styles.dropdownArrow.borderColor,
+              ["--pc-dd-arrow-size" as keyof React.CSSProperties]: styles.dropdownArrow.size != null ? `${styles.dropdownArrow.size}px` : undefined,
+              ["--pc-dd-arrow-top" as keyof React.CSSProperties]: styles.dropdownArrow.top != null ? `${styles.dropdownArrow.top}px` : undefined,
+              ["--pc-dd-arrow-left" as keyof React.CSSProperties]: styles.dropdownArrow.left != null ? (typeof styles.dropdownArrow.left === "number" ? `${styles.dropdownArrow.left}px` : styles.dropdownArrow.left) : undefined,
+              ["--pc-dd-arrow-right" as keyof React.CSSProperties]: styles.dropdownArrow.right != null ? (typeof styles.dropdownArrow.right === "number" ? `${styles.dropdownArrow.right}px` : styles.dropdownArrow.right) : undefined,
+              ["--pc-dd-arrow-bg" as keyof React.CSSProperties]: styles.dropdownArrow.background,
+              ["--pc-dd-arrow-border-color" as keyof React.CSSProperties]: styles.dropdownArrow.borderColor,
             } : {}),
           }}
           ref={dropdownRef}

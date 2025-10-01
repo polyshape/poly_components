@@ -1,17 +1,17 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
+export type ToastType = "success" | "error" | "warning" | "info";
 
 export type ToastPosition =
-  | 'topRight'
-  | 'topCenter'
-  | 'topLeft'
-  | 'bottomRight'
-  | 'bottomCenter'
-  | 'bottomLeft';
+  | "topRight"
+  | "topCenter"
+  | "topLeft"
+  | "bottomRight"
+  | "bottomCenter"
+  | "bottomLeft";
 
-export type ToastTheme = 'sync' | 'dark' | 'light' | 'colored';
-export type ToastDraggable = 'touch' | 'always' | 'never';
+export type ToastTheme = "sync" | "dark" | "light" | "colored";
+export type ToastDraggable = "touch" | "always" | "never";
 
 export type ToastIconOverrides = Partial<Record<ToastType, ReactNode | null>>;
 

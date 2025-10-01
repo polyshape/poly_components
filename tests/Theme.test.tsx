@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { ThemeProvider, useTheme, ThemeToggle } from "../src";
+import { userEvent } from "@testing-library/user-event";
+import { ThemeProvider, useTheme, ThemeToggle } from "../src/theme/index.js";
 
 function ThemeProbe() {
   const { theme, setTheme } = useTheme();

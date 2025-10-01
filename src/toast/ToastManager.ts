@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react';
-import { ToastItem, ToastType, ToastOptions } from './ToastTypes';
+import type { ReactNode } from "react";
+import { ToastItem, ToastType, ToastOptions } from "./ToastTypes.js";
 
 class ToastManager {
   private listeners: Set<(toasts: ToastItem[]) => void> = new Set();
@@ -56,19 +56,19 @@ class ToastManager {
   }
 
   success(message: ReactNode, options?: ToastOptions): string {
-    return this.addToast('success', message, options);
+    return this.addToast("success", message, options);
   }
 
   error(message: ReactNode, options?: ToastOptions): string {
-    return this.addToast('error', message, options);
+    return this.addToast("error", message, options);
   }
 
   warning(message: ReactNode, options?: ToastOptions): string {
-    return this.addToast('warning', message, options);
+    return this.addToast("warning", message, options);
   }
 
   info(message: ReactNode, options?: ToastOptions): string {
-    return this.addToast('info', message, options);
+    return this.addToast("info", message, options);
   }
 
   remove(id: string): void {

@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { ReactNode } from "react";
 import { MemoryRouter, useSearchParams } from "react-router-dom";
-import { usePagination } from "../src/pagination/usePagination";
-import { setup } from "../src/pagination/enableRouterIntegration";
+import { usePagination } from "../src/pagination/usePagination.js";
+import { setup } from "../src/pagination/enableRouterIntegration.js";
 
 // Setup React Router integration for tests
 beforeEach(() => {

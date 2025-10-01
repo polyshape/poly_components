@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ThemeContext, type Theme } from "./ThemeContext";
+import { ThemeContext, type Theme } from "./ThemeContext.js";
 
 type ThemeSource = "system" | "user";
 
@@ -18,7 +18,9 @@ function getInitialTheme(initialTheme?: Theme): { theme: Theme; source: ThemeSou
       if (saved === "light" || saved === "dark") {
         return { theme: saved, source: "user" };
       }
-    } catch {}
+    } catch {
+      // Ignore localStorage access errors in restricted environments
+    }
     const mql = win.matchMedia?.("(prefers-color-scheme: light)");
     const prefersLight = !!mql && mql.matches;
     return { theme: prefersLight ? "light" : "dark", source: "system" };
@@ -138,7 +140,9 @@ function applyTheme(theme: Theme, overrides?: ThemeTokens, scope?: string) {
     const fg = win.getComputedStyle(root).getPropertyValue("--pc-fg").trim() || (theme === "light" ? "#111111" : "#e7e7e7");
     win.document.body.style.background = bg;
     win.document.body.style.color = fg;
-  } catch {}
+  } catch {
+    // Ignore DOM access errors
+  }
 
   try {
     const id = "pc-theme-baseline";
@@ -150,7 +154,7 @@ function applyTheme(theme: Theme, overrides?: ThemeTokens, scope?: string) {
     }
     
     // Create selector list - always include main, plus custom scope if provided
-    const selectors = scope ? `main, ${scope}` : 'main';
+    const selectors = scope ? `main, ${scope}` : "main";
     
     // Always refresh baseline to reflect updates and stay in sync with tokens
     styleEl.textContent = `
@@ -187,7 +191,9 @@ function applyTheme(theme: Theme, overrides?: ThemeTokens, scope?: string) {
       ${selectors} input:focus-visible, ${selectors} textarea:focus-visible, ${selectors} select:focus-visible { outline: 1px solid var(--pc-accent); }
       ${selectors} input:disabled, ${selectors} textarea:disabled, ${selectors} select:disabled { opacity: .7; cursor: not-allowed; }
     `;
-  } catch {}
+  } catch {
+    // Ignore CSS injection errors
+  }
 }
 
 export function ThemeProvider({ 
@@ -211,7 +217,9 @@ export function ThemeProvider({
     applyTheme(theme, tokens, scope);
     try {
       safeWindow()?.localStorage?.setItem("theme", theme);
-    } catch {}
+    } catch {
+      // Ignore localStorage write errors in restricted environments
+    }
   }, [theme, tokens, scope]);
 
   // Listen to system preference changes when source is system
@@ -223,9 +231,9 @@ export function ThemeProvider({
     if (mql && typeof mql.addEventListener === "function") {
       mql.addEventListener("change", handler);
       return () => mql.removeEventListener("change", handler);
-    } else if (mql && typeof (mql as any).addListener === "function") {
-      (mql as any).addListener(handler);
-      return () => (mql as any).removeListener(handler);
+    } else if (mql && typeof (mql as MediaQueryList & { addListener?: (handler: (e: MediaQueryListEvent) => void) => void; removeListener?: (handler: (e: MediaQueryListEvent) => void) => void }).addListener === "function") {
+      (mql as MediaQueryList & { addListener: (handler: (e: MediaQueryListEvent) => void) => void }).addListener(handler);
+      return () => (mql as MediaQueryList & { removeListener: (handler: (e: MediaQueryListEvent) => void) => void }).removeListener(handler);
     }
   }, []);
 

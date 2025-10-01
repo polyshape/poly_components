@@ -13,7 +13,7 @@
  * setup({ useSearchParams });
  * ```
  */
-import { setReactRouterHooks } from './usePagination';
+import { setReactRouterHooks } from "./usePagination.js";
 
 export function setup(hooks: {
   useSearchParams: () => [URLSearchParams, (params: URLSearchParams, opts?: { replace?: boolean }) => void];

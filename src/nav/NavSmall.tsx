@@ -1,7 +1,7 @@
-import type { NavItem, NavProps } from "./Nav";
+import type { NavItem, NavProps } from "./Nav.js";
 import { useEffect, useRef, useState } from "react";
 import { makeStyles } from "@griffel/react";
-import { Button } from "../button";
+import { Button } from "../button/index.js";
 
 const useStyles = makeStyles({
   root: {
@@ -132,26 +132,26 @@ const useStyles = makeStyles({
     ":visited": {
       color: "color-mix(in srgb, var(--pc-fg, currentColor) 75%, var(--pc-bg, #fff))"
     },
-    ':after': {
+    ":after": {
       content: '""',
-      display: 'block',
-      position: 'absolute',
+      display: "block",
+      position: "absolute",
       left: 0,
       bottom: 0,
-      width: '100%',
-      height: '2px',
-      background: 'var(--pc-accent, currentColor)',
-      transformOrigin: 'left center',
-      transform: 'scaleX(0)',
-      borderRadius: '2px',
-      transition: 'transform 180ms ease-in-out',
+      width: "100%",
+      height: "2px",
+      background: "var(--pc-accent, currentColor)",
+      transformOrigin: "left center",
+      transform: "scaleX(0)",
+      borderRadius: "2px",
+      transition: "transform 180ms ease-in-out",
       zIndex: 1,
     },
     '&[aria-current="page"]:after': {
-      transform: 'scaleX(1) !important',
+      transform: "scaleX(1) !important",
     },
     ':not([aria-current="page"]):after': {
-      transform: 'scaleX(0)',
+      transform: "scaleX(0)",
     },
   },
   chevron: {
@@ -219,7 +219,7 @@ const useStyles = makeStyles({
   },
 });
 
-type NavSmallProps = Omit<NavProps, 'variant' | 'defaultOpenIds' | 'showBorder' | 'responsiveBreakpoint'>;
+type NavSmallProps = Omit<NavProps, "variant" | "defaultOpenIds" | "showBorder" | "responsiveBreakpoint">;
 
 export default function NavSmall({ items, as, linkProp, className, styles, customLeft, customRight }: NavSmallProps) {
   const classes = useStyles();
@@ -228,7 +228,7 @@ export default function NavSmall({ items, as, linkProp, className, styles, custo
   const [activeId, setActiveId] = useState<string | null>(null);
   const burgerBtnRef = useRef<HTMLButtonElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
-  const LinkComponent = as || 'a';
+  const LinkComponent = as || "a";
 
   // Focus management
   const closeMenu = (restoreFocus = true) => {
@@ -252,12 +252,12 @@ export default function NavSmall({ items, as, linkProp, className, styles, custo
     // Precedence: href > to
     const navTarget = item.href ?? item.to;
     if (!navTarget) return {};
-    const props: Record<string, any> = {};
+    const props: Record<string, string | boolean> = {};
     if (linkProp) {
       props[linkProp] = navTarget;
     } else {
-      const comp: any = LinkComponent;
-      const isNavLink = comp?.displayName === 'NavLink' || comp?.name === 'NavLink';
+      const comp = LinkComponent as React.ComponentType & { displayName?: string; name?: string };
+      const isNavLink = comp?.displayName === "NavLink" || comp?.name === "NavLink";
       if (isNavLink) {
         props.to = navTarget;
       } else {
@@ -302,7 +302,7 @@ export default function NavSmall({ items, as, linkProp, className, styles, custo
         aria-hidden={!menuOpen}
         className={menuOpen ? `${classes.overlay} ${classes.overlayOpen}` : classes.overlay}
         ref={overlayRef}
-        style={{ ...(styles?.overlay || {}), pointerEvents: menuOpen ? 'auto' : 'none' }}
+        style={{ ...(styles?.overlay || {}), pointerEvents: menuOpen ? "auto" : "none" }}
         onKeyDown={e => {
           if (e.key === "Escape" && menuOpen) {
             e.stopPropagation();

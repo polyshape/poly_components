@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import { LoadingContext } from "./LoadingContext";
+import { LoadingContext, LoadingContextValue } from "./LoadingContext.js";
 
-export function useLoading() {
+export function useLoading(): LoadingContextValue {
   const ctx = useContext(LoadingContext);
   if (!ctx) {
     throw new Error("useLoading must be used within LoadingProvider");

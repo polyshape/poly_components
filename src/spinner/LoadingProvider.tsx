@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { LoadingContext } from "./LoadingContext";
+import { LoadingContext } from "./LoadingContext.js";
 import type { ReactNode } from "react";
-import type { LoadingState } from "./LoadingContext";
+import type { LoadingState } from "./LoadingContext.js";
 
 
 export function LoadingProvider({ children }: { children: ReactNode }) {

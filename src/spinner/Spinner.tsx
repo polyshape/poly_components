@@ -11,8 +11,8 @@ type Props = {
 
 let injected = false;
 function ensureKeyframes() {
-  if (injected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
+  if (injected || typeof document === "undefined") return;
+  const style = document.createElement("style");
   style.textContent = `
   @keyframes pc-propagate { 
     0%   { transform: translateX(0) scale(0.25); opacity: .5; }
@@ -65,12 +65,12 @@ export function Spinner({ size = 12, color = "var(--pc-accent)", speed = 1, clas
           top: `${size / 2}px`,
           marginTop,
           background: color,
-          animationName: 'pc-propagate',
+          animationName: "pc-propagate",
           animationDuration: `${durationSec}s`,
-          animationTimingFunction: 'ease-in-out',
-          animationIterationCount: 'infinite',
+          animationTimingFunction: "ease-in-out",
+          animationIterationCount: "infinite",
           animationDelay: `${delay}s`,
-          ["--shift" as any]: shift,
+          ["--shift" as keyof React.CSSProperties]: shift,
         };
         return <div key={idx} className={classes.dot} style={styleDot} aria-hidden />;
       })}

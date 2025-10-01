@@ -1,5 +1,5 @@
 import { makeStyles, mergeClasses, shorthands } from "@griffel/react";
-import { Button } from "../button";
+import { Button } from "../button/index.js";
 import { useEffect, useState, type ReactNode } from "react";
 
 export type TabKey = string;

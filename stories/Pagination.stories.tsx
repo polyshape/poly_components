@@ -1,16 +1,15 @@
-// stories/Pagination.stories.tsx
-import type { Meta, StoryObj } from '@storybook/react';
-import { useState } from 'react';
-import { Pagination } from '../src';
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { Pagination } from "../src";
 
 const meta: Meta<typeof Pagination> = {
-  title: 'Components/Pagination',
+  title: "Components/Pagination",
   component: Pagination,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
-    totalPages: { control: { type: 'number', min: 1, max: 50 } },
+    totalPages: { control: { type: "number", min: 1, max: 50 } },
     currentPage: { control: false }, // handled internally in the story
-    delta: { control: { type: 'number', min: 0, max: 5 } },
+    delta: { control: { type: "number", min: 0, max: 5 } },
   },
 };
 export default meta;

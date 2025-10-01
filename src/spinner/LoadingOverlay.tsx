@@ -1,6 +1,7 @@
-import { makeStyles } from "@griffel/react";
-import { useLoading } from "./useLoading";
-import { Spinner } from "./Spinner";
+import { makeStyles, mergeClasses } from "@griffel/react";
+import type { CSSProperties } from "react";
+import { useLoading } from "./useLoading.js";
+import { Spinner } from "./Spinner.js";
 
 const useStyles = makeStyles({
   overlay: {
@@ -16,7 +17,28 @@ const useStyles = makeStyles({
   },
 });
 
-export function LoadingOverlay({ dismissOnClick = false }: { dismissOnClick?: boolean }) {
+interface LoadingOverlayProps {
+  dismissOnClick?: boolean;
+  // Spinner props
+  size?: number;
+  color?: string;
+  speed?: number;
+  // Styling props
+  className?: string;
+  styles?: {
+    root?: CSSProperties;
+    spinner?: CSSProperties;
+  };
+}
+
+export function LoadingOverlay({ 
+  dismissOnClick = false,
+  size = 14,
+  color,
+  speed,
+  className,
+  styles,
+}: LoadingOverlayProps) {
   const { state, setLoadingState } = useLoading();
   const classes = useStyles();
 
@@ -26,13 +48,19 @@ export function LoadingOverlay({ dismissOnClick = false }: { dismissOnClick?: bo
 
   return (
     <div
-      className={classes.overlay}
+      className={mergeClasses(classes.overlay, className)}
+      style={styles?.root}
       role="status"
       aria-live="polite"
       aria-busy="true"
       onClick={dismissOnClick ? () => setLoadingState(null) : undefined}
     >
-      <Spinner size={14} />
+      <Spinner 
+        size={size} 
+        color={color}
+        speed={speed}
+        style={styles?.spinner}
+      />
     </div>
   );
 }

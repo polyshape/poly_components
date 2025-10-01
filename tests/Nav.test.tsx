@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import Nav, { NavItem } from "../src/nav/Nav";
+import Nav, { NavItem } from "../src/nav/Nav.js";
 import { vi } from "vitest";
 
 describe("Nav component", () => {
@@ -115,7 +115,7 @@ describe("Nav component", () => {
   });
 
   it("uses to when href is not defined and as is custom link", () => {
-    const DummyLink = React.forwardRef<HTMLAnchorElement, any>((props, ref) => (
+    const DummyLink = React.forwardRef<HTMLAnchorElement, React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string }>((props, ref) => (
       <a ref={ref} data-testid="dummy-link" {...props} />
     ));
     DummyLink.displayName = "DummyLink";

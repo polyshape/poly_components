@@ -1,25 +1,25 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { ThemeToggle, Button, Pagination, Tabs, type Tab } from '../src';
-import { useState } from 'react';
+import type { Meta, StoryObj } from "@storybook/react";
+import { ThemeToggle, ThemeProvider, Button, Pagination, Tabs, type Tab } from "../src";
+import { useState } from "react";
 
 // Widen meta typing to allow extra playground-only controls like `tokens`
-const meta: Meta<any> = {
-  title: 'Components/Theme',
+const meta: Meta<Record<string, unknown>> = {
+  title: "Components/Theme",
   component: ThemeToggle,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
-    tokens: { control: 'object' },
+    tokens: { control: "object" },
     appearance: {
-      control: 'select',
-      options: ['subtle', 'transparent', 'outline', 'secondary', 'primary', 'danger'],
+      control: "select",
+      options: ["subtle", "transparent", "outline", "secondary", "primary", "danger"],
     },
     size: {
-      control: 'select',
-      options: ['small', 'medium', 'large'],
+      control: "select",
+      options: ["small", "medium", "large"],
     },
     shape: {
-      control: 'select',
-      options: ['rounded', 'square', 'circular'],
+      control: "select",
+      options: ["rounded", "square", "circular"],
     },
   },
 };
@@ -29,24 +29,26 @@ type Story = StoryObj<typeof ThemeToggle>;
 
 export const Playground: Story = {
   args: {
-    appearance: 'outline',
-    shape: 'rounded',
-    size: 'medium',
+    appearance: "outline",
+    shape: "rounded",
+    size: "medium",
   },
   render: (args) => (
-    <DemoContent args={args} />
+    <ThemeProvider>
+      <DemoContent args={args} />
+    </ThemeProvider>
   ),
 };
 
-function DemoContent({ args }: { args: any }) {
+function DemoContent({ args }: { args: Record<string, unknown> }) {
   const [page, setPage] = useState(1);
   const tabs: Tab[] = [
-    { key: 'tab_1', label: 'Tab 1', content: <div>Tab 1</div> },
-    { key: 'tab_2', label: 'Tab 2', content: <div>Tab 2</div> },
+    { key: "tab_1", label: "Tab 1", content: <div>Tab 1</div> },
+    { key: "tab_2", label: "Tab 2", content: <div>Tab 2</div> },
   ];
-  const [activeTab, setActiveTab] = useState<Tab['key']>('tab_1');
+  const [_activeTab, _setActiveTab] = useState<Tab["key"]>("tab_1");
   return (
-    <div style={{ display: 'grid', gap: '1rem' }}>
+    <div style={{ display: "grid", gap: "1rem" }}>
       <div>
         <ThemeToggle {...args} />
       </div>
@@ -79,7 +81,7 @@ function DemoContent({ args }: { args: any }) {
           <li>First</li>
           <li>Second</li>
         </ul>
-        <form onSubmit={(e) => e.preventDefault()} style={{ display: 'grid', gap: 8, maxWidth: 420 }}>
+        <form onSubmit={(e) => e.preventDefault()} style={{ display: "grid", gap: 8, maxWidth: 420 }}>
           <input placeholder="Your name" />
           <select defaultValue="">
             <option value="" disabled>Pick one…</option>
@@ -93,7 +95,7 @@ function DemoContent({ args }: { args: any }) {
       <div>
         <Tabs tabs={tabs} defaultActive="tab_1" ariaLabel="Demo tabs" />
       </div>
-      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
         <Button appearance="primary">Primary</Button>
         <Button appearance="secondary">Secondary</Button>
         <Button appearance="outline">Outline</Button>

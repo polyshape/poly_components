@@ -1,5 +1,5 @@
-import { useTheme } from "./useTheme";
-import Button from "../button/Button";
+import { useTheme } from "./useTheme.js";
+import { Button } from "../button/index.js";
 
 type Props = {
   appearance?: "subtle" | "transparent" | "outline" | "secondary" | "primary" | "danger";

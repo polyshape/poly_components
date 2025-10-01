@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import type { CSSProperties } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@griffel/react";
-import { normalizeBorderStyles } from "../utils/style";
-import { Button } from "../button";
+import { normalizeBorderStyles } from "../utils/style.js";
+import { Button } from "../button/index.js";
 
 const useStyles = makeStyles({
   root: {

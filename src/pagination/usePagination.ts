@@ -50,6 +50,7 @@ export function usePagination<T>(items: T[], pageSize: number, options?: Paginat
   const [page, setPageState] = useState<number>(initialPage);
 
   // Keep local state in sync with external or router state
+  const currentPageValue = getPage ? getPage() : params;
   useEffect(() => {
     let fromExternal = 1;
     if (getPage) {
@@ -60,7 +61,7 @@ export function usePagination<T>(items: T[], pageSize: number, options?: Paginat
     if (fromExternal !== page) {
       setPageState(fromExternal);
     }
-  }, [getPage ? getPage() : params, totalPages]);
+  }, [currentPageValue, totalPages, getPage, page, params, useRouter]);
 
   const visible = useMemo(() => {
     const start = (page - 1) * normalizedSize;
