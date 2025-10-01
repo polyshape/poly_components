@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { readdir, readFile, writeFile, access } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -37,7 +36,7 @@ async function collectExports() {
     }
   }
   exportDirs.sort();
-  return exportDirs.map((name) => `export * from "./${name}";`);
+  return exportDirs.map((name) => `export * from "./${name}/index.js";`);
 }
 
 async function run() {
@@ -58,12 +57,12 @@ async function run() {
         .map((l) => l.trim())
         .filter(Boolean)
         .map((l) => {
-          const m = l.match(/export\s+.*from\s+["']\.\/(.+?)["']/);
+          const m = l.match(/export\s+.*from\s+["']\.\/(.+?)\/index\.js["']/);
           return m ? m[1] : null;
         })
         .filter(Boolean)
     );
-    const required = lines.map((l) => l.match(/"\.\/(.+)"/)[1]);
+    const required = lines.map((l) => l.match(/"\.\/(.+?)\/index\.js"/)[1]);
     const missing = required.filter((name) => !present.has(name));
     if (missing.length === 0) {
       log('Exports check passed.');
