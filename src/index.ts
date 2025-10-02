@@ -5,3 +5,4 @@ export * from "./tabs/index.js";
 export * from "./spinner/index.js";
 export * from "./nav/index.js";
 export * from "./toast/index.js";
+export * from "./icons/index.js";
