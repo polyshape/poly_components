@@ -1,8 +1,8 @@
 import type { Preview } from "@storybook/react-vite";
 import { addons } from "storybook/preview-api";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { ThemeProvider } from "../src/theme/ThemeProvider";
-import { useTheme } from "../src/theme/useTheme";
+import { ThemeProvider } from "../src/theme/ThemeProvider.js";
+import { useTheme } from "../src/theme/useTheme.js";
 import { useEffect } from "react";
 
 function ThemeSync({ target }: { target: "light" | "dark" }) {

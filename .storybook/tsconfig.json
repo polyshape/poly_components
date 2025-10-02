@@ -1,3 +1,7 @@
 {
-  "extends": "../tsconfig.storybook.json"
+  "extends": "../tsconfig.storybook.json",
+  "include": [
+    "../global.d.ts",
+    "./**/*"
+  ]
 }
