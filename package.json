@@ -1,6 +1,6 @@
 {
   "name": "@polyutils/components",
-  "version": "2.6.2",
+  "version": "2.6.3",
   "type": "module",
   "description": "Reusable React components",
   "license": "MIT",
