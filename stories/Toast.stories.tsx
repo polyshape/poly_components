@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Toast, toast } from "../src/toast";
 import type { ToastProps } from "../src/toast";
 import Button from "../src/button/Button";
@@ -249,7 +249,6 @@ export const WithCustomOptions: Story = {
 
 export const FullyConfigurable: Story = {
   parameters: { controls: { disabled: false }, docs: { disable: true } },
-  name: "Fully Configurable",
   render: (args) => {
     const handleShowToast = () => {
       const options: Partial<ToastProps> = {
@@ -326,7 +325,6 @@ export const DismissOnClick: Story = {
 export const CustomIcon: Story = {
   args: {icons: { success: <Icon name="star" style={{ fontSize: 20, color: "lime" }} /> }, closeIcon: <Icon name="circle-close" style={{ fontSize: 20}}/>},
   argTypes: { type: { control: false } },
-  name: "Custom Icon",
   render: (args) => {
     return (
       <div style={{ padding: "20px" }}>
@@ -340,7 +338,6 @@ export const CustomIcon: Story = {
 };
 
 export const ElementMessage: Story = {
-  name: "Element Message",
   args: {theme: "sync", closeIcon: null, duration: 0, dismissOnClick: false, position: "bottomRight", icons: { info: null }, draggable: "never" },
   argTypes: { type: { control: false }, message: { control: false } },
   render: (args) => {

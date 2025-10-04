@@ -50,8 +50,10 @@ describe("Button", () => {
     );
     const btn = screen.getByRole("button", { name: /loading/i });
     expect(btn).toBeDisabled();
-    // Spinner icon exists
-    expect(btn.querySelector(".fa-circle-notch")).toBeTruthy();
+    // Spinner icon exists (our custom Icon component within spinner container)
+    const spinnerContainer = btn.querySelector("[aria-hidden]");
+    expect(spinnerContainer).toBeTruthy();
+    expect(spinnerContainer?.querySelector("svg")).toBeTruthy();
     await user.click(btn);
     expect(onClick).not.toHaveBeenCalled();
   });
