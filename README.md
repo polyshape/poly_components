@@ -23,32 +23,6 @@ If you want automatic URL-based pagination, install it:
 npm install react-router-dom
 ```
 
-### Font Awesome Requirement
-
-This package uses [Font Awesome](https://fontawesome.com).  
-Ensure Font Awesome is loaded in your project:
-
-**Option 1 — via CDN:**
-
-```html
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-/>
-```
-
-**Option 2 — via npm:**
-
-```bash
-npm install @fortawesome/fontawesome-free
-```
-
-And import it once in your app:
-
-```ts
-import "@fortawesome/fontawesome-free/css/all.min.css";
-```
-
 ## Usage
 
 ### Example: Tabs
@@ -168,13 +142,10 @@ export function ButtonShowcase() {
         <Button size="medium">Medium</Button>
         <Button size="large">Large</Button>
         <Button shape="square">Square</Button>
-        <Button shape="circular" icon={<i className="fa-solid fa-star" />} aria-label="Star" iconOnly />
       </div>
 
       {/* Icons and loading */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-        <Button icon={<i className="fa-solid fa-plus" />}>Add</Button>
-        <Button iconAfter={<i className="fa-solid fa-arrow-right" />}>Next</Button>
         <Button loading appearance="primary">Loading…</Button>
         <Button disabled>Disabled</Button>
       </div>
@@ -220,6 +191,36 @@ export function ButtonDropdownExample() {
 Notes
 
 - The small arrow aligns under the chevron; if you set `hideChevron`, it centers under the button. You can nudge it with `styles.dropdownArrow.offsetX` or fully override using `left`/`right`.
+
+### Example: Icons
+
+```tsx
+import { Icon } from "@polyutils/components";
+
+function IconExample() {
+  return (
+    <div>
+      {/* Basic usage */}
+      <Icon name="home" />
+      <Icon name="user" />
+      <Icon name="settings" />
+      
+      {/* Custom styling */}
+      <Icon name="home" style={{ fontSize: '24px', color: 'blue' }} />
+      
+      {/* Different sizes inherit parent font size */}
+      <div style={{ fontSize: '16px' }}><Icon name="home" /></div>
+      <div style={{ fontSize: '32px' }}><Icon name="user" /></div>
+      <div style={{ fontSize: '48px' }}><Icon name="settings" /></div>
+      
+      {/* With accessibility */}
+      <Icon name="settings" aria-label="Settings" />
+    </div>
+  );
+}
+```
+
+Icons inherit the font size and color of their parent element, making them easy to style consistently. All icons are SVG-based for crisp rendering at any size.
 
 ### Example: Toast Notifications
 
@@ -316,8 +317,8 @@ export function ExampleComponent() {
 
 // Custom icon and close button
 <Toast
-  icons={{ success: <i className="fa-solid fa-thumbs-up" style={{ color: 'lime' }} /> }}
-  closeIcon={<i className="fa-solid fa-circle-xmark" />}
+  icons={{ success: <Icon name="star" style={{ color: 'lime' }} /> }}
+  closeIcon={<Icon name="circle-close" />}
   showLoadingBar={false}
   pauseOnHover
   theme="colored"
@@ -397,7 +398,7 @@ You can set global defaults for new toasts via `<Toast />` props and still overr
 
 - Per-toast options passed to `toast.success|error|warning|info()` take precedence.
 - If an option is omitted per toast, the matching `<Toast />` prop acts as the global default.
-- If neither supplies a value, library defaults apply (duration `5000`, dismissOnClick `false`, showLoadingBar `true`, pauseOnHover `false`, position 'topRight', theme 'sync', draggable 'touch', built-in icons, Font Awesome close button).
+- If neither supplies a value, library defaults apply (duration `5000`, dismissOnClick `false`, showLoadingBar `true`, pauseOnHover `false`, position 'topRight', theme 'sync', draggable 'touch', built-in icons).
 
 Example:
 

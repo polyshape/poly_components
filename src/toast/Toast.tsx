@@ -11,6 +11,7 @@ import type {
   ToastDraggable,
 } from "./ToastTypes.js";
 import { Button } from "../button/index.js";
+import { Icon } from "../icons/Icon.js";
 import type { ReactNode, PointerEvent as ReactPointerEvent } from "react";
 
 const useStyles = makeStyles({
@@ -449,18 +450,31 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
     if (toast.dismissOnClick) handleRemove();
   };
   // Icon and color mapping
-  const iconMap: Record<ToastType, { icon: string; color: string }> = {
-    success: { icon: "fa-solid fa-circle-check", color: "#10b981" },
-    error: { icon: "fa-solid fa-circle-xmark", color: "#ef4444" },
-    warning: { icon: "fa-solid fa-circle-exclamation", color: "#f59e0b" },
-    info: { icon: "fa-solid fa-circle-info", color: "#3b82f6" },
+  const iconMap: Record<ToastType, { icon: ReactNode; color: string }> = {
+    success: { icon: <Icon name="circle-check" style={{ fontSize: 24}}/>, color: "#10b981" },
+    error: { icon: <Icon name="circle-close" style={{ fontSize: 24}}/>, color: "#ef4444" },
+    warning: { icon: <Icon name="circle-exclamation" style={{ fontSize: 24}}/>, color: "#f59e0b" },
+    info: { icon: <Icon name="circle-info" style={{ fontSize: 24}}/>, color: "#3b82f6" },
   };
   const iconData = iconMap[toast.type];
   let iconElem: ReactNode = null;
   if (iconOverrides && Object.prototype.hasOwnProperty.call(iconOverrides, toast.type)) {
     iconElem = iconOverrides[toast.type];
   } else {
-    iconElem = <i className={iconData.icon} style={{ color: resolvedTheme === "colored" ? "#fff" : iconData.color, fontSize: 22 }} aria-hidden="true" />;
+    iconElem = (
+      <div 
+        style={{ 
+          color: resolvedTheme === "colored" ? "#fff" : iconData.color, 
+          fontSize: 22,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }} 
+        aria-hidden="true"
+      >
+        {iconData.icon}
+      </div>
+    );
   }
   // Bar color
   const barColorMap: Record<ToastType, string> = {
@@ -553,7 +567,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
             {iconElem}
           </span>
         )}
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, alignContent: "center" }}>
           {toast.title && (
             <div className={classes.toastTitle} style={styles?.title}>
               {toast.title}
@@ -579,7 +593,7 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
           <Button
             appearance="transparent"
             pressEffect={false}
-            icon={resolvedCloseIcon !== undefined ? resolvedCloseIcon : <i className="fa-solid fa-xmark"></i>}
+            icon={resolvedCloseIcon !== undefined ? resolvedCloseIcon : <Icon name="close" style={{ fontSize: "24px"}} />}
             iconOnly
             className={mergeClasses(classes.closeBtn, resolvedTheme === "colored" && classes.closeBtnFullyColored)}
             style={styles?.closeButton}
@@ -777,7 +791,3 @@ export default function Toast(props: ToastProps = {}) {
     </>
   );
 }
-
-
-
-

@@ -2,6 +2,7 @@ import { makeStyles, mergeClasses, shorthands } from "@griffel/react";
 import { normalizeBorderStyles } from "../utils/style.js";
 import { forwardRef, useEffect, useRef, useState, cloneElement } from "react";
 import type { CSSProperties, ReactNode, ButtonHTMLAttributes } from "react";
+import { Icon } from "../icons/Icon.js";
 
 type Appearance = "primary" | "secondary" | "default" | "outline" | "subtle" | "transparent" | "danger";
 type Size = "small" | "medium" | "large";
@@ -320,7 +321,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
     >
       {loading && (
         <span className={mergeClasses(classes.spinner, spinnerClassName)} aria-hidden style={styles?.spinner}>
-          <i className="fa-solid fa-circle-notch fa-spin"></i>
+          <Icon name="circle-notch" spin weight={"heavy"} />
         </span>
       )}
       <span className={mergeClasses(classes.content, contentClassName)} style={styles?.content}>
@@ -329,9 +330,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
         {iconAfter && <span className={mergeClasses(classes.icon, iconClassName)} style={styles?.icon}>{iconAfter}</span>}
         {Array.isArray(menuItems) && !hideChevron && menuItems.length > 0 && (
           <span className={classes.chevron} aria-hidden ref={chevronRef}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <Icon name="chevron-down" weight={"medium"}/>
           </span>
         )}
       </span>

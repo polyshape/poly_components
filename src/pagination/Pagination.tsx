@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@griffel/react";
 import { normalizeBorderStyles } from "../utils/style.js";
 import { Button } from "../button/index.js";
+import { Icon } from "../icons/Icon.js";
 
 const useStyles = makeStyles({
   root: {
@@ -101,7 +102,7 @@ export default function Pagination({
         shape="circular"
         size="small"
         iconOnly
-        icon={<i className="fa-solid fa-angles-left" aria-hidden="true"></i>}
+        icon={<Icon name="angles-left" weight={"bold"} style={{ fontSize: "1.1rem" }} aria-hidden="true" />}
         disabled={currentPage <= 1}
         aria-label="First page"
         className={classes.buttonArrow}
@@ -115,7 +116,7 @@ export default function Pagination({
         shape="circular"
         size="small"
         iconOnly
-        icon={<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>}
+        icon={<Icon name="chevron-left" weight={"bold"} style={{ fontSize: "1.4rem", paddingRight: "0.15rem" }} aria-hidden="true" />}
         disabled={currentPage <= 1}
         aria-label="Previous page"
         className={classes.buttonArrow}
@@ -156,7 +157,7 @@ export default function Pagination({
         shape="circular"
         size="small"
         iconOnly
-        icon={<i className="fa-solid fa-chevron-right" aria-hidden="true"></i>}
+        icon={<Icon name="chevron-right" weight={"bold"} style={{ fontSize: "1.4rem", paddingLeft: "0.15rem" }} aria-hidden="true" />}
         disabled={currentPage >= totalPages}
         aria-label="Next page"
         className={classes.buttonArrow}
@@ -170,7 +171,7 @@ export default function Pagination({
         shape="circular"
         size="small"
         iconOnly
-        icon={<i className="fa-solid fa-angles-right" aria-hidden="true"></i>}
+        icon={<Icon name="angles-right" weight={"bold"} style={{ fontSize: "1.1rem" }} aria-hidden="true" />}
         disabled={currentPage >= totalPages}
         aria-label="Last page"
         className={classes.buttonArrow}

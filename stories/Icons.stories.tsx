@@ -1,15 +1,28 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Icon } from "../src";
+import { iconPaths } from "../src/icons/IconRegistry";
 
 const meta: Meta<typeof Icon> = {
   title: "Components/Icons",
   component: Icon,
   tags: ["autodocs"],
+  args: {
+    name: "home"
+  },
   argTypes: {
     name: { 
       control: { type: "select" },
-      options: ["home"],
+      options: Object.keys(iconPaths),
       description: "Icon name from the registry"
+    },
+    spin: {
+      control: { type: "boolean" },
+      description: "Makes the icon spin continuously - great for loading states"
+    },
+    weight: {
+      control: { type: "select" },
+      options: ["thin", "light", "normal", "medium", "bold", "heavy"],
+      description: "Icon stroke thickness - try different weights to see the effect"
     },
     style: {
       control: { type: "object" },
@@ -24,14 +37,13 @@ type Story = StoryObj<typeof Icon>;
 
 export const Home: Story = {
   args: {
-    name: "home",
-    style: { fontSize: "24px", color: "currentColor" },
+    style: { fontSize: "36px", color: "currentColor" },
   },
   render: (args) => (
     <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-      <span>Home icon: </span>
-      <span style={{ fontSize: "12px" }}>
-        <Icon {...args} />
+      <span>Icon: </span>
+      <span>
+        <Icon {...args} name={args.name}/>
       </span>
     </div>
   ),
@@ -47,7 +59,7 @@ export const CustomColors: Story = {
       <Icon {...args} style={{ color: "blue" }} />
       <Icon {...args} style={{ color: "green" }} />
       <Icon {...args} style={{ color: "#ff6b35" }} />
-      <div style={{ color: "purple" }}>
+      <div style={{ color: "purple", display: "flex", alignItems: "center", gap: "8px" }}>
         <Icon {...args} />
         <span> Uses parent color</span>
       </div>
