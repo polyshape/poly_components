@@ -4,6 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Toast, toast } from "../src/toast";
 import type { ToastProps } from "../src/toast";
 import Button from "../src/button/Button";
+import { Icon } from "../src";
 
 // Define the args interface for toast options
 interface ToastStoryArgs extends ToastProps {
@@ -322,17 +323,8 @@ export const DismissOnClick: Story = {
   ),
 };
 
-const customSuccessIcon = (
-  <span style={{ display: "inline-flex", alignItems: "center" }}>
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="11" cy="11" r="11" fill="purple" />
-      <path d="M7 11.5L10 14.5L15 9.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  </span>
-);
-
 export const CustomIcon: Story = {
-  args: {icons: { success: customSuccessIcon }, closeIcon: <i className="fa-solid fa-circle-xmark"></i>},
+  args: {icons: { success: <Icon name="star" style={{ fontSize: 20, color: "lime" }} /> }, closeIcon: <Icon name="circle-close" style={{ fontSize: 20}}/>},
   argTypes: { type: { control: false } },
   name: "Custom Icon",
   render: (args) => {
@@ -358,6 +350,7 @@ export const ElementMessage: Story = {
           <div className="auto-logout__warning" role="dialog" aria-live="polite" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
             <p style={{marginTop: 5}}>You will be logged out in 60 seconds due to inactivity.</p>
             <Button
+              styles={{ root: { marginBottom: "12px" } }}
               appearance="primary"
               size="small"
               onClick={(event) => {
