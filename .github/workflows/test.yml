@@ -25,5 +25,8 @@ jobs:
       - name: Check barrel exports
         run: npm run exports:check
 
+      - name: Run linting
+        run: npm run lint
+
       - name: Run tests
         run: npm test

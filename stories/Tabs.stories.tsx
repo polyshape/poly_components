@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Tabs, type Tab, type TabsProps } from "../src";
 
 const ON_CHANGE_OPTIONS = {
