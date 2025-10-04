@@ -54,11 +54,13 @@ const useStyles = makeStyles({
     transition: "opacity 200ms ease, transform 220ms ease, visibility 0s linear 220ms",
   },
   overlayOpen: {
-    opacity: 1,
-    visibility: "visible",
-    pointerEvents: "auto",
-    transform: "translateY(0)",
-    transition: "opacity 200ms ease, transform 220ms ease, visibility 0s",
+    "&&&": {
+      opacity: 1,
+      visibility: "visible",
+      pointerEvents: "auto",
+      transform: "translateY(0)",
+      transition: "opacity 200ms ease, transform 220ms ease, visibility 0s",
+    }
   },
   burgerBtn: {
     display: "block",
@@ -98,10 +100,12 @@ const useStyles = makeStyles({
     transition: "opacity 220ms ease 60ms, transform 220ms ease 60ms",
   },
   menuOpen: {
-    display: "flex",
-    opacity: 1,
-    transform: "translateY(0)",
-    width: "90%",
+    "&&&": {
+      display: "flex",
+      opacity: 1,
+      transform: "translateY(0)",
+      width: "90%",
+    }
   },
   menuItem: {
     fontSize: "1.5rem",
