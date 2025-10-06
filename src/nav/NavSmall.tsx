@@ -188,6 +188,7 @@ const useStyles = makeStyles({
     alignItems: "flex-start",
   },
   submenuItem: {
+    width: "100%",
     fontSize: "1rem",
     fontWeight: 500,
     background: "none",
