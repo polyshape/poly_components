@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState, useEffect } from "react";
-import { Icon } from "../src";
+import { useState, useEffect, useRef } from "react";
+import { Button, Icon } from "../src";
 import { iconPaths, type IconName } from "../src/icons/IconRegistry";
 
 // Simplified theme detection - just check actual background color
@@ -285,6 +285,42 @@ const IconBrowserComponent = ({ initialIcon }: { initialIcon: IconName }) => {
   const iconOptions = Object.keys(iconPaths).sort() as IconName[];
   const [selectedIcon, setSelectedIcon] = useState<IconName>(iconOptions[0] || initialIcon);
   const isDark = useTheme();
+  const usageSnippet = `<Icon name="${selectedIcon}" />`;
+  const [copyLabel, setCopyLabel] = useState("Copy to clipboard");
+  const copyLabelTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyLabelTimeout.current) {
+        clearTimeout(copyLabelTimeout.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    setCopyLabel("Copy to clipboard");
+    if (copyLabelTimeout.current) {
+      clearTimeout(copyLabelTimeout.current);
+      copyLabelTimeout.current = null;
+    }
+  }, [usageSnippet]);
+
+  const handleCopy = () => {
+    if (!navigator.clipboard?.writeText) {
+      return;
+    }
+
+    navigator.clipboard.writeText(usageSnippet).then(() => {
+      setCopyLabel("Copied");
+      if (copyLabelTimeout.current) {
+        clearTimeout(copyLabelTimeout.current);
+      }
+      copyLabelTimeout.current = setTimeout(() => {
+        setCopyLabel("Copy to clipboard");
+        copyLabelTimeout.current = null;
+      }, 1500);
+    }).catch(() => undefined);
+  };
   
   return (
     <div style={{ display: "flex", gap: "24px", maxWidth: "100%" }}>
@@ -355,17 +391,30 @@ const IconBrowserComponent = ({ initialIcon }: { initialIcon: IconName }) => {
         {/* Usage code */}
         <div>
           <h4 style={{ fontSize: "14px", marginBottom: "8px" }}>Usage:</h4>
-          <code style={{ 
-            display: "block",
-            padding: "8px",
-            backgroundColor: isDark ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.05)",
-            border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.15)"}`,
-            borderRadius: "4px",
-            fontSize: "11px",
-            wordBreak: "break-all"
-          }}>
-            {`<Icon name="${selectedIcon}" />`}
-          </code>
+          <div style={{ display: "flex", alignItems: "stretch", gap: "8px" }}>
+            <code style={{ 
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              padding: "8px",
+              backgroundColor: isDark ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.05)",
+              border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.15)"}`,
+              borderRadius: "4px",
+              fontSize: "11px",
+              wordBreak: "break-all"
+            }}>
+              {usageSnippet}
+            </code>
+            <Button
+              appearance="transparent"
+              size="small"
+              icon={<Icon name="copy" />}
+              iconOnly
+              aria-label={copyLabel}
+              title={copyLabel}
+              onClick={handleCopy}
+            />
+          </div>
         </div>
       </div>
     </div>
