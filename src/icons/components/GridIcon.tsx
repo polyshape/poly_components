@@ -1,0 +1,11 @@
+export function GridIcon() {
+  return (
+    <>
+      <rect x="4" y="4" width="7" height="7" stroke="currentColor" fill="none" strokeLinejoin="round" />
+      <rect x="13" y="4" width="7" height="7" stroke="currentColor" fill="none" strokeLinejoin="round" />
+      <rect x="4" y="13" width="7" height="7" stroke="currentColor" fill="none" strokeLinejoin="round" />
+      <rect x="13" y="13" width="7" height="7" stroke="currentColor" fill="none" strokeLinejoin="round" />
+    </>
+  );
+}
+
