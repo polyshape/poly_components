@@ -23,6 +23,7 @@ import {
   CircleCheckIcon,
   CircleExclamationIcon,
   CircleInfoIcon,
+  CircleIcon,
   CircleMinusIcon,
   CircleNotchIcon,
   CirclePlusIcon,
@@ -68,6 +69,8 @@ import {
   PrintIcon,
   ShoppingCartIcon,
   RefreshIcon,
+  RectangleIcon,
+  SquareIcon,
   RotateLeftIcon,
   RotateRightIcon,
   RewindIcon,
@@ -92,11 +95,13 @@ import {
   UserPlusIcon,
   UsersIcon,
   HourglassHalfIcon,
+  HourglassFullIcon,
   HourglassIcon,
   VolumeOffIcon,
   VolumeUpIcon,
   WarningDiamondIcon,
   WarningTriangleIcon,
+  TriangleIcon,
 } from "./components.js";
 
 // Icon registry - maps icon names to their components
@@ -122,6 +127,7 @@ export const iconPaths = {
   "chevron-right": <ChevronRightIcon />,
   "chevron-up": <ChevronUpIcon />,
   "chevron-down": <ChevronDownIcon />,
+  circle: <CircleIcon />,
   "circle-check": <CircleCheckIcon />,
   "circle-exclamation": <CircleExclamationIcon />,
   "circle-info": <CircleInfoIcon />,
@@ -168,6 +174,8 @@ export const iconPaths = {
   "phone-off": <PhoneOffIcon />,
   plus: <PlusIcon />,
   print: <PrintIcon />,
+  rectangle: <RectangleIcon />,
+  square: <SquareIcon />,
   refresh: <RefreshIcon />,
   "shopping-cart": <ShoppingCartIcon />,
   "rotate-left": <RotateLeftIcon />,
@@ -195,10 +203,12 @@ export const iconPaths = {
   "user-plus": <UserPlusIcon />,
   hourglass: <HourglassIcon />,
   "hourglass-half": <HourglassHalfIcon />,
+  "hourglass-full": <HourglassFullIcon />,
   "volume-off": <VolumeOffIcon />,
   "volume-up": <VolumeUpIcon />,
   "warning-diamond": <WarningDiamondIcon />,
   "warning-triangle": <WarningTriangleIcon />,
+  triangle: <TriangleIcon />,
 } as const;
 
 export type IconName = keyof typeof iconPaths;
