@@ -19,13 +19,13 @@ export function Icon({
   const getStrokeWidth = (w: typeof weight): number => {
     if (typeof w === "number") return w;
     switch (w) {
-      case "thin": return 1;
-      case "light": return 1.5;
-      case "normal": return 2;
-      case "medium": return 2.5;
-      case "bold": return 3;
-      case "heavy": return 3.5;
-      default: return 2;
+      case "thin": return 0.5;
+      case "light": return 1;
+      case "normal": return 1.5;
+      case "medium": return 2;
+      case "bold": return 2.5;
+      case "heavy": return 3;
+      default: return 1.5;
     }
   };
 
