@@ -210,6 +210,15 @@ import {
   BranchIcon,
   MergeIcon,
   DatabaseIcon,
+  FilePlusIcon,
+  FileMinusIcon,
+  FileCheckIcon,
+  FolderCheckIcon,
+  ClipboardMinusIcon,
+  DatabasePlusIcon,
+  DatabaseMinusIcon,
+  DatabaseCheckIcon,
+  EditSquare,
 } from "./components.js";
 
 // Icon registry - maps icon names to their components
@@ -263,6 +272,7 @@ export const iconPaths = {
   "clipboard-list": <ClipboardListIcon />,
   "clipboard-check": <ClipboardCheckIcon />,
   "clipboard-plus": <ClipboardPlusIcon />,
+  "clipboard-minus": <ClipboardMinusIcon />,
   eye: <EyeIcon />,
   "eye-off": <EyeOffIcon />,
   "double-arrow-horizontal": <DoubleArrowHorizontalIcon />,
@@ -303,11 +313,15 @@ export const iconPaths = {
   "file-image": <FileImageIcon />,
   "file-video": <FileVideoIcon />,
   "file-code": <FileCodeIcon />,
+  "file-plus": <FilePlusIcon />,
+  "file-minus": <FileMinusIcon />,
+  "file-check": <FileCheckIcon />,
   filter: <FilterIcon />,
   folder: <FolderIcon />,
   "folder-open": <FolderOpenIcon />,
   "folder-plus": <FolderPlusIcon />,
   "folder-minus": <FolderMinusIcon />,
+  "folder-check": <FolderCheckIcon />,
   "map-pin": <MapPinIcon />,
   map: <MapIcon />,
   route: <RouteIcon />,
@@ -427,6 +441,10 @@ export const iconPaths = {
   branch: <BranchIcon />,
   merge: <MergeIcon />,
   database: <DatabaseIcon />,
+  "database-plus": <DatabasePlusIcon />,
+  "database-minus": <DatabaseMinusIcon />,
+  "database-check": <DatabaseCheckIcon />,
+  "edit-square": <EditSquare />,
 } as const;
 
 export type IconName = keyof typeof iconPaths;
