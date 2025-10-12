@@ -1,4 +1,4 @@
-export function ThermometerIcon() {
+export function ThermometerPlusIcon() {
   return (
     <>
       <path
@@ -16,6 +16,9 @@ export function ThermometerIcon() {
         opacity="0.7"
       />
       <circle cx="12" cy="18" r="2" fill="currentColor" opacity="0.7" />
+      {/* Plus */}
+      <path d="M18 9v4M16 11h4" stroke="currentColor" strokeLinecap="round" />
     </>
   );
 }
+

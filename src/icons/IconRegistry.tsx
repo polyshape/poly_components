@@ -52,6 +52,7 @@ import {
   UnlinkIcon,
   ShoppingBagIcon,
   WalletIcon,
+  WalletCardIcon,
   ReceiptIcon,
   EyeIcon,
   EyeOffIcon,
@@ -80,7 +81,10 @@ import {
   FolderPlusIcon,
   FolderMinusIcon,
   MapPinIcon,
+  PinIcon,
   MapIcon,
+  RouteIcon,
+  CompassNorthIcon,
   CompassIcon,
   BookmarkIcon,
   TagIcon,
@@ -100,6 +104,9 @@ import {
   CircleQuestionIcon,
   QuestionIcon,
   CreditCardIcon,
+  CouponIcon,
+  CubeIcon,
+  TruckIcon,
   LocationPinIcon,
   ClockIcon,
   PauseIcon,
@@ -128,6 +135,9 @@ import {
   CloudSunIcon,
   CloudRainIcon,
   CloudsIcon,
+  WindIcon,
+  CloudSnowIcon,
+  CloudStormIcon,
   UploadCloudIcon,
   BatteryEmptyIcon,
   BatteryHalfIcon,
@@ -137,6 +147,8 @@ import {
   DownloadCloudIcon,
   UmbrellaIcon,
   ThermometerIcon,
+  ThermometerPlusIcon,
+  ThermometerMinusIcon,
   GridIcon,
   ListIcon,
   RefreshIcon,
@@ -241,7 +253,6 @@ export const iconPaths = {
   send: <SendIcon />,
   reply: <ReplyIcon />,
   forward: <ForwardIcon />,
-
   hashtag: <HashtagIcon />,
   cut: <CutIcon />,
   paste: <PasteIcon />,
@@ -274,6 +285,8 @@ export const iconPaths = {
   "folder-minus": <FolderMinusIcon />,
   "map-pin": <MapPinIcon />,
   map: <MapIcon />,
+  route: <RouteIcon />,
+  "compass-north": <CompassNorthIcon />,
   compass: <CompassIcon />,
   list: <ListIcon />,
   "circle-question": <CircleQuestionIcon />,
@@ -356,6 +369,16 @@ export const iconPaths = {
   upload: <UploadIcon />,
   user: <UserIcon />,
   users: <UsersIcon />,
+  pin: <PinIcon />,
+  wind: <WindIcon />,
+  "cloud-snow": <CloudSnowIcon />,
+  "cloud-storm": <CloudStormIcon />,
+  "thermometer-plus": <ThermometerPlusIcon />,
+  "thermometer-minus": <ThermometerMinusIcon />,
+  coupon: <CouponIcon />,
+  cube: <CubeIcon />,
+  truck: <TruckIcon />,
+  "wallet-card": <WalletCardIcon />,
   "user-minus": <UserMinusIcon />,
   "user-plus": <UserPlusIcon />,
   hourglass: <HourglassIcon />,
@@ -369,20 +392,3 @@ export const iconPaths = {
 } as const;
 
 export type IconName = keyof typeof iconPaths;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

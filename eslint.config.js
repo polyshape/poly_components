@@ -4,9 +4,22 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
-  // Ignore build artifacts
+  // Ignore build artifacts and static/generated files
   {
-    ignores: ['dist/**', 'node_modules/**', 'public/**'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'public/**',
+      'storybook-static/**',
+      '*.js',
+      '*.cjs',
+      '*.mjs',
+      '*.jsx',
+      '**/*.js',
+      '**/*.cjs',
+      '**/*.mjs',
+      '**/*.jsx'
+    ]
   },
 
   // Base JS + TypeScript (non type-checked) recommendations
