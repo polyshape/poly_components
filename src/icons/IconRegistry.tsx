@@ -23,6 +23,7 @@ import {
   CircleCheckIcon,
   CircleExclamationIcon,
   CircleInfoIcon,
+  InfoIcon,
   CircleIcon,
   CircleMinusIcon,
   CircleNotchIcon,
@@ -30,18 +31,25 @@ import {
   CloseCircleIcon,
   CloseIcon,
   CopyIcon,
+  InboxIcon,
+  SendIcon,
+  ReplyIcon,
+  ForwardIcon,
+  HashtagIcon,
   ClipboardIcon,
   ClipboardListIcon,
   ClipboardCheckIcon,
   ClipboardPlusIcon,
   CutIcon,
-  PasteIcon,BoldIcon,
+  PasteIcon,
+  BoldIcon,
   ItalicIcon,
   UnderlineIcon,
   AlignLeftIcon,
   AlignCenterIcon,
   AlignRightIcon,
-  AlignJustifyIcon,UnlinkIcon,
+  AlignJustifyIcon,
+  UnlinkIcon,
   ShoppingBagIcon,
   WalletIcon,
   ReceiptIcon,
@@ -90,6 +98,7 @@ import {
   MinusIcon,
   MoonIcon,
   CircleQuestionIcon,
+  QuestionIcon,
   CreditCardIcon,
   LocationPinIcon,
   ClockIcon,
@@ -97,6 +106,21 @@ import {
   PlayIcon,
   PhoneIcon,
   PhoneOffIcon,
+  CameraIcon,
+  VideoIcon,
+  MicIcon,
+  MicOffIcon,
+  HeadphonesIcon,
+  MonitorIcon,
+  LaptopIcon,
+  MobileIcon,
+  ShuffleIcon,
+  RepeatIcon,
+  RepeatOneIcon,
+  SkipNextIcon,
+  SkipPreviousIcon,
+  RecordIcon,
+  VolumeDownIcon,
   PlusIcon,
   PrintIcon,
   ShoppingCartIcon,
@@ -105,6 +129,11 @@ import {
   CloudRainIcon,
   CloudsIcon,
   UploadCloudIcon,
+  BatteryEmptyIcon,
+  BatteryHalfIcon,
+  BatteryFullIcon,
+  WifiIcon,
+  SignalIcon,
   DownloadCloudIcon,
   UmbrellaIcon,
   ThermometerIcon,
@@ -189,6 +218,10 @@ export const iconPaths = {
   "circle-notch": <CircleNotchIcon />,
   "circle-plus": <CirclePlusIcon />,
   "circle-close": <CloseCircleIcon />,
+  "x-circle": <CloseCircleIcon />,
+  "check-circle": <CircleCheckIcon />,
+  info: <InfoIcon />,
+  question: <QuestionIcon />,
   close: <CloseIcon />,
   copy: <CopyIcon />,
   clipboard: <ClipboardIcon />,
@@ -204,6 +237,12 @@ export const iconPaths = {
   "ellipsis-vertical": <EllipsisVerticalIcon />,
   ellipsis: <EllipsisIcon />,
   "external-link": <ExternalLinkIcon />,
+  inbox: <InboxIcon />,
+  send: <SendIcon />,
+  reply: <ReplyIcon />,
+  forward: <ForwardIcon />,
+
+  hashtag: <HashtagIcon />,
   cut: <CutIcon />,
   paste: <PasteIcon />,
   bold: <BoldIcon />,
@@ -257,6 +296,21 @@ export const iconPaths = {
   play: <PlayIcon />,
   phone: <PhoneIcon />,
   "phone-off": <PhoneOffIcon />,
+  camera: <CameraIcon />,
+  video: <VideoIcon />,
+  mic: <MicIcon />,
+  "mic-off": <MicOffIcon />,
+  headphones: <HeadphonesIcon />,
+  monitor: <MonitorIcon />,
+  laptop: <LaptopIcon />,
+  mobile: <MobileIcon />,
+  shuffle: <ShuffleIcon />,
+  repeat: <RepeatIcon />,
+  "repeat-1": <RepeatOneIcon />,
+  "skip-next": <SkipNextIcon />,
+  "skip-previous": <SkipPreviousIcon />,
+  record: <RecordIcon />,
+  "volume-down": <VolumeDownIcon />,
   plus: <PlusIcon />,
   print: <PrintIcon />,
   rectangle: <RectangleIcon />,
@@ -265,6 +319,11 @@ export const iconPaths = {
   cloud: <CloudIcon />,
   "upload-cloud": <UploadCloudIcon />,
   "download-cloud": <DownloadCloudIcon />,
+  "battery-empty": <BatteryEmptyIcon />,
+  "battery-half": <BatteryHalfIcon />,
+  "battery-full": <BatteryFullIcon />,
+  wifi: <WifiIcon />,
+  signal: <SignalIcon />,
   "cloud-sun": <CloudSunIcon />,
   "cloud-rain": <CloudRainIcon />,
   umbrella: <UmbrellaIcon />,
@@ -310,3 +369,20 @@ export const iconPaths = {
 } as const;
 
 export type IconName = keyof typeof iconPaths;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
