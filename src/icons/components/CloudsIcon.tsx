@@ -1,8 +1,12 @@
+import { useId } from "react";
+
 export function CloudsIcon() {
+  const id = useId();
+  const clipId = `pc-back-cloud-clip-${id}`;
   return (
     <>
       <defs>
-        <clipPath id="back-cloud-clip" clipPathUnits="userSpaceOnUse">
+        <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
           <path
             d="M0 0H24V24H0Z M6.3 16.15H18a3.5 3.5 0 0 0 0-7 5.5 5.5 0 0 0-10.4-1.7A4 4 0 0 0 6.3 17.3Z"
             fillRule="evenodd"
@@ -16,7 +20,7 @@ export function CloudsIcon() {
         fill="none"
         strokeLinecap="round"
         strokeLinejoin="round"
-        clipPath="url(#back-cloud-clip)"
+        clipPath={`url(#${clipId})`}
       />
       <g transform="translate(0.8,0.8)">
         <path

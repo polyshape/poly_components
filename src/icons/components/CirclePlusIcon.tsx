@@ -1,14 +1,18 @@
+import { useId } from "react";
+
 export function CirclePlusIcon() {
+  const id = useId();
+  const maskId = `pc-circle-plus-mask-${id}`;
   return (
     <g stroke="none" strokeWidth="0">
       <defs>
-        <mask id="circle-plus-mask">
+        <mask id={maskId}>
           <rect width="24" height="24" fill="white" />
           <path d="M12 8v8" stroke="black" strokeWidth="2" strokeLinecap="round" />
           <path d="M8 12h8" stroke="black" strokeWidth="2" strokeLinecap="round" />
         </mask>
       </defs>
-      <circle cx="12" cy="12" r="10" fill="currentColor" mask="url(#circle-plus-mask)" />
+      <circle cx="12" cy="12" r="10" fill="currentColor" mask={`url(#${maskId})`} />
     </g>
   );
 }

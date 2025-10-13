@@ -1,8 +1,12 @@
+import { useId } from "react";
+
 export function CircleQuestionIcon() {
+  const id = useId();
+  const maskId = `pc-question-mask-${id}`;
   return (
     <g stroke="none" strokeWidth="0">
       <defs>
-        <mask id="question-mask">
+        <mask id={maskId}>
           <rect width="24" height="24" fill="white" />
           <g transform="translate(0,-1)">
             <path
@@ -16,7 +20,7 @@ export function CircleQuestionIcon() {
           </g>
         </mask>
       </defs>
-      <circle cx="12" cy="12" r="10" fill="currentColor" mask="url(#question-mask)" />
+      <circle cx="12" cy="12" r="10" fill="currentColor" mask={`url(#${maskId})`} />
     </g>
   );
 }
