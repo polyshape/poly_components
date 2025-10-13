@@ -1,66 +1,15 @@
 import type { IconProps } from "./types.js";
 import { iconPaths } from "./IconRegistry.js";
+import { SvgIconBase } from "./SvgIconBase.js";
 
-export function Icon({ 
-  name,
-  className,
-  style,
-  spin,
-  weight = "normal",
-  ...props 
-}: IconProps) {
+export function Icon({ name, ...props }: IconProps) {
   const iconContent = iconPaths[name];
-  
   if (!iconContent) {
     return null;
   }
-
-  // Convert weight to strokeWidth value
-  const getStrokeWidth = (w: typeof weight): number => {
-    if (typeof w === "number") return w;
-    switch (w) {
-      case "thin": return 0.2;
-      case "light": return 0.6;
-      case "normal": return 1;
-      case "medium": return 1.5;
-      case "bold": return 2;
-      case "heavy": return 2.5;
-      default: return 1;
-    }
-  };
-
-  const strokeWidth = getStrokeWidth(weight);
-
-  const spinStyle = spin ? {
-    animation: "pc-icon-spin 1s linear infinite",
-    ...style
-  } : style;
-
   return (
-    <>
-      {spin && (
-        <style>{`
-          @keyframes pc-icon-spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-        `}</style>
-      )}
-      <svg
-        width="1em"
-        height="1em"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-        style={spinStyle}
-        {...props}
-      >
-        {iconContent}
-      </svg>
-    </>
+    <SvgIconBase {...props}>
+      {iconContent}
+    </SvgIconBase>
   );
 }

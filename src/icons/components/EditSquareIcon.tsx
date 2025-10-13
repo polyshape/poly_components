@@ -1,4 +1,4 @@
-export function EditSquare() {
+export function EditSquareIcon() {
   return (
     <>
       <g transform="scale(0.4) translate(36 6)" vectorEffect="non-scaling-stroke">

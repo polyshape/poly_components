@@ -196,6 +196,7 @@ Notes
 
 ```tsx
 import { Icon } from "@polyutils/components";
+import { HomeIcon, SearchIcon, StarIcon } from "@polyutils/components/icons";
 
 function IconExample() {
   return (
@@ -208,6 +209,17 @@ function IconExample() {
       {/* Custom styling */}
       <Icon name="home" style={{ fontSize: '24px', color: 'blue' }} />
       
+      {/* Stroke weight control */}
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <Icon name="home" weight="thin" />
+        <Icon name="home" weight="light" />
+        <Icon name="home" weight="normal" />
+        <Icon name="home" weight="medium" />
+        <Icon name="home" weight="bold" />
+        <Icon name="home" weight="heavy" />
+        {/* You can also pass a number, e.g., weight={1.25} */}
+      </div>
+      
       {/* Different sizes inherit parent font size */}
       <div style={{ fontSize: '16px' }}><Icon name="home" /></div>
       <div style={{ fontSize: '32px' }}><Icon name="user" /></div>
@@ -215,12 +227,40 @@ function IconExample() {
       
       {/* With accessibility */}
       <Icon name="settings" aria-label="Settings" />
+
+      {/* Direct icon components (tree-shakable) */}
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 12 }}>
+        <HomeIcon weight="bold" style={{ fontSize: 24 }} />
+        <SearchIcon spin style={{ fontSize: 24 }} />
+        <StarIcon weight="thin" style={{ fontSize: 24, color: 'goldenrod' }} />
+      </div>
+
+      {/* Spin speed overrides */}
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 12 }}>
+        {/* Override only the duration (keeps default animation name and timing function) */}
+        <Icon name="refresh" spin style={{ fontSize: 24, animationDuration: '2s' }} />
+
+        {/* Override the full animation shorthand */}
+        <HomeIcon spin style={{ fontSize: 24, animation: 'pc-icon-spin 500ms linear infinite' }} />
+      </div>
     </div>
   );
 }
 ```
 
 Icons inherit the font size and color of their parent element, making them easy to style consistently. All icons are SVG-based for crisp rendering at any size.
+
+Icon props of note:
+
+- `weight`: Controls the stroke thickness of line-based icons. Accepts `'thin' | 'light' | 'normal' | 'medium' | 'bold' | 'heavy'` or a custom `number` (strokeWidth). Default is `"normal"`.
+- `spin`: When `true`, adds a simple continuous rotation animation (useful for loaders).
+
+Direct icon components:
+
+- You can import individual icons directly from `@polyutils/components/icons` (e.g., `HomeIcon`, `SearchIcon`, `StarIcon`).
+- They accept the same props (`weight`, `spin`, and standard SVG props). Size is controlled via `style.fontSize`.
+
+Note on filled icons: Some icons that are primarily filled (e.g., badges or toggles) intentionally fix certain strokes/fills for visual balance. In those cases, parts of the icon may ignore the global `weight` value (the filled shapes still follow `currentColor`).
 
 ### Example: Toast Notifications
 

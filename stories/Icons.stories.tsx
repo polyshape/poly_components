@@ -1,6 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState, useEffect, useRef } from "react";
+import type { ComponentType, CSSProperties } from "react";
 import { Button, Icon } from "../src";
+import {
+  HomeIcon,
+  SearchIcon,
+  StarIcon,
+  HeartIcon,
+  CameraIcon,
+  BellIcon,
+  CalendarIcon,
+  UserIcon,
+  CheckIcon,
+} from "../src/icons";
 import { iconPaths, type IconName } from "../src/icons/IconRegistry";
 
 // Simplified theme detection - just check actual background color
@@ -174,6 +186,14 @@ const meta: Meta<typeof Icon> = {
   title: "Components/Icons",
   component: Icon,
   tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Icons inherit parent font-size and color. The `weight` prop controls stroke thickness (thin → heavy or a custom number), and `spin` adds a simple rotation animation. Note: primarily filled icons may fix some stroke widths for visual balance, so parts of those icons can ignore `weight`.",
+      },
+    },
+  },
   args: {
     name: "home"
   },
@@ -202,6 +222,7 @@ const meta: Meta<typeof Icon> = {
 export default meta;
 
 type Story = StoryObj<typeof Icon>;
+type NamedStory = StoryObj<{ icon: NamedIconKey; spin?: boolean; weight?: IconProps["weight"]; style?: CSSProperties }>;
 
 export const IconBrowser: Story = {
   argTypes: {
@@ -233,6 +254,77 @@ export const Icons: Story = {
       </span>
     </div>
   ),
+};
+
+// Named (wrapped) icons demo
+type NamedIconKey =
+  | "home"
+  | "search"
+  | "star"
+  | "heart"
+  | "camera"
+  | "bell"
+  | "calendar"
+  | "user"
+  | "check";
+
+import type { IconProps } from "../src/icons";
+
+type NamedIconComponent = ComponentType<Omit<IconProps, "name">>;
+
+const namedIcons: Record<NamedIconKey, NamedIconComponent> = {
+  home: HomeIcon,
+  search: SearchIcon,
+  star: StarIcon,
+  heart: HeartIcon,
+  camera: CameraIcon,
+  bell: BellIcon,
+  calendar: CalendarIcon,
+  user: UserIcon,
+  check: CheckIcon,
+};
+
+export const NamedIcons: NamedStory = {
+  argTypes: {
+    icon: {
+      control: { type: "select" },
+      options: Object.keys(namedIcons),
+      description: "Select a named icon to render",
+    },
+    spin: {
+      control: { type: "boolean" },
+      description: "Makes the icon spin continuously",
+    },
+    weight: {
+      control: { type: "select" },
+      options: ["thin", "light", "normal", "medium", "bold", "heavy"],
+      description: "Icon stroke thickness",
+    },
+    style: {
+      control: { type: "object" },
+      description: "CSS styles - e.g., { fontSize: '32px', color: 'red' }",
+    },
+  },
+  parameters: {
+    controls: {
+      exclude: ["name"],
+    },
+  },
+  args: {
+    icon: "home" as NamedIconKey,
+    style: { fontSize: "36px", color: "currentColor" },
+  },
+  render: (args) => {
+    const Cmp = namedIcons[args.icon];
+    return (
+      <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+        <span>Named Icon: </span>
+        <span>
+          <Cmp spin={args.spin} weight={args.weight} style={args.style} />
+        </span>
+      </div>
+    );
+  },
 };
 
 export const CustomColors: Story = {

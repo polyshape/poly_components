@@ -1,4 +1,4 @@
-export function CircleHalfFull() {
+export function CircleHalfFullIcon() {
   return (
     <>
       <defs>
@@ -11,4 +11,3 @@ export function CircleHalfFull() {
     </>
   );
 }
-

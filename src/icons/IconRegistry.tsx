@@ -233,9 +233,9 @@ import {
   WifiOffIcon,
   ImageIcon,
   MusicIcon,
-  EditSquare,
+  EditSquareIcon,
   CircleFullIcon,
-  CircleHalfFull,
+  CircleHalfFullIcon,
 } from "./components.js";
 
 // Icon registry - maps icon names to their components
@@ -476,9 +476,9 @@ export const iconPaths = {
   "database-plus": <DatabasePlusIcon />,
   "database-minus": <DatabaseMinusIcon />,
   "database-check": <DatabaseCheckIcon />,
-  "edit-square": <EditSquare />,
+  "edit-square": <EditSquareIcon />,
   "circle-full": <CircleFullIcon />,
-  "circle-half": <CircleHalfFull />,
+  "circle-half": <CircleHalfFullIcon />,
 } as const;
 
 export type IconName = keyof typeof iconPaths;
