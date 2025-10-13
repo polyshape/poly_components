@@ -235,3 +235,6 @@ export { ImageIcon } from "./components/ImageIcon.js";
 export { MusicIcon } from "./components/MusicIcon.js";
 export { CircleFullIcon } from "./components/CircleFullIcon.js";
 export { CircleHalfFullIcon } from "./components/CircleHalfFullIcon.js";
+export { VolumeFullIcon } from "./components/VolumeFullIcon.js";
+export { BroadcastIcon } from "./components/BroadcastIcon.js";
+export { CallDialpadIcon } from "./components/CallDialpadIcon.js";

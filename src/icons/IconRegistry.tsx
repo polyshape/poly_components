@@ -236,6 +236,9 @@ import {
   EditSquareIcon,
   CircleFullIcon,
   CircleHalfFullIcon,
+  VolumeFullIcon,
+  BroadcastIcon,
+  CallDialpadIcon,
 } from "./components.js";
 
 // Icon registry - maps icon names to their components
@@ -479,6 +482,9 @@ export const iconPaths = {
   "edit-square": <EditSquareIcon />,
   "circle-full": <CircleFullIcon />,
   "circle-half": <CircleHalfFullIcon />,
+  "volume-full": <VolumeFullIcon />,
+  "broadcast": <BroadcastIcon />,
+  "call-dialpad": <CallDialpadIcon />,
 } as const;
 
 export type IconName = keyof typeof iconPaths;
