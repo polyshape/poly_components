@@ -12,6 +12,15 @@ import {
   CalendarIcon,
   UserIcon,
   CheckIcon,
+  CircleCheckIcon,
+  CloseCircleIcon,
+  CircleExclamationIcon,
+  CircleInfoIcon,
+  CircleMinusIcon,
+  CirclePlusIcon,
+  CircleQuestionIcon,
+  CircleHalfFullIcon,
+  CloudsIcon,
 } from "../src/icons";
 import { iconPaths, type IconName } from "../src/icons/IconRegistry";
 
@@ -322,6 +331,62 @@ export const NamedIcons: NamedStory = {
         <span>
           <Cmp spin={args.spin} weight={args.weight} style={args.style} />
         </span>
+      </div>
+    );
+  },
+};
+
+// Visual regression check for masked/clipPath icons: render many duplicates
+type MaskedStory = StoryObj<{ weight?: IconProps["weight"]; style?: CSSProperties }>;
+
+export const MaskedIconsGrid: MaskedStory = {
+  argTypes: {
+    weight: {
+      control: { type: "select" },
+      options: ["thin", "light", "normal", "medium", "bold", "heavy"],
+      description: "Icon stroke thickness",
+    },
+    style: {
+      control: { type: "object" },
+      description: "CSS styles - e.g., { fontSize: '28px' }",
+    },
+  },
+  args: {
+    weight: "normal",
+    style: { fontSize: "28px" },
+  },
+  render: (args) => {
+    const maskedList: Array<[string, React.ComponentType<Omit<IconProps, "name">>]> = [
+      ["CircleCheckIcon", CircleCheckIcon],
+      ["CloseCircleIcon", CloseCircleIcon],
+      ["CircleExclamationIcon", CircleExclamationIcon],
+      ["CircleInfoIcon", CircleInfoIcon],
+      ["CircleMinusIcon", CircleMinusIcon],
+      ["CirclePlusIcon", CirclePlusIcon],
+      ["CircleQuestionIcon", CircleQuestionIcon],
+      ["CircleHalfFullIcon", CircleHalfFullIcon],
+      ["CloudsIcon", CloudsIcon],
+    ];
+    return (
+      <div style={{ display: "grid", gap: "16px" }}>
+        {maskedList.map(([label, Cmp]) => (
+          <div key={label}>
+            <div style={{ marginBottom: 8, fontSize: 12, opacity: 0.8 }}>{label}</div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: "12px",
+                alignItems: "center",
+                justifyItems: "center",
+              }}
+            >
+              {Array.from({ length: 9 }).map((_, i) => (
+                <Cmp key={i} weight={args.weight} style={args.style} />
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     );
   },

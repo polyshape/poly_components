@@ -7,6 +7,7 @@
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
   "files": [
     "dist",
     "README.md",
@@ -19,6 +20,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "icons:named:write": "node scripts/generate-named-icons.mjs",
+    "icons:named:check": "node scripts/generate-named-icons.mjs --check",
     "prepublishOnly": "npm run exports:write && npm run icons:named:write && npm run clean && npm run build",
     "test": "vitest",
     "test:watch": "vitest --watch",

@@ -2,6 +2,8 @@ import { readFile, writeFile, access } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = process.cwd();
+const args = new Set(process.argv.slice(2));
+const checkOnly = args.has('--check');
 const componentsBarrel = path.join(root, 'src', 'icons', 'components.ts');
 const namedOut = path.join(root, 'src', 'icons', 'named.ts');
 
@@ -39,6 +41,10 @@ async function run() {
     current = await readFile(namedOut, 'utf8');
   } catch {}
   if (current !== content) {
+    if (checkOnly) {
+      process.stdout.write('Named icons check failed: src/icons/named.ts is out of date.\n');
+      process.exit(1);
+    }
     await writeFile(namedOut, content, 'utf8');
     process.stdout.write(`Wrote ${names.length} wrapped icons to src/icons/named.ts\n`);
   } else {
