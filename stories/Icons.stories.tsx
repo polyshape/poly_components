@@ -13,7 +13,7 @@ import {
   UserIcon,
   CheckIcon,
   CircleCheckIcon,
-  CloseCircleIcon,
+  CircleCloseIcon,
   CircleExclamationIcon,
   CircleInfoIcon,
   CircleMinusIcon,
@@ -358,7 +358,7 @@ export const MaskedIconsGrid: MaskedStory = {
   render: (args) => {
     const maskedList: Array<[string, React.ComponentType<Omit<IconProps, "name">>]> = [
       ["CircleCheckIcon", CircleCheckIcon],
-      ["CloseCircleIcon", CloseCircleIcon],
+      ["CircleCloseIcon", CircleCloseIcon],
       ["CircleExclamationIcon", CircleExclamationIcon],
       ["CircleInfoIcon", CircleInfoIcon],
       ["CircleMinusIcon", CircleMinusIcon],

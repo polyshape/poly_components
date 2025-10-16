@@ -1,6 +1,6 @@
 import { useId } from "react";
 
-export function CloseCircleIcon() {
+export function CircleCloseIcon() {
   const id = useId();
   const maskId = `pc-xmark-mask-${id}`;
   return (

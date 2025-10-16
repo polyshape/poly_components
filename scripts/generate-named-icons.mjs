@@ -42,12 +42,16 @@ async function run() {
   } catch {}
   if (current !== content) {
     if (checkOnly) {
-      process.stdout.write('Named icons check failed: src/icons/named.ts is out of date.\n');
+      process.stdout.write('Named icons check FAILED: src/icons/named.ts is out of date.\n');
       process.exit(1);
     }
     await writeFile(namedOut, content, 'utf8');
     process.stdout.write(`Wrote ${names.length} wrapped icons to src/icons/named.ts\n`);
   } else {
+    if (checkOnly) {
+      process.stdout.write('Named icons check PASSED: src/icons/named.ts is up to date.\n');
+      process.exit(0);
+    }
     process.stdout.write('No changes in wrapped icons.\n');
   }
 }

@@ -26,7 +26,7 @@ export { CircleIcon } from "./components/CircleIcon.js";
 export { CircleMinusIcon } from "./components/CircleMinusIcon.js";
 export { CircleNotchIcon } from "./components/CircleNotchIcon.js";
 export { CirclePlusIcon } from "./components/CirclePlusIcon.js";
-export { CloseCircleIcon } from "./components/CircleCloseIcon.js";
+export { CircleCloseIcon } from "./components/CircleCloseIcon.js";
 export { CloseIcon } from "./components/CloseIcon.js";
 export { CopyIcon } from "./components/CopyIcon.js";
 export { InboxIcon } from "./components/InboxIcon.js";
