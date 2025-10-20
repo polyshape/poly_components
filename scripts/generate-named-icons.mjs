@@ -40,11 +40,39 @@ async function run() {
     await access(namedOut);
     current = await readFile(namedOut, 'utf8');
   } catch {}
-  if (current !== content) {
-    if (checkOnly) {
-      process.stdout.write('Named icons check FAILED: src/icons/named.ts is out of date.\n');
-      process.exit(1);
+  // Order-tolerant check when --check is used
+  if (checkOnly) {
+    const expectedLines = body
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean)
+      .filter((l) => l.startsWith('export const '));
+    const currentLines = current
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean)
+      .filter((l) => l.startsWith('export const '));
+    const missing = expectedLines.filter((l) => !currentLines.includes(l));
+    const extra = currentLines.filter((l) => !expectedLines.includes(l));
+    if (missing.length === 0 && extra.length === 0) {
+      process.stdout.write('No changes in wrapped icons.\n');
+      return;
     }
+    process.stdout.write('Named icons check FAILED: src/icons/named.ts is out of date.\n');
+    if (missing.length) {
+      process.stdout.write('Missing exports:\n');
+      missing.forEach((l) => process.stdout.write('  ' + l + '\n'));
+    }
+    if (extra.length) {
+      process.stdout.write('Unexpected exports present:\n');
+      extra.forEach((l) => process.stdout.write('  ' + l + '\n'));
+    }
+    process.stdout.write('Run: npm run icons:named:write\n');
+    process.exit(1);
+  }
+
+  // Write canonical content in non-check mode
+  if (current !== content) {
     await writeFile(namedOut, content, 'utf8');
     process.stdout.write(`Wrote ${names.length} wrapped icons to src/icons/named.ts\n`);
   } else {
