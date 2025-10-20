@@ -115,6 +115,7 @@ export { BatteryHalfIcon } from "./components/BatteryHalfIcon.js";
 export { BatteryFullIcon } from "./components/BatteryFullIcon.js";
 export { WifiIcon } from "./components/WifiIcon.js";
 export { SignalIcon } from "./components/SignalIcon.js";
+export { SignalOffIcon } from "./components/SignalOffIcon.js";
 export { InfoIcon } from "./components/InfoIcon.js";
 export { QuestionIcon } from "./components/QuestionIcon.js";
 export { PhoneIcon } from "./components/PhoneIcon.js";

@@ -260,6 +260,7 @@ import {
   SearchPlusIcon,
   SearchMinusIcon,
   ZoomResetIcon,
+  SignalOffIcon,
 } from "./components.js";
 
 // Icon registry - maps icon names to their components
@@ -428,6 +429,7 @@ export const iconPaths = {
   wifi: <WifiIcon />,
   "wifi-off": <WifiOffIcon />,
   signal: <SignalIcon />,
+  "signal-off": <SignalOffIcon />,
   "cloud-sun": <CloudSunIcon />,
   "cloud-rain": <CloudRainIcon />,
   umbrella: <UmbrellaIcon />,

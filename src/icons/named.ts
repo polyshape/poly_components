@@ -213,6 +213,7 @@ export const ShoppingBagIcon = wrapIcon(Paths.ShoppingBagIcon);
 export const ShoppingCartIcon = wrapIcon(Paths.ShoppingCartIcon);
 export const ShuffleIcon = wrapIcon(Paths.ShuffleIcon);
 export const SignalIcon = wrapIcon(Paths.SignalIcon);
+export const SignalOffIcon = wrapIcon(Paths.SignalOffIcon);
 export const SkipNextIcon = wrapIcon(Paths.SkipNextIcon);
 export const SkipPreviousIcon = wrapIcon(Paths.SkipPreviousIcon);
 export const SlidersIcon = wrapIcon(Paths.SlidersIcon);
