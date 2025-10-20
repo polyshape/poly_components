@@ -260,3 +260,4 @@ export { BarcodeIcon } from "./components/BarcodeIcon.js";
 export { SearchPlusIcon } from "./components/SearchPlusIcon.js";
 export { SearchMinusIcon } from "./components/SearchMinusIcon.js";
 export { ZoomResetIcon } from "./components/ZoomResetIcon.js";
+export { PencilIcon } from "./components/PencilIcon.js";

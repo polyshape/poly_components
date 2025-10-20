@@ -261,6 +261,7 @@ import {
   SearchMinusIcon,
   ZoomResetIcon,
   SignalOffIcon,
+  PencilIcon,
 } from "./components.js";
 
 // Icon registry - maps icon names to their components
@@ -527,6 +528,7 @@ export const iconPaths = {
   maximize: <MaximizeIcon />,
   minimize: <MinimizeIcon />,
   rss: <RssIcon />,
+  pencil: <PencilIcon />,
 } as const;
 
 export type IconName = keyof typeof iconPaths;

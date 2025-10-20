@@ -174,6 +174,7 @@ export const PaperclipIcon = wrapIcon(Paths.PaperclipIcon);
 export const PasteIcon = wrapIcon(Paths.PasteIcon);
 export const PauseCircleIcon = wrapIcon(Paths.PauseCircleIcon);
 export const PauseIcon = wrapIcon(Paths.PauseIcon);
+export const PencilIcon = wrapIcon(Paths.PencilIcon);
 export const PhoneIcon = wrapIcon(Paths.PhoneIcon);
 export const PhoneOffIcon = wrapIcon(Paths.PhoneOffIcon);
 export const PieChartIcon = wrapIcon(Paths.PieChartIcon);
