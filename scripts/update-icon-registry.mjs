@@ -22,7 +22,7 @@ async function getComponentExports() {
   const components = [];
   for (const file of files) {
     const src = await readFile(path.join(componentsDir, file), 'utf8');
-    const m = src.match(/^export\s+function\s+(\w+)\s*\(/m);
+    const m = src.match(/^[\uFEFF]?\s*export\s+function\s+(\w+)\s*\(/m);
     if (!m) continue;
     const exportName = m[1];
     const base = exportName.endsWith('Icon') ? exportName.slice(0, -4) : exportName;

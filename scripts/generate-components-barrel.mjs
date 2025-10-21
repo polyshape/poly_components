@@ -28,7 +28,8 @@ async function collectExports() {
     const full = path.join(componentsDir, file);
     const src = await readFile(full, 'utf8');
     // Look for a named function export: export function Name(
-    const m = src.match(/^export\s+function\s+(\w+)\s*\(/m);
+    // Be tolerant of an optional BOM and leading whitespace
+    const m = src.match(/^[\uFEFF]?\s*export\s+function\s+(\w+)\s*\(/m);
     if (!m) {
       // Skip files that don't match the pattern (none expected)
       continue;
