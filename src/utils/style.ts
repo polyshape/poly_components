@@ -17,4 +17,3 @@ export function normalizeBorderStyles(style?: CSSProperties): CSSProperties | un
 
   return normalized;
 }
-

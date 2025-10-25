@@ -3,7 +3,6 @@ import { LoadingContext } from "./LoadingContext.js";
 import type { ReactNode } from "react";
 import type { LoadingState } from "./LoadingContext.js";
 
-
 export function LoadingProvider({ children }: { children: ReactNode }) {
   const [state, setLoadingState] = useState<LoadingState>(null);
 

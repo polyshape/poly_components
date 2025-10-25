@@ -7,6 +7,7 @@
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
   "files": [
     "dist",
     "README.md",
@@ -18,7 +19,14 @@
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepublishOnly": "npm run exports:write && npm run clean && npm run build",
+    "icons:components:write": "node scripts/generate-components-barrel.mjs",
+    "icons:components:check": "node scripts/generate-components-barrel.mjs --check",
+    "icons:named:write": "node scripts/generate-named-icons.mjs",
+    "icons:named:check": "node scripts/generate-named-icons.mjs --check",
+    "icons:registry:write": "node scripts/update-icon-registry.mjs",
+    "icons:registry:check": "node scripts/update-icon-registry.mjs --check",
+    "icons:update": "npm run icons:components:write && npm run icons:named:write && npm run icons:registry:write",
+    "prepublishOnly": "npm run exports:write && npm run icons:components:write && npm run icons:named:write && npm run clean && npm run build",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:ci": "vitest run --reporter=dot",
@@ -53,9 +61,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
-    "@fortawesome/fontawesome-free": "^7.0.1",
-    "@storybook/addon-docs": "^9.1.8",
-    "@storybook/react-vite": "^9.1.8",
+    "@storybook/addon-docs": "^9.1.10",
+    "@storybook/react-vite": "^9.1.10",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
@@ -71,12 +78,13 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.8.2",
     "shx": "^0.4.0",
-    "storybook": "^9.1.8",
-    "storybook-addon-pseudo-states": "^9.1.8",
+    "storybook": "^9.1.10",
+    "storybook-addon-pseudo-states": "^9.1.10",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.39.1",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "eslint-plugin-storybook": "9.1.10"
   },
   "dependencies": {
     "@griffel/react": "^1.5.30"

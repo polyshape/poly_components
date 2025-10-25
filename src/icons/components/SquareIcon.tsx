@@ -1,0 +1,20 @@
+export function SquareIcon() {
+  return (
+    <>
+      <rect
+        x="4"
+        y="4"
+        width="16"
+        height="16"
+        stroke="currentColor"
+        fill="none"
+        strokeLinejoin="round"
+      />
+    </>
+  );
+}
+
+Object.defineProperty(SquareIcon, Symbol.for("poly:icon:tags"), {
+  value: ["shape", "box", "rectangle"] as const,
+  enumerable: false,
+});

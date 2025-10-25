@@ -1,0 +1,56 @@
+export function SignalIcon() {
+  return (
+    <>
+      <rect
+        x="2"
+        y="17"
+        width="1"
+        height="4"
+        rx="0.4"
+        stroke="currentColor"
+        fill="currentColor"
+      />
+      <rect
+        x="6.5"
+        y="15"
+        width="1"
+        height="6"
+        rx="0.4"
+        stroke="currentColor"
+        fill="currentColor"
+      />
+      <rect
+        x="11"
+        y="13"
+        width="1"
+        height="8"
+        rx="0.4"
+        stroke="currentColor"
+        fill="currentColor"
+      />
+      <rect
+        x="15.5"
+        y="11"
+        width="1"
+        height="10"
+        rx="0.4"
+        stroke="currentColor"
+        fill="currentColor"
+      />
+      <rect
+        x="20"
+        y="9"
+        width="1"
+        height="12"
+        rx="0.4"
+        stroke="currentColor"
+        fill="currentColor"
+      />
+    </>
+  );
+}
+
+Object.defineProperty(SignalIcon, Symbol.for("poly:icon:tags"), {
+  value: ["network", "wifi"] as const,
+  enumerable: false,
+});

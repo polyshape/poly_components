@@ -2,6 +2,7 @@ import { makeStyles } from "@griffel/react";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { Button } from "../button/index.js";
+import { Icon } from "../icons/Icon.js";
 import NavSmall from "./NavSmall.js";
 
 export type NavItem = {
@@ -320,7 +321,6 @@ const useStyles = makeStyles({
   },
 });
 
-
 const isPositive = (value: unknown): value is number =>
   typeof value === "number" && Number.isFinite(value) && value > 0;
 
@@ -355,7 +355,6 @@ const getNodeFullWidth = (el: HTMLElement): number => {
   const marginRight = parseFloat(styles.marginRight || "0");
   return rect.width + marginLeft + marginRight;
 };
-
 
 export default function Nav(props: NavProps) {
   const {
@@ -544,7 +543,7 @@ export default function Nav(props: NavProps) {
       className={`${classes.moreBtn}`}
       style={styles?.moreButton}
       menuTrigger="click"
-      icon={<i className="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>}
+      icon={<Icon name="ellipsis-vertical" weight="bold" />}
       iconOnly
       aria-label="More"
       hideChevron
@@ -650,9 +649,7 @@ export default function Nav(props: NavProps) {
                         <span>{it.label}</span>
                         {hasChildren && (
                         <span className={`${classes.chevronSide} ${opened ? classes.chevronOpenSide : ""}`} style={{...styles?.chevronSide, ...(opened ? styles?.chevronOpen : {})}} aria-hidden>
-                          <svg className={classes.chevronIcon} width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={styles?.chevronIcon}>
-                            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
+                          <Icon name="chevron-down" className={classes.chevronIcon} style={{ fontSize: "18px", ...styles?.chevronIcon }} />
                         </span>
                         )}
                       </LinkComponent>
@@ -730,9 +727,7 @@ export default function Nav(props: NavProps) {
                       >
                         <span>{it.label}</span>
                         <span className={`${classes.chevron} ${hoverIdx === idx ? classes.chevronOpen : ""}`} style={{ ...styles?.chevron, ...(hoverIdx === idx ? styles?.chevronOpen : {}) }} aria-hidden>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={styles?.chevronIcon}>
-                            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
+                          <Icon name="chevron-down" style={{ fontSize: "14px", ...styles?.chevronIcon }} />
                         </span>
                       </LinkComponent>
                       {hoverIdx === idx && (
@@ -890,9 +885,7 @@ export default function Nav(props: NavProps) {
                         <span>{it.label}</span>
                         {hasChildren && (
                           <span className={classes.chevron} style={styles?.chevron} aria-hidden>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={styles?.chevronIcon}>
-                              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
+                            <Icon name="chevron-down" style={{ fontSize: "18px", ...styles?.chevronIcon }} />
                           </span>
                         )}
                       </LinkComponent>

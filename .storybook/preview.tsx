@@ -1,9 +1,8 @@
 import type { Preview } from "@storybook/react-vite";
 import { addons } from "storybook/preview-api";
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import { ThemeProvider } from "../src/theme/ThemeProvider";
-import { useTheme } from "../src/theme/useTheme";
-import { useEffect } from "react";
+import { ThemeProvider } from "../src/theme/ThemeProvider.js";
+import { useTheme } from "../src/theme/useTheme.js";
+import { useEffect, type ComponentType } from "react";
 
 function ThemeSync({ target }: { target: "light" | "dark" }) {
   const { setTheme } = useTheme();
@@ -79,10 +78,10 @@ const preview: Preview = {
   },
 
   decorators: [
-    (Story, context) => {
+    (Story: ComponentType, context: { args: Record<string, unknown>; globals: Record<string, unknown> }) => {
       const baseTokens = ((context.args as { tokens?: Record<string, string> })?.tokens ?? context.globals.tokens) as Record<string, string>;
       return (
-        <ThemeProvider initialTheme={context.globals.theme} tokens={baseTokens}>
+        <ThemeProvider initialTheme={context.globals.theme as "light" | "dark"} tokens={baseTokens}>
           <ThemeSync target={context.globals.theme as "light" | "dark"} />
           <ThemeBodySync />
           <LiveTokenSync />

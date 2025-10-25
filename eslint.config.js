@@ -4,9 +4,22 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
-  // Ignore build artifacts
+  // Ignore build artifacts and static/generated files
   {
-    ignores: ['dist/**', 'node_modules/**', 'public/**'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'public/**',
+      'storybook-static/**',
+      '*.js',
+      '*.cjs',
+      '*.mjs',
+      '*.jsx',
+      '**/*.js',
+      '**/*.cjs',
+      '**/*.mjs',
+      '**/*.jsx'
+    ]
   },
 
   // Base JS + TypeScript (non type-checked) recommendations
@@ -37,6 +50,9 @@ export default [
 
       // Console usage in TS files
       'no-console': 'warn',
+
+      // Trim excessive empty lines including at beginning/end of files
+      'no-multiple-empty-lines': ['error', { max: 1, maxBOF: 0, maxEOF: 0 }],
 
       // Requested TypeScript rules (non type-aware)
       '@typescript-eslint/no-unused-vars': [

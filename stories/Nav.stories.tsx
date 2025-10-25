@@ -1,6 +1,6 @@
 import NavSmall from "../src/nav/NavSmall";
 import { MemoryRouter, NavLink } from "react-router-dom";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, Nav, type NavItem, ThemeToggle } from "../src";
 import React from "react";
 
@@ -22,7 +22,6 @@ const meta: Meta<typeof Nav> = {
 export default meta;
 
 type Story = StoryObj<typeof Nav>;
-
 
 const stop: React.MouseEventHandler = (e) => e.preventDefault();
 

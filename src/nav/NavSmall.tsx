@@ -2,6 +2,7 @@ import type { NavItem, NavProps } from "./Nav.js";
 import { useEffect, useRef, useState } from "react";
 import { makeStyles } from "@griffel/react";
 import { Button } from "../button/index.js";
+import { Icon } from "../icons/Icon.js";
 
 const useStyles = makeStyles({
   root: {
@@ -68,7 +69,7 @@ const useStyles = makeStyles({
     right: "0.5rem",
     fontSize: "1.5rem",
     zIndex: 1001,
-    padding: "0.3rem",
+    padding: "0.6rem",
     transform: "scaleX(1.25)",
     ":active": {
       transform: "scaleX(1.25) translateY(1px)",
@@ -290,7 +291,7 @@ export default function NavSmall({ items, as, linkProp, className, styles, custo
           aria-label={menuOpen ? "Close navigation" : "Open navigation"}
           aria-expanded={menuOpen}
           ref={burgerBtnRef}
-          icon={<i className="fa-solid fa-bars"></i>}
+          icon={<Icon name="bars" weight="medium" style={{ fontSize: "2rem" }} />}
           iconOnly
           onClick={() => {
             setMenuOpen(open => !open);
@@ -335,16 +336,15 @@ export default function NavSmall({ items, as, linkProp, className, styles, custo
                     aria-current={isActive ? "page" : undefined}
                   >
                     <span>{route.label}</span>
-                    <span className={classes.neutralIcon} aria-hidden>
-                      {openSubmenu === routeId ? (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M6 15l6-6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      ) : (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      )}
+                    <span 
+                      className={classes.neutralIcon} 
+                      aria-hidden
+                      style={{
+                        transform: openSubmenu === routeId ? "rotate(180deg)" : "rotate(0deg)",
+                        transition: "transform 160ms ease"
+                      }}
+                    >
+                      <Icon name="chevron-down" style={{ fontSize: "18px" }} />
                     </span>
                   </LinkComponent>
                   {openSubmenu === routeId && route.items && route.items.length > 0 && (
@@ -400,7 +400,7 @@ export default function NavSmall({ items, as, linkProp, className, styles, custo
         </nav>
         <Button
             appearance="transparent"
-            icon={<i className="fa-solid fa-xmark"></i>}
+            icon={<Icon name="close" weight="medium" style={{ fontSize: "2rem" }} />}
             iconOnly
             className={classes.closeBtn}
             style={styles?.closeButton}
