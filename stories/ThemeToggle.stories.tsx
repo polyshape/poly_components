@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { ThemeToggle, ThemeProvider, Button, Pagination, Tabs, type Tab } from "../src";
 import { useState } from "react";
+import {
+  Button,
+  Pagination,
+  Tabs,
+  ThemeProvider,
+  ThemeToggle,
+  type Tab,
+} from "../src";
 
 // Widen meta typing to allow extra playground-only controls like `tokens`
 const meta: Meta<Record<string, unknown>> = {
@@ -11,7 +18,14 @@ const meta: Meta<Record<string, unknown>> = {
     tokens: { control: "object" },
     appearance: {
       control: "select",
-      options: ["subtle", "transparent", "outline", "secondary", "primary", "danger"],
+      options: [
+        "subtle",
+        "transparent",
+        "outline",
+        "secondary",
+        "primary",
+        "danger",
+      ],
     },
     size: {
       control: "select",
@@ -56,35 +70,58 @@ function DemoContent({ args }: { args: Record<string, unknown> }) {
       <section>
         <h3 style={{ margin: 0 }}>Baseline HTML</h3>
         <p>
-          This is some text with a themed <a href="#" onClick={(e) => e.preventDefault()}>link</a> and an <strong>emphasis</strong>.
+          This is some text with a themed{" "}
+          <a href="#" onClick={(e) => e.preventDefault()}>
+            link
+          </a>{" "}
+          and an <strong>emphasis</strong>.
         </p>
         <p>
-          Inline <code>code()</code>, keyboard <kbd>Ctrl</kbd>+<kbd>K</kbd>, and <mark>highlight</mark>.
+          Inline <code>code()</code>, keyboard <kbd>Ctrl</kbd>+<kbd>K</kbd>, and{" "}
+          <mark>highlight</mark>.
         </p>
-        <pre><code>{`function hello() {
+        <pre>
+          <code>{`function hello() {
   console.log('world');
-}`}</code></pre>
+}`}</code>
+        </pre>
         <blockquote>
           This is a themed blockquote using muted text and a border.
         </blockquote>
         <table>
           <thead>
-            <tr><th>Name</th><th>Count</th></tr>
+            <tr>
+              <th>Name</th>
+              <th>Count</th>
+            </tr>
           </thead>
           <tbody>
-            <tr><td>Apples</td><td>3</td></tr>
-            <tr><td>Oranges</td><td>2</td></tr>
+            <tr>
+              <td>Apples</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td>Oranges</td>
+              <td>2</td>
+            </tr>
           </tbody>
         </table>
-        <p><small>Small, muted text example.</small></p>
+        <p>
+          <small>Small, muted text example.</small>
+        </p>
         <ul>
           <li>First</li>
           <li>Second</li>
         </ul>
-        <form onSubmit={(e) => e.preventDefault()} style={{ display: "grid", gap: 8, maxWidth: 420 }}>
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          style={{ display: "grid", gap: 8, maxWidth: 420 }}
+        >
           <input placeholder="Your name" />
           <select defaultValue="">
-            <option value="" disabled>Pick one…</option>
+            <option value="" disabled>
+              Pick one…
+            </option>
             <option>Option A</option>
             <option>Option B</option>
           </select>
@@ -104,7 +141,12 @@ function DemoContent({ args }: { args: Record<string, unknown> }) {
         <Button appearance="danger">Danger</Button>
       </div>
       <div>
-        <Pagination totalPages={26} currentPage={page} setPage={setPage} ariaLabel="Demo pagination" />
+        <Pagination
+          totalPages={26}
+          currentPage={page}
+          setPage={setPage}
+          ariaLabel="Demo pagination"
+        />
       </div>
     </div>
   );
