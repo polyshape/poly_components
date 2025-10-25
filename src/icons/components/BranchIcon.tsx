@@ -11,3 +11,7 @@ export function BranchIcon() {
   );
 }
 
+Object.defineProperty(BranchIcon, Symbol.for("poly:icon:tags"), {
+  value: ["code", "development"] as const,
+  enumerable: false,
+});

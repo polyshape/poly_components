@@ -1,4 +1,4 @@
-export function FemaleIcon() {
+﻿export function FemaleIcon() {
   return (
     <>
       <circle cx="12" cy="9" r="4" stroke="currentColor" />
@@ -8,3 +8,7 @@ export function FemaleIcon() {
   );
 }
 
+Object.defineProperty(FemaleIcon, Symbol.for("poly:icon:tags"), {
+  value: ["gender", "woman", "person"] as const,
+  enumerable: false,
+});

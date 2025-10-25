@@ -7,3 +7,7 @@ export function PictureInPictureIcon() {
   );
 }
 
+Object.defineProperty(PictureInPictureIcon, Symbol.for("poly:icon:tags"), {
+  value: ["media", "video", "screen"] as const,
+  enumerable: false,
+});

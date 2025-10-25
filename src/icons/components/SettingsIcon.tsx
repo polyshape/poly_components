@@ -1,7 +1,8 @@
 export function SettingsIcon() {
   return (
     <>
-      <path d="
+      <path
+        d="
         M19.8 13.5
         a8.6 8.6 0 0 0 0-3
         l2.4-1.7
@@ -22,8 +23,14 @@ export function SettingsIcon() {
         a8.6 8.6 0 0 0 2.8-1.6
         l2.4 1.3
         1.7-2.3
-        -2.4-1.7z" />
+        -2.4-1.7z"
+      />
       <circle cx="13" cy="12" r="3" />
     </>
   );
 }
+
+Object.defineProperty(SettingsIcon, Symbol.for("poly:icon:tags"), {
+  value: ["gear", "controls"] as const,
+  enumerable: false,
+});

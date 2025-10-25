@@ -8,8 +8,16 @@ export function LifeBuoyIcon() {
       <path d="M3.2 12h3.5" stroke="currentColor" strokeLinecap="round" />
       <path d="M17.5 12H20.8" stroke="currentColor" strokeLinecap="round" />
       <path d="M6 6l2.3 2.3" stroke="currentColor" strokeLinecap="round" />
-      <path d="M15.7 15.7l2.3 2.3" stroke="currentColor" strokeLinecap="round" />
-      <path d="M18.2 5.8l-2.3 2.3" stroke="currentColor" strokeLinecap="round" />
+      <path
+        d="M15.7 15.7l2.3 2.3"
+        stroke="currentColor"
+        strokeLinecap="round"
+      />
+      <path
+        d="M18.2 5.8l-2.3 2.3"
+        stroke="currentColor"
+        strokeLinecap="round"
+      />
       <path d="M5.8 18.2l2.3-2.3" stroke="currentColor" strokeLinecap="round" />
     </>
   );

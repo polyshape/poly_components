@@ -8,3 +8,8 @@ export function PencilIcon() {
     </>
   );
 }
+
+Object.defineProperty(PencilIcon, Symbol.for("poly:icon:tags"), {
+  value: ["edit", "write"] as const,
+  enumerable: false,
+});

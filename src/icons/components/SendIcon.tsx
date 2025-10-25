@@ -6,3 +6,7 @@ export function SendIcon() {
   );
 }
 
+Object.defineProperty(SendIcon, Symbol.for("poly:icon:tags"), {
+  value: ["message", "email", "paperplane"] as const,
+  enumerable: false,
+});

@@ -6,3 +6,7 @@ export function MinimizeIcon() {
   );
 }
 
+Object.defineProperty(MinimizeIcon, Symbol.for("poly:icon:tags"), {
+  value: ["collapse", "shrink", "reduce", "window"] as const,
+  enumerable: false,
+});

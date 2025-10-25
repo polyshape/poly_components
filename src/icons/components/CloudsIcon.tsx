@@ -34,3 +34,8 @@ export function CloudsIcon() {
     </>
   );
 }
+
+Object.defineProperty(CloudsIcon, Symbol.for("poly:icon:tags"), {
+  value: ["weather"] as const,
+  enumerable: false,
+});

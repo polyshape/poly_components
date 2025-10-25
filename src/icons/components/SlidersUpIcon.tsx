@@ -15,3 +15,7 @@ export function SlidersUpIcon() {
   );
 }
 
+Object.defineProperty(SlidersUpIcon, Symbol.for("poly:icon:tags"), {
+  value: ["settings", "controls"] as const,
+  enumerable: false,
+});

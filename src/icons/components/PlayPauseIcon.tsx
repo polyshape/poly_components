@@ -7,3 +7,7 @@ export function PlayPauseIcon() {
   );
 }
 
+Object.defineProperty(PlayPauseIcon, Symbol.for("poly:icon:tags"), {
+  value: ["video", "media", "audio", "sound"] as const,
+  enumerable: false,
+});

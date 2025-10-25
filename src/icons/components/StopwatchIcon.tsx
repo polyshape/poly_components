@@ -10,3 +10,8 @@ export function StopwatchIcon() {
     </>
   );
 }
+
+Object.defineProperty(StopwatchIcon, Symbol.for("poly:icon:tags"), {
+  value: ["time", "clock", "alarm"] as const,
+  enumerable: false,
+});

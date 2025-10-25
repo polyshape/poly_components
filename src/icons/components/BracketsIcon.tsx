@@ -8,3 +8,8 @@
     </>
   );
 }
+
+Object.defineProperty(BracketsIcon, Symbol.for("poly:icon:tags"), {
+  value: ["fonts", "text", "formatting", "code", "development"] as const,
+  enumerable: false,
+});

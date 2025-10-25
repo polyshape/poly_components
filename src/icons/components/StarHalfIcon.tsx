@@ -27,3 +27,7 @@ export function StarHalfIcon() {
   );
 }
 
+Object.defineProperty(StarHalfIcon, Symbol.for("poly:icon:tags"), {
+  value: ["favorite", "rating"] as const,
+  enumerable: false,
+});

@@ -1,12 +1,33 @@
 export function ListOrderedIcon() {
   return (
     <>
-      <path d="M9 7h11M9 12h11M9 17h11" stroke="currentColor" strokeLinecap="round" strokeWidth={1}/>
+      <path
+        d="M9 7h11M9 12h11M9 17h11"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth={1}
+      />
       {/* 1 */}
-      <path d="M5 6.1v1.8" stroke="currentColor" strokeLinecap="round" strokeWidth={1}/>
-      <path d="M4.6 8h0.8" stroke="currentColor" strokeLinecap="round" strokeWidth={1}/>
+      <path
+        d="M5 6.1v1.8"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth={1}
+      />
+      <path
+        d="M4.6 8h0.8"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth={1}
+      />
       {/* 2 */}
-      <path d="M4.2 10.2C4.8 9.6 5.6 9.6 6 10.2L4 12.2h2" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1}/>
+      <path
+        d="M4.2 10.2C4.8 9.6 5.6 9.6 6 10.2L4 12.2h2"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1}
+      />
       {/* 3 - single continuous path */}
       <path
         d="M4.3 14.2
@@ -23,3 +44,8 @@ export function ListOrderedIcon() {
     </>
   );
 }
+
+Object.defineProperty(ListOrderedIcon, Symbol.for("poly:icon:tags"), {
+  value: ["menu", "options", "numbered"] as const,
+  enumerable: false,
+});

@@ -8,8 +8,16 @@ export function CloudRainIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M8 17.5v2M12 17.5v2M16 17.5v2" stroke="currentColor" strokeLinecap="round" />
+      <path
+        d="M8 17.5v2M12 17.5v2M16 17.5v2"
+        stroke="currentColor"
+        strokeLinecap="round"
+      />
     </>
   );
 }
 
+Object.defineProperty(CloudRainIcon, Symbol.for("poly:icon:tags"), {
+  value: ["weather"] as const,
+  enumerable: false,
+});

@@ -58,4 +58,3 @@ describe("Tabs", () => {
     expect(screen.getByTestId("panel-two").closest('[role="tabpanel"]')).not.toHaveAttribute("hidden");
   });
 });
-

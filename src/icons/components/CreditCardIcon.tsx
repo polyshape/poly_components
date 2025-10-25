@@ -7,3 +7,8 @@ export function CreditCardIcon() {
     </>
   );
 }
+
+Object.defineProperty(CreditCardIcon, Symbol.for("poly:icon:tags"), {
+  value: ["money", "currency", "finance"] as const,
+  enumerable: false,
+});

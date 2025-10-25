@@ -1,4 +1,4 @@
-export function ExpandIcon() {
+﻿export function ExpandIcon() {
   return (
     <>
       <path d="M9 6H5v4" stroke="currentColor" strokeLinecap="round" />
@@ -9,3 +9,7 @@ export function ExpandIcon() {
   );
 }
 
+Object.defineProperty(ExpandIcon, Symbol.for("poly:icon:tags"), {
+  value: ["media"] as const,
+  enumerable: false,
+});

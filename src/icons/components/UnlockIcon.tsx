@@ -6,3 +6,8 @@ export function UnlockIcon() {
     </>
   );
 }
+
+Object.defineProperty(UnlockIcon, Symbol.for("poly:icon:tags"), {
+  value: ["security", "lock"] as const,
+  enumerable: false,
+});

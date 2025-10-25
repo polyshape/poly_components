@@ -6,3 +6,8 @@ export function ToggleOffIcon() {
     </>
   );
 }
+
+Object.defineProperty(ToggleOffIcon, Symbol.for("poly:icon:tags"), {
+  value: ["switch"] as const,
+  enumerable: false,
+});

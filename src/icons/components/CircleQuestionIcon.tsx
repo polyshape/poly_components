@@ -16,11 +16,29 @@ export function CircleQuestionIcon() {
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            <circle cx="12" cy="18" r="0.6" stroke="black" strokeWidth="1.2" fill="none" />
+            <circle
+              cx="12"
+              cy="18"
+              r="0.6"
+              stroke="black"
+              strokeWidth="1.2"
+              fill="none"
+            />
           </g>
         </mask>
       </defs>
-      <circle cx="12" cy="12" r="10" fill="currentColor" mask={`url(#${maskId})`} />
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        fill="currentColor"
+        mask={`url(#${maskId})`}
+      />
     </g>
   );
 }
+
+Object.defineProperty(CircleQuestionIcon, Symbol.for("poly:icon:tags"), {
+  value: ["status", "confirmation", "alert", "help", "question"] as const,
+  enumerable: false,
+});

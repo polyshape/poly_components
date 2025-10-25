@@ -10,4 +10,3 @@ export function wrapIcon(PathComponent: ComponentType): ComponentType<Omit<IconP
   );
   return Wrapped as ComponentType<Omit<IconProps, "name">>;
 }
-

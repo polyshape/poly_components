@@ -14,3 +14,7 @@ export function SquareIcon() {
   );
 }
 
+Object.defineProperty(SquareIcon, Symbol.for("poly:icon:tags"), {
+  value: ["shape", "box", "rectangle"] as const,
+  enumerable: false,
+});

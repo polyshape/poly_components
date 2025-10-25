@@ -8,3 +8,7 @@ export function ThumbsUpIcon() {
   );
 }
 
+Object.defineProperty(ThumbsUpIcon, Symbol.for("poly:icon:tags"), {
+  value: ["like", "vote", "feedback"] as const,
+  enumerable: false,
+});

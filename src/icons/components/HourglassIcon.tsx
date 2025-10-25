@@ -18,3 +18,8 @@ export function HourglassIcon() {
     </>
   );
 }
+
+Object.defineProperty(HourglassIcon, Symbol.for("poly:icon:tags"), {
+  value: ["time", "loading", "wait"] as const,
+  enumerable: false,
+});

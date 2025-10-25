@@ -7,3 +7,7 @@ export function SkipPreviousIcon() {
   );
 }
 
+Object.defineProperty(SkipPreviousIcon, Symbol.for("poly:icon:tags"), {
+  value: ["media", "player", "video", "music", "audio"] as const,
+  enumerable: false,
+});

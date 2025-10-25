@@ -7,3 +7,7 @@ export function InfoIcon() {
   );
 }
 
+Object.defineProperty(InfoIcon, Symbol.for("poly:icon:tags"), {
+  value: ["status", "confirmation", "info"] as const,
+  enumerable: false,
+});

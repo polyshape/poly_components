@@ -7,3 +7,8 @@ export function UploadIcon() {
     </>
   );
 }
+
+Object.defineProperty(UploadIcon, Symbol.for("poly:icon:tags"), {
+  value: ["arrows", "connectivity"] as const,
+  enumerable: false,
+});

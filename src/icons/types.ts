@@ -1,4 +1,4 @@
-import type { IconName } from "./IconRegistry.js";
+﻿import type { IconName } from "./IconRegistry.js";
 import type { SVGProps } from "react";
 
 export type { IconName };

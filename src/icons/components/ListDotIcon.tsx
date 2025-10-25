@@ -1,7 +1,12 @@
 export function ListDotIcon() {
   return (
     <>
-      <path d="M9 7h11M9 12h11M9 17h11" stroke="currentColor" strokeLinecap="round" strokeWidth={1}/>
+      <path
+        d="M9 7h11M9 12h11M9 17h11"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth={1}
+      />
       <g fill="currentColor" stroke="none">
         <circle cx="5" cy="7" r="1" />
         <circle cx="5" cy="12" r="1" />
@@ -11,3 +16,7 @@ export function ListDotIcon() {
   );
 }
 
+Object.defineProperty(ListDotIcon, Symbol.for("poly:icon:tags"), {
+  value: ["menu", "options"] as const,
+  enumerable: false,
+});

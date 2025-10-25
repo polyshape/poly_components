@@ -9,3 +9,7 @@ export function BoldIcon() {
   );
 }
 
+Object.defineProperty(BoldIcon, Symbol.for("poly:icon:tags"), {
+  value: ["fonts", "text", "formatting"] as const,
+  enumerable: false,
+});

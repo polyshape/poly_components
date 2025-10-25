@@ -1,7 +1,14 @@
 export function CalendarIcon() {
   return (
     <>
-      <rect x="4" y="5" width="16" height="15" stroke="currentColor" fill="none" />
+      <rect
+        x="4"
+        y="5"
+        width="16"
+        height="15"
+        stroke="currentColor"
+        fill="none"
+      />
       <path d="M8 3v4M16 3v4" stroke="currentColor" strokeLinecap="round" />
       <path d="M4 9h16" stroke="currentColor" strokeLinecap="round" />
       <g fill="currentColor" stroke="none">
@@ -15,3 +22,8 @@ export function CalendarIcon() {
     </>
   );
 }
+
+Object.defineProperty(CalendarIcon, Symbol.for("poly:icon:tags"), {
+  value: ["date", "schedule"] as const,
+  enumerable: false,
+});

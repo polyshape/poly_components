@@ -9,3 +9,8 @@ export function StarIcon() {
     </>
   );
 }
+
+Object.defineProperty(StarIcon, Symbol.for("poly:icon:tags"), {
+  value: ["favorite", "rating"] as const,
+  enumerable: false,
+});

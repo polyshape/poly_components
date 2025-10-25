@@ -16,4 +16,3 @@ export function ensureSpinKeyframes() {
   document.head.appendChild(style);
   inserted = true;
 }
-

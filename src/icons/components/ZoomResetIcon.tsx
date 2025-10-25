@@ -11,3 +11,7 @@ export function ZoomResetIcon() {
   );
 }
 
+Object.defineProperty(ZoomResetIcon, Symbol.for("poly:icon:tags"), {
+  value: ["filter", "magnify", "search"] as const,
+  enumerable: false,
+});

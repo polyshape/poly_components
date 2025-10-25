@@ -9,3 +9,7 @@ export function AlignCenterIcon() {
   );
 }
 
+Object.defineProperty(AlignCenterIcon, Symbol.for("poly:icon:tags"), {
+  value: ["text", "formatting"] as const,
+  enumerable: false,
+});

@@ -7,3 +7,7 @@ export function ArrowDownFromLineIcon() {
   );
 }
 
+Object.defineProperty(ArrowDownFromLineIcon, Symbol.for("poly:icon:tags"), {
+  value: ["arrows", "navigation"] as const,
+  enumerable: false,
+});

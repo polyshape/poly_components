@@ -10,3 +10,7 @@ export function MicOffIcon() {
   );
 }
 
+Object.defineProperty(MicOffIcon, Symbol.for("poly:icon:tags"), {
+  value: ["mic", "audio", "record"] as const,
+  enumerable: false,
+});

@@ -8,3 +8,7 @@ export function SearchPlusIcon() {
   );
 }
 
+Object.defineProperty(SearchPlusIcon, Symbol.for("poly:icon:tags"), {
+  value: ["filter", "find", "math"] as const,
+  enumerable: false,
+});

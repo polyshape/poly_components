@@ -10,3 +10,7 @@ export function WiredInternetIcon() {
   );
 }
 
+Object.defineProperty(WiredInternetIcon, Symbol.for("poly:icon:tags"), {
+  value: ["network", "connectivity", "internet"] as const,
+  enumerable: false,
+});

@@ -6,3 +6,8 @@ export function LinkIcon() {
     </>
   );
 }
+
+Object.defineProperty(LinkIcon, Symbol.for("poly:icon:tags"), {
+  value: ["connectivity"] as const,
+  enumerable: false,
+});

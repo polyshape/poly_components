@@ -30,3 +30,8 @@ export function RepeatIcon() {
     </>
   );
 }
+
+Object.defineProperty(RepeatIcon, Symbol.for("poly:icon:tags"), {
+  value: ["arrows", "audio", "media", "video"] as const,
+  enumerable: false,
+});

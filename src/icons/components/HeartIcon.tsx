@@ -11,3 +11,8 @@ export function HeartIcon() {
     </>
   );
 }
+
+Object.defineProperty(HeartIcon, Symbol.for("poly:icon:tags"), {
+  value: ["favorite"] as const,
+  enumerable: false,
+});

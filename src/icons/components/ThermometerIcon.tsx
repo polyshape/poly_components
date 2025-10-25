@@ -19,3 +19,8 @@ export function ThermometerIcon() {
     </>
   );
 }
+
+Object.defineProperty(ThermometerIcon, Symbol.for("poly:icon:tags"), {
+  value: ["weather", "temperature", "climate", "heat", "cold"] as const,
+  enumerable: false,
+});

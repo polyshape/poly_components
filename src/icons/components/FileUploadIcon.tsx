@@ -3,8 +3,17 @@ export function FileUploadIcon() {
     <>
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6" />
       <path d="M12 17v-6" stroke="currentColor" strokeLinecap="round" />
-      <path d="M9.5 13.5L12 11l2.5 2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M9.5 13.5L12 11l2.5 2.5"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </>
   );
 }
 
+Object.defineProperty(FileUploadIcon, Symbol.for("poly:icon:tags"), {
+  value: ["connectivity", "document"] as const,
+  enumerable: false,
+});

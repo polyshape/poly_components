@@ -6,3 +6,8 @@ export function SearchIcon() {
     </>
   );
 }
+
+Object.defineProperty(SearchIcon, Symbol.for("poly:icon:tags"), {
+  value: ["filter", "find"] as const,
+  enumerable: false,
+});

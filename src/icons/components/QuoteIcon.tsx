@@ -7,3 +7,7 @@ export function QuoteIcon() {
   );
 }
 
+Object.defineProperty(QuoteIcon, Symbol.for("poly:icon:tags"), {
+  value: ["citation", "speech", "text"] as const,
+  enumerable: false,
+});

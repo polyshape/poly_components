@@ -8,3 +8,7 @@ export function PauseCircleIcon() {
   );
 }
 
+Object.defineProperty(PauseCircleIcon, Symbol.for("poly:icon:tags"), {
+  value: ["stop", "media"] as const,
+  enumerable: false,
+});

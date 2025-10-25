@@ -9,3 +9,7 @@ export function WatchIcon() {
   );
 }
 
+Object.defineProperty(WatchIcon, Symbol.for("poly:icon:tags"), {
+  value: ["time", "clock", "alarm"] as const,
+  enumerable: false,
+});

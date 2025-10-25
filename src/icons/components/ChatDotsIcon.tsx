@@ -7,7 +7,18 @@ export function ChatDotsIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M9 11h.01M12 11h.01M15 11h.01" stroke="currentColor" strokeLinecap="round" strokeWidth={2} strokeLinejoin="round" />
+      <path
+        d="M9 11h.01M12 11h.01M15 11h.01"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth={2}
+        strokeLinejoin="round"
+      />
     </>
   );
 }
+
+Object.defineProperty(ChatDotsIcon, Symbol.for("poly:icon:tags"), {
+  value: ["communication", "messages", "chat", "connectivity"] as const,
+  enumerable: false,
+});

@@ -8,3 +8,7 @@ export function ZoomInIcon() {
   );
 }
 
+Object.defineProperty(ZoomInIcon, Symbol.for("poly:icon:tags"), {
+  value: ["filter", "magnify", "search"] as const,
+  enumerable: false,
+});

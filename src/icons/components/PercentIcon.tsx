@@ -8,3 +8,7 @@ export function PercentIcon() {
   );
 }
 
+Object.defineProperty(PercentIcon, Symbol.for("poly:icon:tags"), {
+  value: ["currency", "math", "symbol"] as const,
+  enumerable: false,
+});

@@ -12,3 +12,7 @@ export function PaperclipIcon() {
   );
 }
 
+Object.defineProperty(PaperclipIcon, Symbol.for("poly:icon:tags"), {
+  value: ["attachment", "file"] as const,
+  enumerable: false,
+});

@@ -6,3 +6,7 @@ export function RecordIcon() {
   );
 }
 
+Object.defineProperty(RecordIcon, Symbol.for("poly:icon:tags"), {
+  value: ["media", "video", "audio"] as const,
+  enumerable: false,
+});

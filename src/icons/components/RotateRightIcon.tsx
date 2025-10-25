@@ -6,3 +6,8 @@ export function RotateRightIcon() {
     </>
   );
 }
+
+Object.defineProperty(RotateRightIcon, Symbol.for("poly:icon:tags"), {
+  value: ["arrows", "sync"] as const,
+  enumerable: false,
+});

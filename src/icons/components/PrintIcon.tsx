@@ -7,3 +7,8 @@ export function PrintIcon() {
     </>
   );
 }
+
+Object.defineProperty(PrintIcon, Symbol.for("poly:icon:tags"), {
+  value: ["document", "paper", "fax"] as const,
+  enumerable: false,
+});

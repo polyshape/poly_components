@@ -7,3 +7,8 @@ export function KeyIcon() {
     </>
   );
 }
+
+Object.defineProperty(KeyIcon, Symbol.for("poly:icon:tags"), {
+  value: ["security", "lock"] as const,
+  enumerable: false,
+});

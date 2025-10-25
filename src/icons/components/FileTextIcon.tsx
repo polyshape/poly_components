@@ -7,3 +7,7 @@ export function FileTextIcon() {
   );
 }
 
+Object.defineProperty(FileTextIcon, Symbol.for("poly:icon:tags"), {
+  value: ["document"] as const,
+  enumerable: false,
+});

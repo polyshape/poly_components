@@ -9,3 +9,7 @@ export function MicIcon() {
   );
 }
 
+Object.defineProperty(MicIcon, Symbol.for("poly:icon:tags"), {
+  value: ["mic", "audio", "record"] as const,
+  enumerable: false,
+});

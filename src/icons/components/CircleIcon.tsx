@@ -5,3 +5,8 @@ export function CircleIcon() {
     </>
   );
 }
+
+Object.defineProperty(CircleIcon, Symbol.for("poly:icon:tags"), {
+  value: ["shape", "geometry"] as const,
+  enumerable: false,
+});

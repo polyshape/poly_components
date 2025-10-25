@@ -8,11 +8,34 @@ export function CircleExclamationIcon() {
       <defs>
         <mask id={maskId}>
           <rect width="24" height="24" fill="white" />
-          <path d="M12 7v6" stroke="black" strokeWidth="2" strokeLinecap="round" />
-          <circle cx="12" cy="17" r="0.6" stroke="black" strokeWidth="1.2" fill="none" />
+          <path
+            d="M12 7v6"
+            stroke="black"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <circle
+            cx="12"
+            cy="17"
+            r="0.6"
+            stroke="black"
+            strokeWidth="1.2"
+            fill="none"
+          />
         </mask>
       </defs>
-      <circle cx="12" cy="12" r="10" fill="currentColor" mask={`url(#${maskId})`} />
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        fill="currentColor"
+        mask={`url(#${maskId})`}
+      />
     </g>
   );
 }
+
+Object.defineProperty(CircleExclamationIcon, Symbol.for("poly:icon:tags"), {
+  value: ["status", "confirmation", "warning", "alert"] as const,
+  enumerable: false,
+});

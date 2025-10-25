@@ -8,8 +8,17 @@ export function CallIncomingIcon() {
         strokeLinejoin="round"
       />
       <path d="M19 5l-4 4" stroke="currentColor" strokeLinecap="round" />
-      <path d="M19 9h-4V5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M19 9h-4V5"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </>
   );
 }
 
+Object.defineProperty(CallIncomingIcon, Symbol.for("poly:icon:tags"), {
+  value: ["phone", "contact"] as const,
+  enumerable: false,
+});

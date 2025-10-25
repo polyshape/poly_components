@@ -5,3 +5,8 @@ export function PlusIcon() {
     </>
   );
 }
+
+Object.defineProperty(PlusIcon, Symbol.for("poly:icon:tags"), {
+  value: ["math", "symbol"] as const,
+  enumerable: false,
+});

@@ -51,6 +51,9 @@ export default [
       // Console usage in TS files
       'no-console': 'warn',
 
+      // Trim excessive empty lines including at beginning/end of files
+      'no-multiple-empty-lines': ['error', { max: 1, maxBOF: 0, maxEOF: 0 }],
+
       // Requested TypeScript rules (non type-aware)
       '@typescript-eslint/no-unused-vars': [
         'warn',

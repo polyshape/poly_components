@@ -7,7 +7,17 @@ export function PhoneOffIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M2 2l20 20" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M2 2l20 20"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </>
   );
 }
+
+Object.defineProperty(PhoneOffIcon, Symbol.for("poly:icon:tags"), {
+  value: ["communication", "call", "contact"] as const,
+  enumerable: false,
+});

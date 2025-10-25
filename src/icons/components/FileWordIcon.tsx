@@ -6,3 +6,8 @@ export function FileWordIcon() {
     </>
   );
 }
+
+Object.defineProperty(FileWordIcon, Symbol.for("poly:icon:tags"), {
+  value: ["microsoft", "document"] as const,
+  enumerable: false,
+});

@@ -8,3 +8,8 @@ export function RefreshIcon() {
     </>
   );
 }
+
+Object.defineProperty(RefreshIcon, Symbol.for("poly:icon:tags"), {
+  value: ["arrows", "sync"] as const,
+  enumerable: false,
+});

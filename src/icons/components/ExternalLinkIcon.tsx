@@ -7,3 +7,8 @@ export function ExternalLinkIcon() {
     </>
   );
 }
+
+Object.defineProperty(ExternalLinkIcon, Symbol.for("poly:icon:tags"), {
+  value: ["connectivity"] as const,
+  enumerable: false,
+});

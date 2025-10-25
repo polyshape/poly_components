@@ -179,7 +179,6 @@ export type ToastStyleOverrides = Partial<{
 
 export type { ToastPosition, ToastTheme, ToastDraggable, ToastIconOverrides } from "./ToastTypes.js";
 
-
 interface ToastComponentProps {
   toast: ToastItem;
   onRemove: (id: string) => void;
@@ -433,7 +432,6 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
   const handlePointerCancel = (event: ReactPointerEvent<HTMLDivElement>) => {
     completeDrag(event.pointerId);
   };
-
 
   useEffect(() => {
     return () => {

@@ -10,3 +10,8 @@ export function PhoneIcon() {
     </>
   );
 }
+
+Object.defineProperty(PhoneIcon, Symbol.for("poly:icon:tags"), {
+  value: ["communication", "call", "contact"] as const,
+  enumerable: false,
+});

@@ -7,3 +7,8 @@ export function LightbulbOffIcon() {
     </>
   );
 }
+
+Object.defineProperty(LightbulbOffIcon, Symbol.for("poly:icon:tags"), {
+  value: ["idea", "inspiration", "bulb"] as const,
+  enumerable: false,
+});

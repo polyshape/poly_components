@@ -10,3 +10,8 @@ export function CircleNotchIcon() {
     </>
   );
 }
+
+Object.defineProperty(CircleNotchIcon, Symbol.for("poly:icon:tags"), {
+  value: ["shape", "loading", "progress"] as const,
+  enumerable: false,
+});

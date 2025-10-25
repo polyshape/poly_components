@@ -1,4 +1,4 @@
-export function HeadingIcon() {
+﻿export function HeadingIcon() {
   return (
     <>
       <path d="M6 5v14" stroke="currentColor" strokeLinecap="round" />
@@ -8,3 +8,7 @@ export function HeadingIcon() {
   );
 }
 
+Object.defineProperty(HeadingIcon, Symbol.for("poly:icon:tags"), {
+  value: ["fonts", "text", "formatting"] as const,
+  enumerable: false,
+});

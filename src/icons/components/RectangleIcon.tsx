@@ -14,3 +14,7 @@ export function RectangleIcon() {
   );
 }
 
+Object.defineProperty(RectangleIcon, Symbol.for("poly:icon:tags"), {
+  value: ["shape", "geometry"] as const,
+  enumerable: false,
+});

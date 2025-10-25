@@ -6,3 +6,8 @@ export function FileExcelIcon() {
     </>
   );
 }
+
+Object.defineProperty(FileExcelIcon, Symbol.for("poly:icon:tags"), {
+  value: ["microsoft", "document"] as const,
+  enumerable: false,
+});

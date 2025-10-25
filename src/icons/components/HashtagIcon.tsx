@@ -9,3 +9,7 @@ export function HashtagIcon() {
   );
 }
 
+Object.defineProperty(HashtagIcon, Symbol.for("poly:icon:tags"), {
+  value: ["social", "media", "label"] as const,
+  enumerable: false,
+});

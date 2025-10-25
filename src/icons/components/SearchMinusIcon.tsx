@@ -8,3 +8,7 @@ export function SearchMinusIcon() {
   );
 }
 
+Object.defineProperty(SearchMinusIcon, Symbol.for("poly:icon:tags"), {
+  value: ["filter", "find"] as const,
+  enumerable: false,
+});

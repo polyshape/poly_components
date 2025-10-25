@@ -8,3 +8,8 @@ export function TrashIcon() {
     </>
   );
 }
+
+Object.defineProperty(TrashIcon, Symbol.for("poly:icon:tags"), {
+  value: ["delete", "can"] as const,
+  enumerable: false,
+});

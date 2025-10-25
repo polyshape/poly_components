@@ -9,3 +9,7 @@
   );
 }
 
+Object.defineProperty(SmileIcon, Symbol.for("poly:icon:tags"), {
+  value: ["emoji", "face", "happy"] as const,
+  enumerable: false,
+});

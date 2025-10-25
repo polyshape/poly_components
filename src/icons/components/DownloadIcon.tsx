@@ -7,3 +7,8 @@ export function DownloadIcon() {
     </>
   );
 }
+
+Object.defineProperty(DownloadIcon, Symbol.for("poly:icon:tags"), {
+  value: ["arrows", "connectivity"] as const,
+  enumerable: false,
+});

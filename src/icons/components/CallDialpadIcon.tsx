@@ -18,3 +18,7 @@ export function CallDialpadIcon() {
   );
 }
 
+Object.defineProperty(CallDialpadIcon, Symbol.for("poly:icon:tags"), {
+  value: ["phone", "contact"] as const,
+  enumerable: false,
+});

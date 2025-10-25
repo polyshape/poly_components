@@ -15,3 +15,7 @@
   );
 }
 
+Object.defineProperty(CalculatorIcon, Symbol.for("poly:icon:tags"), {
+  value: ["math"] as const,
+  enumerable: false,
+});

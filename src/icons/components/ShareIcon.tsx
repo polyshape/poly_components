@@ -7,3 +7,8 @@ export function ShareIcon() {
     </>
   );
 }
+
+Object.defineProperty(ShareIcon, Symbol.for("poly:icon:tags"), {
+  value: ["upload", "send"] as const,
+  enumerable: false,
+});

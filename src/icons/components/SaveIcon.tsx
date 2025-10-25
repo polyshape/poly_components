@@ -7,3 +7,8 @@ export function SaveIcon() {
     </>
   );
 }
+
+Object.defineProperty(SaveIcon, Symbol.for("poly:icon:tags"), {
+  value: ["files", "documents", "floppy"] as const,
+  enumerable: false,
+});

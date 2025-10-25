@@ -1,4 +1,4 @@
-export function CollapseIcon() {
+﻿export function CollapseIcon() {
   return (
     <>
       <path d="M9 9H5V5" stroke="currentColor" strokeLinecap="round" />
@@ -9,3 +9,7 @@ export function CollapseIcon() {
   );
 }
 
+Object.defineProperty(CollapseIcon, Symbol.for("poly:icon:tags"), {
+  value: ["media"] as const,
+  enumerable: false,
+});

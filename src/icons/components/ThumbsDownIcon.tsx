@@ -8,3 +8,7 @@ export function ThumbsDownIcon() {
   );
 }
 
+Object.defineProperty(ThumbsDownIcon, Symbol.for("poly:icon:tags"), {
+  value: ["dislike", "vote", "feedback"] as const,
+  enumerable: false,
+});

@@ -13,3 +13,7 @@ export function BarcodeIcon() {
   );
 }
 
+Object.defineProperty(BarcodeIcon, Symbol.for("poly:icon:tags"), {
+  value: ["scan"] as const,
+  enumerable: false,
+});

@@ -1,4 +1,4 @@
-export function HourglassFullIcon() {
+﻿export function HourglassFullIcon() {
   return (
     <>
       <path d="M6 4.5h12" stroke="currentColor" strokeLinecap="round" />
@@ -15,7 +15,16 @@ export function HourglassFullIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M7.5 5 C8 7.5 11 9.5 12 11 C13 9.5 16 7.5 16.5 5 z" fill="currentColor" opacity="0.7"/>
+      <path
+        d="M7.5 5 C8 7.5 11 9.5 12 11 C13 9.5 16 7.5 16.5 5 z"
+        fill="currentColor"
+        opacity="0.7"
+      />
     </>
   );
 }
+
+Object.defineProperty(HourglassFullIcon, Symbol.for("poly:icon:tags"), {
+  value: ["time", "loading", "wait"] as const,
+  enumerable: false,
+});

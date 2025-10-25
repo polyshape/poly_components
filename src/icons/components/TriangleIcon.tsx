@@ -11,3 +11,7 @@ export function TriangleIcon() {
   );
 }
 
+Object.defineProperty(TriangleIcon, Symbol.for("poly:icon:tags"), {
+  value: ["shape", "geometry"] as const,
+  enumerable: false,
+});

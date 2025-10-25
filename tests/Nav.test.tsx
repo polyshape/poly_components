@@ -145,4 +145,3 @@ describe("Nav component", () => {
     expect(screen.getByText("Item 4").closest("a")).toBeNull();
   });
 });
-

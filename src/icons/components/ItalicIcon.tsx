@@ -8,3 +8,7 @@ export function ItalicIcon() {
   );
 }
 
+Object.defineProperty(ItalicIcon, Symbol.for("poly:icon:tags"), {
+  value: ["fonts", "text", "formatting"] as const,
+  enumerable: false,
+});

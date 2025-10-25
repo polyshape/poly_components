@@ -8,3 +8,7 @@ export function IdCardIcon() {
   );
 }
 
+Object.defineProperty(IdCardIcon, Symbol.for("poly:icon:tags"), {
+  value: ["user", "profile"] as const,
+  enumerable: false,
+});

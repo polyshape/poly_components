@@ -10,3 +10,8 @@ export function ChatIcon() {
     </>
   );
 }
+
+Object.defineProperty(ChatIcon, Symbol.for("poly:icon:tags"), {
+  value: ["communication", "messages", "chat", "connectivity"] as const,
+  enumerable: false,
+});

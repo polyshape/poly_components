@@ -9,3 +9,8 @@ export function CloseIcon() {
     </>
   );
 }
+
+Object.defineProperty(CloseIcon, Symbol.for("poly:icon:tags"), {
+  value: ["status", "error"] as const,
+  enumerable: false,
+});

@@ -1,4 +1,4 @@
-export function FontIcon() {
+﻿export function FontIcon() {
   return (
     <>
       <path d="M6 18h4M14 18h4" />
@@ -8,3 +8,7 @@ export function FontIcon() {
   );
 }
 
+Object.defineProperty(FontIcon, Symbol.for("poly:icon:tags"), {
+  value: ["text", "formatting"] as const,
+  enumerable: false,
+});

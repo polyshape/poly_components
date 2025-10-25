@@ -11,3 +11,7 @@ export function ArrowsSplitUpAndLeftIcon() {
   );
 }
 
+Object.defineProperty(ArrowsSplitUpAndLeftIcon, Symbol.for("poly:icon:tags"), {
+  value: ["navigation"] as const,
+  enumerable: false,
+});

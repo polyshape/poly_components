@@ -8,8 +8,20 @@ export function ShuffleIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M22.5 17 l-2.6 -2.6" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M22.5 17 l-2.6 2.6" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M22.5 17 l-2.6 -2.6"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M22.5 17 l-2.6 2.6"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
       <path
         d="M4 17 H8 Q10 17 11.5 15 L15 9 Q16.5 7 20 7 H22.5"
         stroke="currentColor"
@@ -17,9 +29,25 @@ export function ShuffleIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M22.5 7 l-2.6 -2.6" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M22.5 7 l-2.6 2.6" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M22.5 7 l-2.6 -2.6"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M22.5 7 l-2.6 2.6"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </>
   );
 }
 
+Object.defineProperty(ShuffleIcon, Symbol.for("poly:icon:tags"), {
+  value: ["arrows", "media", "music", "video", "audio"] as const,
+  enumerable: false,
+});

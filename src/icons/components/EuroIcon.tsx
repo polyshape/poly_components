@@ -9,3 +9,8 @@
     </>
   );
 }
+
+Object.defineProperty(EuroIcon, Symbol.for("poly:icon:tags"), {
+  value: ["currency", "money", "symbol"] as const,
+  enumerable: false,
+});

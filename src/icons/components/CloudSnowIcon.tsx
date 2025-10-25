@@ -8,15 +8,41 @@ export function CloudSnowIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <g transform="translate(1 14) scale(0.5)" vectorEffect="non-scaling-stroke">
-        <path d="M12 10v4M10 12h4M10.7 10.7l2.6 2.6M13.3 10.7l-2.6 2.6" stroke="currentColor" strokeLinecap="round" />
+      <g
+        transform="translate(1 14) scale(0.5)"
+        vectorEffect="non-scaling-stroke"
+      >
+        <path
+          d="M12 10v4M10 12h4M10.7 10.7l2.6 2.6M13.3 10.7l-2.6 2.6"
+          stroke="currentColor"
+          strokeLinecap="round"
+        />
       </g>
-      <g transform="translate(6 14) scale(0.5)" vectorEffect="non-scaling-stroke">
-        <path d="M12 10v4M10 12h4M10.7 10.7l2.6 2.6M13.3 10.7l-2.6 2.6" stroke="currentColor" strokeLinecap="round" />
+      <g
+        transform="translate(6 14) scale(0.5)"
+        vectorEffect="non-scaling-stroke"
+      >
+        <path
+          d="M12 10v4M10 12h4M10.7 10.7l2.6 2.6M13.3 10.7l-2.6 2.6"
+          stroke="currentColor"
+          strokeLinecap="round"
+        />
       </g>
-      <g transform="translate(11 14) scale(0.5)" vectorEffect="non-scaling-stroke">
-        <path d="M12 10v4M10 12h4M10.7 10.7l2.6 2.6M13.3 10.7l-2.6 2.6" stroke="currentColor" strokeLinecap="round" />
+      <g
+        transform="translate(11 14) scale(0.5)"
+        vectorEffect="non-scaling-stroke"
+      >
+        <path
+          d="M12 10v4M10 12h4M10.7 10.7l2.6 2.6M13.3 10.7l-2.6 2.6"
+          stroke="currentColor"
+          strokeLinecap="round"
+        />
       </g>
     </>
   );
 }
+
+Object.defineProperty(CloudSnowIcon, Symbol.for("poly:icon:tags"), {
+  value: ["weather"] as const,
+  enumerable: false,
+});

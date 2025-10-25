@@ -10,8 +10,19 @@ export function CircleHalfFullIcon() {
           <rect x="2" y="2" width="10" height="20" />
         </clipPath>
       </defs>
-      <circle cx="12" cy="12" r="10" fill="currentColor" clipPath={`url(#${clipId})`} />
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        fill="currentColor"
+        clipPath={`url(#${clipId})`}
+      />
       <circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" />
     </>
   );
 }
+
+Object.defineProperty(CircleHalfFullIcon, Symbol.for("poly:icon:tags"), {
+  value: ["shape", "geometry"] as const,
+  enumerable: false,
+});

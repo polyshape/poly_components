@@ -7,3 +7,8 @@ export function UnlinkIcon() {
     </>
   );
 }
+
+Object.defineProperty(UnlinkIcon, Symbol.for("poly:icon:tags"), {
+  value: ["connectivity"] as const,
+  enumerable: false,
+});

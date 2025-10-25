@@ -321,7 +321,6 @@ const useStyles = makeStyles({
   },
 });
 
-
 const isPositive = (value: unknown): value is number =>
   typeof value === "number" && Number.isFinite(value) && value > 0;
 
@@ -356,7 +355,6 @@ const getNodeFullWidth = (el: HTMLElement): number => {
   const marginRight = parseFloat(styles.marginRight || "0");
   return rect.width + marginLeft + marginRight;
 };
-
 
 export default function Nav(props: NavProps) {
   const {

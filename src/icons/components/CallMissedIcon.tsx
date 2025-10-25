@@ -7,8 +7,16 @@ export function CallMissedIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M14 6l6 6M20 6l-6 6" stroke="currentColor" strokeLinecap="round" />
+      <path
+        d="M14 6l6 6M20 6l-6 6"
+        stroke="currentColor"
+        strokeLinecap="round"
+      />
     </>
   );
 }
 
+Object.defineProperty(CallMissedIcon, Symbol.for("poly:icon:tags"), {
+  value: ["phone", "contact"] as const,
+  enumerable: false,
+});

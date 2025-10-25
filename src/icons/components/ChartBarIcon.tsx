@@ -10,3 +10,7 @@ export function ChartBarIcon() {
   );
 }
 
+Object.defineProperty(ChartBarIcon, Symbol.for("poly:icon:tags"), {
+  value: ["data", "statistics", "analytics", "business", "finance"] as const,
+  enumerable: false,
+});

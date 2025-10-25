@@ -9,8 +9,23 @@ export function BluetoothIcon() {
         strokeLinejoin="round"
       />
       {/* subtle left extensions of the diagonals */}
-      <path d="M12 12 L9 9" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M12 12 L9 15" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M12 12 L9 9"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 12 L9 15"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </>
   );
 }
+
+Object.defineProperty(BluetoothIcon, Symbol.for("poly:icon:tags"), {
+  value: ["connectivity"] as const,
+  enumerable: false,
+});

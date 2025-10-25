@@ -6,3 +6,8 @@
     </>
   );
 }
+
+Object.defineProperty(EqualsIcon, Symbol.for("poly:icon:tags"), {
+  value: ["math", "symbol"] as const,
+  enumerable: false,
+});

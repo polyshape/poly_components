@@ -23,7 +23,6 @@ export default meta;
 
 type Story = StoryObj<typeof Nav>;
 
-
 const stop: React.MouseEventHandler = (e) => e.preventDefault();
 
 const sample: NavItem[] = [

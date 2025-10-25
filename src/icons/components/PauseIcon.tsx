@@ -6,3 +6,8 @@ export function PauseIcon() {
     </>
   );
 }
+
+Object.defineProperty(PauseIcon, Symbol.for("poly:icon:tags"), {
+  value: ["stop", "media"] as const,
+  enumerable: false,
+});
