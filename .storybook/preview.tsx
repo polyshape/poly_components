@@ -1,8 +1,9 @@
 import type { Preview } from "@storybook/react-vite";
+import { useEffect, type ComponentType } from "react";
 import { addons } from "storybook/preview-api";
+import { Scrollbars } from "../src/scrollbars/Scrollbars.js";
 import { ThemeProvider } from "../src/theme/ThemeProvider.js";
 import { useTheme } from "../src/theme/useTheme.js";
-import { useEffect, type ComponentType } from "react";
 
 function ThemeSync({ target }: { target: "light" | "dark" }) {
   const { setTheme } = useTheme();
@@ -26,7 +27,14 @@ function ThemeBodySync() {
 
 function LiveTokenSync() {
   useEffect(() => {
-    const ch = (addons as { getChannel?: () => { on: (event: string, handler: (payload: unknown) => void) => void; off?: (event: string, handler: (payload: unknown) => void) => void } })?.getChannel?.();
+    const ch = (
+      addons as {
+        getChannel?: () => {
+          on: (event: string, handler: (payload: unknown) => void) => void;
+          off?: (event: string, handler: (payload: unknown) => void) => void;
+        };
+      }
+    )?.getChannel?.();
     if (!ch) return;
     const handler = (payload: unknown) => {
       try {
@@ -78,16 +86,39 @@ const preview: Preview = {
   },
 
   decorators: [
-    (Story: ComponentType, context: { args: Record<string, unknown>; globals: Record<string, unknown> }) => {
+    (Story: ComponentType, context: { args: Record<string, unknown>; globals: Record<string, unknown>; viewMode?: string }) => {
       const baseTokens = ((context.args as { tokens?: Record<string, string> })?.tokens ?? context.globals.tokens) as Record<string, string>;
+      const isDocs = context.viewMode === "docs";
       return (
         <ThemeProvider initialTheme={context.globals.theme as "light" | "dark"} tokens={baseTokens}>
           <ThemeSync target={context.globals.theme as "light" | "dark"} />
           <ThemeBodySync />
           <LiveTokenSync />
-          <main style={{ minHeight: "100vh", background: "var(--pc-bg)", color: "var(--pc-fg)", fontFamily: "Inter, ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial" }}>
-            <Story />
-          </main>
+          {isDocs ? (
+            <main
+              style={{
+                minHeight: "100vh",
+                background: "var(--pc-bg)",
+                color: "var(--pc-fg)",
+                fontFamily: "Inter, ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial",
+              }}
+            >
+              <Story />
+            </main>
+          ) : (
+            <PageScrollWrapper>
+              <main
+                style={{
+                  minHeight: "100vh",
+                  background: "var(--pc-bg)",
+                  color: "var(--pc-fg)",
+                  fontFamily: "Inter, ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial",
+                }}
+              >
+                <Story />
+              </main>
+            </PageScrollWrapper>
+          )}
         </ThemeProvider>
       );
     },
@@ -95,3 +126,23 @@ const preview: Preview = {
 };
 
 export default preview;
+
+function PageScrollWrapper({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    return () => {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+    };
+  }, []);
+  return (
+    <div style={{ height: "100vh", overflow: "hidden" }}>
+      <Scrollbars style={{ height: "100vh" }}>{children}</Scrollbars>
+    </div>
+  );
+}

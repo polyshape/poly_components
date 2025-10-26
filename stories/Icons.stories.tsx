@@ -1,7 +1,7 @@
 ﻿import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ComponentType, CSSProperties } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Button, Icon } from "../src";
+import { Button, Icon, Scrollbars } from "../src";
 import {
   BellIcon,
   CalendarIcon,
@@ -109,15 +109,10 @@ const hashTag = (s: string): number => {
   return h >>> 0;
 };
 
-const colorForTag = (
-  tag: string,
-  isDark: boolean
-): { bg: string; border: string } => {
+const colorForTag = (tag: string, isDark: boolean): { bg: string; border: string } => {
   const idx = hashTag(tag.toLowerCase()) % TAG_PALETTE.length;
   const base = TAG_PALETTE[idx];
-  return isDark
-    ? { bg: hexToRgba(base, 0.22), border: hexToRgba(base, 0.35) }
-    : { bg: hexToRgba(base, 0.35), border: hexToRgba(base, 0.55) };
+  return isDark ? { bg: hexToRgba(base, 0.22), border: hexToRgba(base, 0.35) } : { bg: hexToRgba(base, 0.35), border: hexToRgba(base, 0.55) };
 };
 
 // Simplified theme detection - just check actual background color
@@ -128,9 +123,7 @@ const useTheme = () => {
     const checkTheme = () => {
       // Check the actual background color of the body or main container
       const bodyColor = getComputedStyle(document.body).backgroundColor;
-      const documentColor = getComputedStyle(
-        document.documentElement
-      ).backgroundColor;
+      const documentColor = getComputedStyle(document.documentElement).backgroundColor;
 
       // Convert rgb values to determine if background is dark
       const getRgbValues = (colorStr: string) => {
@@ -183,15 +176,7 @@ const useTheme = () => {
 };
 
 // Custom Icon Grid Control Component
-const IconGridControl = ({
-  value,
-  onChange,
-  options,
-}: {
-  value: IconName;
-  onChange: (value: IconName) => void;
-  options: IconName[];
-}) => {
+const IconGridControl = ({ value, onChange, options }: { value: IconName; onChange: (value: IconName) => void; options: IconName[] }) => {
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const isDark = useTheme();
@@ -210,10 +195,8 @@ const IconGridControl = ({
     if (!hasText && !hasSelected) return true;
     const tags = getTags(name).map(String);
     const nameMatch = hasText && name.toLowerCase().includes(q);
-    const tagTextMatch =
-      hasText && tags.some((t) => t.toLowerCase().includes(q));
-    const selectedMatch =
-      hasSelected && tags.some((t) => selectedTags.includes(t));
+    const tagTextMatch = hasText && tags.some((t) => t.toLowerCase().includes(q));
+    const selectedMatch = hasSelected && tags.some((t) => selectedTags.includes(t));
 
     // Logic:
     // - If tags are selected: (tag1 OR tag2 ... OR tagn) AND (search text in NAME only)
@@ -240,15 +223,15 @@ const IconGridControl = ({
       }}
     >
       {/* Left: tag list (one per row) */}
-      <div
+      <Scrollbars
         style={{
-          width: 180,
-          minWidth: 180,
+          width: 160,
+          minWidth: 160,
+          height: 660,
+          paddingRight: 4,
           display: "flex",
           flexDirection: "column",
           gap: 8,
-          overflowY: "auto",
-          maxHeight: 660,
         }}
       >
         {allTags.map((tag) => {
@@ -258,19 +241,13 @@ const IconGridControl = ({
             <button
               key={tag}
               type="button"
-              onClick={() =>
-                setSelectedTags((prev) =>
-                  prev.includes(tag)
-                    ? prev.filter((t) => t !== tag)
-                    : [...prev, tag]
-                )
-              }
+              onClick={() => setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]))}
               title={selected ? `Remove filter: ${tag}` : `Add filter: ${tag}`}
               style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                width: "80%",
+                width: "90%",
                 padding: "6px 8px",
                 borderRadius: 8,
                 backgroundColor: c.bg,
@@ -288,7 +265,7 @@ const IconGridControl = ({
             </button>
           );
         })}
-      </div>
+      </Scrollbars>
 
       {/* Right: search + grid */}
       <div
@@ -347,9 +324,7 @@ const IconGridControl = ({
                     iconOnly
                     size="small"
                     icon={<Icon name="close" />}
-                    onClick={() =>
-                      setSelectedTags((prev) => prev.filter((t) => t !== tag))
-                    }
+                    onClick={() => setSelectedTags((prev) => prev.filter((t) => t !== tag))}
                     aria-label={`Remove ${tag}`}
                     title={`Remove ${tag}`}
                     style={{ height: 18, width: 18, minWidth: 18 }}
@@ -396,83 +371,68 @@ const IconGridControl = ({
           </div>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))",
-            gap: "8px",
-            maxHeight: "600px",
-            overflowY: "auto",
-            padding: "4px",
-          }}
-        >
-          {filteredIcons.map((iconName) => (
-            <div
-              key={iconName}
-              onClick={() => onChange(iconName)}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                padding: "8px",
-                border: `2px solid ${
-                  value === iconName
-                    ? "var(--color-primary, #007acc)"
-                    : isDark
-                      ? "rgba(255,255,255,0.1)"
-                      : "rgba(0,0,0,0.15)"
-                }`,
-                borderRadius: "4px",
-                cursor: "pointer",
-                backgroundColor:
-                  value === iconName
-                    ? "var(--color-primary-bg, rgba(0, 122, 204, 0.1))"
-                    : isDark
-                      ? "rgba(255, 255, 255, 0.02)"
-                      : "rgba(0, 0, 0, 0.05)",
-                transition: "all 0.2s ease",
-                fontSize: "10px",
-                textAlign: "center",
-                minHeight: "60px",
-                justifyContent: "center",
-              }}
-              onMouseEnter={(e) => {
-                if (value !== iconName) {
-                  e.currentTarget.style.backgroundColor = isDark
-                    ? "rgba(255, 255, 255, 0.08)"
-                    : "rgba(0, 0, 0, 0.1)";
-                  e.currentTarget.style.borderColor = isDark
-                    ? "rgba(255,255,255,0.2)"
-                    : "rgba(0,0,0,0.25)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (value !== iconName) {
-                  e.currentTarget.style.backgroundColor = isDark
-                    ? "rgba(255, 255, 255, 0.02)"
-                    : "rgba(0, 0, 0, 0.05)";
-                  e.currentTarget.style.borderColor = isDark
-                    ? "rgba(255,255,255,0.1)"
-                    : "rgba(0,0,0,0.15)";
-                }
-              }}
-            >
-              <div style={{ fontSize: "20px", marginBottom: "4px" }}>
-                <Icon name={iconName} />
-              </div>
-              <span
+        <Scrollbars style={{ maxHeight: 600, padding: 4 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))",
+              gap: "8px",
+            }}
+          >
+            {filteredIcons.map((iconName) => (
+              <div
+                key={iconName}
+                onClick={() => onChange(iconName)}
                 style={{
-                  wordBreak: "break-word",
-                  lineHeight: "1.2",
-                  maxWidth: "100%",
-                  fontSize: "9px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  padding: "8px",
+                  border: `2px solid ${value === iconName ? "var(--color-primary, #007acc)" : isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.15)"}`,
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  backgroundColor:
+                    value === iconName
+                      ? "var(--color-primary-bg, rgba(0, 122, 204, 0.1))"
+                      : isDark
+                        ? "rgba(255, 255, 255, 0.02)"
+                        : "rgba(0, 0, 0, 0.05)",
+                  transition: "all 0.2s ease",
+                  fontSize: "10px",
+                  textAlign: "center",
+                  minHeight: "60px",
+                  justifyContent: "center",
+                }}
+                onMouseEnter={(e) => {
+                  if (value !== iconName) {
+                    e.currentTarget.style.backgroundColor = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.1)";
+                    e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.25)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (value !== iconName) {
+                    e.currentTarget.style.backgroundColor = isDark ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.05)";
+                    e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.15)";
+                  }
                 }}
               >
-                {iconName}
-              </span>
-            </div>
-          ))}
-        </div>
+                <div style={{ fontSize: "20px", marginBottom: "4px" }}>
+                  <Icon name={iconName} />
+                </div>
+                <span
+                  style={{
+                    wordBreak: "break-word",
+                    lineHeight: "1.2",
+                    maxWidth: "100%",
+                    fontSize: "9px",
+                  }}
+                >
+                  {iconName}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Scrollbars>
         {filteredIcons.length === 0 && (
           <div
             style={{
@@ -523,14 +483,12 @@ const meta: Meta<typeof Icon> = {
     },
     spin: {
       control: { type: "boolean" },
-      description:
-        "Makes the icon spin continuously - great for loading states",
+      description: "Makes the icon spin continuously - great for loading states",
     },
     weight: {
       control: { type: "select" },
       options: ["thin", "light", "normal", "medium", "bold", "heavy"],
-      description:
-        "Icon stroke thickness - try different weights to see the effect",
+      description: "Icon stroke thickness - try different weights to see the effect",
     },
     style: {
       control: { type: "object" },
@@ -582,16 +540,7 @@ export const Icons: Story = {
 };
 
 // Named (wrapped) icons demo
-type NamedIconKey =
-  | "home"
-  | "search"
-  | "star"
-  | "heart"
-  | "camera"
-  | "bell"
-  | "calendar"
-  | "user"
-  | "check";
+type NamedIconKey = "home" | "search" | "star" | "heart" | "camera" | "bell" | "calendar" | "user" | "check";
 
 import type { IconProps } from "../src/icons";
 
@@ -682,14 +631,13 @@ export const MaskedIconsGrid: MaskedStory = {
       description: "CSS styles - e.g., { fontSize: '28px' }",
     },
   },
+  parameters: { layout: "fullscreen" },
   args: {
     weight: "normal",
     style: { fontSize: "28px" },
   },
   render: (args) => {
-    const maskedList: Array<
-      [string, React.ComponentType<Omit<IconProps, "name">>]
-    > = [
+    const maskedList: Array<[string, React.ComponentType<Omit<IconProps, "name">>]> = [
       ["CircleCheckIcon", CircleCheckIcon],
       ["CircleCloseIcon", CircleCloseIcon],
       ["CircleExclamationIcon", CircleExclamationIcon],
@@ -704,9 +652,7 @@ export const MaskedIconsGrid: MaskedStory = {
       <div style={{ display: "grid", gap: "16px" }}>
         {maskedList.map(([label, Cmp]) => (
           <div key={label}>
-            <div style={{ marginBottom: 8, fontSize: 12, opacity: 0.8 }}>
-              {label}
-            </div>
+            <div style={{ marginBottom: 8, fontSize: 12, opacity: 0.8 }}>{label}</div>
             <div
               style={{
                 display: "grid",
@@ -817,9 +763,7 @@ export const DifferentSizesAndWeights: Story = {
 
 const IconBrowserComponent = ({ initialIcon }: { initialIcon: IconName }) => {
   const iconOptions = Object.keys(iconPaths).sort() as IconName[];
-  const [selectedIcon, setSelectedIcon] = useState<IconName>(
-    iconOptions[0] || initialIcon
-  );
+  const [selectedIcon, setSelectedIcon] = useState<IconName>(iconOptions[0] || initialIcon);
   const isDark = useTheme();
   const usageSnippet = `<Icon name="${selectedIcon}" />`;
   const selectedTags = getTags(selectedIcon);
@@ -872,9 +816,7 @@ const IconBrowserComponent = ({ initialIcon }: { initialIcon: IconName }) => {
     >
       {/* Left side - Icon Grid Browser */}
       <div style={{ flex: 1, minWidth: "400px" }}>
-        <h3 style={{ marginTop: 0, marginBottom: "8px" }}>
-          Browse Icons ({iconOptions.length} total)
-        </h3>
+        <h3 style={{ marginTop: 0, marginBottom: "8px" }}>Browse Icons ({iconOptions.length} total)</h3>
         <details style={{ marginBottom: "12px" }}>
           <summary style={{ cursor: "pointer" }}>Examples</summary>
           <div style={{ marginBottom: 20, position: "relative" }}>
@@ -914,11 +856,7 @@ const IconBrowserComponent = ({ initialIcon }: { initialIcon: IconName }) => {
             />
           </div>
         </details>
-        <IconGridControl
-          value={selectedIcon}
-          onChange={setSelectedIcon}
-          options={iconOptions}
-        />
+        <IconGridControl value={selectedIcon} onChange={setSelectedIcon} options={iconOptions} />
       </div>
 
       {/* Right side - Selected Icon Preview */}
@@ -931,9 +869,7 @@ const IconBrowserComponent = ({ initialIcon }: { initialIcon: IconName }) => {
           backgroundColor: "var(--color-surface, transparent)",
         }}
       >
-        <h3 style={{ marginTop: 0, marginBottom: "16px" }}>
-          Selected: {selectedIcon}
-        </h3>
+        <h3 style={{ marginTop: 0, marginBottom: "16px" }}>Selected: {selectedIcon}</h3>
 
         {/* Large preview */}
         <div
@@ -942,9 +878,7 @@ const IconBrowserComponent = ({ initialIcon }: { initialIcon: IconName }) => {
             justifyContent: "center",
             marginBottom: "20px",
             padding: "20px",
-            backgroundColor: isDark
-              ? "rgba(255, 255, 255, 0.02)"
-              : "rgba(0, 0, 0, 0.05)",
+            backgroundColor: isDark ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.05)",
             borderRadius: "4px",
             border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.15)"}`,
           }}
@@ -962,9 +896,7 @@ const IconBrowserComponent = ({ initialIcon }: { initialIcon: IconName }) => {
               gap: "8px",
             }}
           >
-            {(
-              ["thin", "light", "normal", "medium", "bold", "heavy"] as const
-            ).map((weight) => (
+            {(["thin", "light", "normal", "medium", "bold", "heavy"] as const).map((weight) => (
               <div
                 key={weight}
                 style={{
@@ -974,11 +906,7 @@ const IconBrowserComponent = ({ initialIcon }: { initialIcon: IconName }) => {
                   fontSize: "12px",
                 }}
               >
-                <Icon
-                  name={selectedIcon}
-                  weight={weight}
-                  style={{ fontSize: "18px" }}
-                />
+                <Icon name={selectedIcon} weight={weight} style={{ fontSize: "18px" }} />
                 <span>{weight}</span>
               </div>
             ))}
@@ -1004,9 +932,7 @@ const IconBrowserComponent = ({ initialIcon }: { initialIcon: IconName }) => {
                 display: "flex",
                 alignItems: "center",
                 padding: "8px",
-                backgroundColor: isDark
-                  ? "rgba(255, 255, 255, 0.02)"
-                  : "rgba(0, 0, 0, 0.05)",
+                backgroundColor: isDark ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.05)",
                 border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.15)"}`,
                 borderRadius: "4px",
                 fontSize: "11px",
@@ -1039,9 +965,7 @@ const IconBrowserComponent = ({ initialIcon }: { initialIcon: IconName }) => {
                         borderRadius: "8px",
                         backgroundColor: colorForTag(tag, isDark).bg,
                         border: `1px solid ${colorForTag(tag, isDark).border}`,
-                        boxShadow: isDark
-                          ? "0 1px 2px rgba(0,0,0,0.5)"
-                          : "0 1px 2px rgba(0,0,0,0.1)",
+                        boxShadow: isDark ? "0 1px 2px rgba(0,0,0,0.5)" : "0 1px 2px rgba(0,0,0,0.1)",
                         color: "inherit",
                         fontWeight: 600,
                         letterSpacing: "0.02em",

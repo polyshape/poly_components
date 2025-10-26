@@ -2,6 +2,7 @@ export * from "./button/index.js";
 export * from "./icons/index.js";
 export * from "./nav/index.js";
 export * from "./pagination/index.js";
+export * from "./scrollbars/index.js";
 export * from "./spinner/index.js";
 export * from "./tabs/index.js";
 export * from "./theme/index.js";
