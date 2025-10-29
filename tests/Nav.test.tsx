@@ -76,6 +76,38 @@ describe("Nav component", () => {
     expect(screen.getByText("Contact")).toBeInTheDocument();
   });
 
+  it("opens default submenus in side variant via defaultOpenIds", () => {
+    render(<Nav items={items} disableOverflow variant="side" defaultOpenIds={["about"]} />);
+    expect(screen.getByText("Team")).toBeInTheDocument();
+    expect(screen.getByText("Company")).toBeInTheDocument();
+  });
+
+  it("renders customLeft and customRight slots in top variant", () => {
+    render(
+      <Nav
+        items={items}
+        disableOverflow
+        variant="top"
+        customLeft={<span data-testid="left-slot">Left</span>}
+        customRight={<span data-testid="right-slot">Right</span>}
+      />
+    );
+    expect(screen.getByTestId("left-slot")).toBeInTheDocument();
+    expect(screen.getByTestId("right-slot")).toBeInTheDocument();
+  });
+
+  it("switches to small navigation under responsiveBreakpoint", () => {
+    const original = window.innerWidth;
+    // Force a small viewport
+    Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 400 });
+    window.dispatchEvent(new Event("resize"));
+    render(<Nav items={items} responsiveBreakpoint={500} />);
+    // Burger button from NavSmall
+    expect(screen.getByRole("button", { name: /open navigation/i })).toBeInTheDocument();
+    // Restore
+    Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: original });
+  });
+
   it("opens submenu in side variant on click", () => {
     render(<Nav items={items} disableOverflow variant="side" />);
     fireEvent.click(screen.getByText("About"));

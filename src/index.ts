@@ -7,3 +7,5 @@ export * from "./spinner/index.js";
 export * from "./tabs/index.js";
 export * from "./theme/index.js";
 export * from "./toast/index.js";
+export * from "./panel/index.js";
+export * from "./modal/index.js";

@@ -905,3 +905,138 @@ export function App() {
 ```
 
 Tip: For local demos, pass `dismissOnClick` to `LoadingOverlay` to allow clicking the backdrop to hide it.
+
+### Example: Modal
+
+A centered dialog with backdrop, header, content and optional footer.
+
+Recommended usage: mount it when you want it visible and unmount it on close. If you prefer a controlled prop pattern, pass `isOpen`.
+
+```tsx
+import { useState } from "react";
+import { Modal, Panel, Button, Icon } from "@polyutils/components";
+
+export function ModalExample() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <Button appearance="primary" onClick={() => setOpen(true)}>
+        Open Modal
+      </Button>
+
+      {open ? (
+        <Modal
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          title="Modal Title"
+          subtitle="Optional subtitle"
+          footer={(
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+              <Button appearance="subtle" onClick={() => setOpen(false)}>Cancel</Button>
+              <Button appearance="primary" onClick={() => setOpen(false)}>Save</Button>
+            </div>
+          )}
+        >
+          <p>Put any content here. The modal closes on backdrop click or Esc.</p>
+        </Modal>
+      ) : null}
+    </div>
+  );
+}
+```
+
+### Example: Panel (drawer)
+
+Side panel that slides from the right or left.
+
+```tsx
+export function SidePanelExample() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <Button onClick={() => setOpen(true)}>Open Side Panel</Button>
+      {open ? (
+        <Panel
+          isOpen={open}
+          side="right" // or "left"
+          width={380}
+          onClose={() => setOpen(false)}
+          closeOnBackdropClick={false} // ignore outside clicks
+          disableAnimation={false}
+          closeIcon={<Icon name="chevron-right" />}
+        >
+          <div style={{ display: "grid", gap: 12 }}>
+            <label style={{ display: "grid", gap: 6 }}>
+              <span>Option A</span>
+              <input type="text" />
+            </label>
+            <label style={{ display: "grid", gap: 6 }}>
+              <span>Option B</span>
+              <input type="checkbox" /> Enable
+            </label>
+          </div>
+        </Panel>
+      ) : null}
+    </div>
+  );
+}
+```
+
+Appearance overrides (per-part styles):
+
+```tsx
+<Panel
+  onClose={() => setOpen(false)}
+  title="Custom Themed Panel"
+  styles={{
+    panel: { background: "#111", color: "#eee", borderColor: "#333" },
+    header: { background: "rgba(255,255,255,0.04)" },
+    footer: { background: "rgba(255,255,255,0.04)" },
+    backdrop: { background: "rgba(0,0,0,0.35)" },
+    closeButton: { color: "#ddd" },
+  }}
+  closeIcon={<span style={{ fontSize: 18, lineHeight: 1 }}>×</span>}
+>
+  Content…
+</Panel>
+```
+
+Modal props of note:
+
+- `isOpen?: boolean` — when `false`, the modal does not render. Optional; you can also control by conditional rendering.
+- `modeless?: boolean` — no overlay/dimming; page behind stays interactive. In this mode, focus trap is disabled; enable `draggable` to move it.
+- `onClose?: () => void` — called after a confirmed close (after exit animation when enabled).
+- `onAfterOpen?: () => void` — fires after mount + entry animation.
+- `onAfterClose?: () => void` — fires after exit animation (or immediately when animations are disabled).
+- `onRequestClose?: (reason) => boolean | void` — return `false` to block closing; reason is `'backdrop' | 'escape' | 'closeButton'`.
+- `closeOnBackdropClick?: boolean` — when `false`, clicking the backdrop does not close.
+- `closeOnEscape?: boolean` — Esc to close.
+- `disableAnimation?: boolean` — disables pop transitions.
+- `unmountOnClose?: boolean` — when `false`, keeps DOM mounted and hides; useful to preserve internal state.
+- `draggable?: boolean` — enables dragging by header (off by default). Works best with `modeless`.
+- `trapFocus?: boolean` — traps focus while open (default `true`, ignored in `modeless`).
+- `width?: number | string` — max width.
+- `useNativeScrollbars?: boolean` — use the custom `Scrollbars` component in the content. Padding is preserved via an inner wrapper so scrollbar tracks stay at the edges.
+- `title?`, `subtitle?`, `footer?` — header/footer content.
+- `closeIcon?: ReactNode` — custom icon element for the close button.
+- `styles?: ModalStyleOverrides` — per-part overrides: `root`, `backdrop`, `container`, `dialog`, `header`, `title`, `subtitle`, `content`, `footer`, `closeButton`.
+
+Panel (drawer) props of note:
+
+- `isOpen?: boolean` — when `false`, the panel does not render. Optional; you can also control by conditional rendering.
+- `side?: "right" | "left"` — which edge the drawer attaches to.
+- `modeless?: boolean` — no overlay/dimming; page behind stays interactive.
+- `onClose?: () => void` — called after a confirmed close (after exit animation when enabled).
+- `onAfterOpen?: () => void` — fires after mount + entry animation.
+- `onAfterClose?: () => void` — fires after exit animation (or immediately when animations are disabled).
+- `onRequestClose?: (reason) => boolean | void` — return `false` to block closing; reason is `'backdrop' | 'escape' | 'closeButton'`.
+- `closeOnBackdropClick?: boolean` — when `false`, clicking outside does not close.
+- `closeOnEscape?: boolean` — Esc to close.
+- `disableAnimation?: boolean` — disables slide transitions.
+- `unmountOnClose?: boolean` — when `false`, keeps DOM mounted and hides; useful to preserve internal state.
+- `trapFocus?: boolean` — traps focus while open (default `true`).
+- `width?: number | string` — drawer width.
+- `useNativeScrollbars?: boolean` — use the custom `Scrollbars` component in the content. Padding is preserved via an inner wrapper so scrollbar tracks stay at the edges.
+- `title?`, `subtitle?`, `footer?` — header/footer content.
+- `closeIcon?: ReactNode` — custom icon element for the close button.
+- `styles?: PanelStyleOverrides` — per-part overrides: `root`, `backdrop`, `container`, `panel`, `header`, `title`, `subtitle`, `content`, `footer`, `closeButton`.
