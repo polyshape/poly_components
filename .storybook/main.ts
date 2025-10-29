@@ -12,6 +12,15 @@ const config: StorybookConfig = {
   "framework": {
     "name": "@storybook/react-vite",
     "options": {}
+  },
+  "typescript": {
+    "reactDocgen": "react-docgen-typescript",
+    "reactDocgenTypescriptOptions": {
+      "tsconfigPath": "../tsconfig.json",
+      "shouldExtractLiteralValuesFromEnum": true,
+      "shouldRemoveUndefinedFromOptional": true,
+      "propFilter": (prop: { parent?: { fileName?: string } }) => !/node_modules/.test(prop.parent?.fileName ?? "")
+    }
   }
 };
 export default config;

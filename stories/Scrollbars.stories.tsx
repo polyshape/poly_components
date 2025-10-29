@@ -4,17 +4,18 @@ import { Scrollbars, ThemeProvider, ThemeToggle } from "../src";
 const meta = {
   title: "Components/Scrollbars",
   component: Scrollbars,
+  tags: ["autodocs"],
   parameters: {
     layout: "padded",
   },
   args: {
     scrollbarWidth: "thin",
+    thumbColor: undefined,
   },
   argTypes: {
     className: {
       control: false,
-      description: "Optional CSS class name (not editable)",
-      table: { disable: true },
+      description: "Optional CSS class name",
     },
     style: {
       control: "object",
@@ -23,10 +24,12 @@ const meta = {
     scrollbarWidth: {
       control: "select",
       options: ["thin", "auto", "none"],
+      table: {
+        type: { summary: "\"thin\" | \"auto\" | \"none\"" },
+      },
     },
     thumbColor: {
       control: "color",
-      description: "Scrollbar thumb color (overrides theme)",
     },
   },
 } satisfies Meta<typeof Scrollbars>;
@@ -56,7 +59,7 @@ export const Basic: Story = {
     style: {
       height: 240,
       width: 360,
-      border: "1px solid var(--pc-border)",
+      border: "1px solid",
       borderRadius: 4,
       padding: 8,
     },

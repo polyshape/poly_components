@@ -14,8 +14,14 @@ const meta: Meta<Record<string, unknown>> = {
   title: "Components/Theme",
   component: ThemeToggle,
   tags: ["autodocs"],
+  args: {
+    appearance: "outline",
+    shape: "rounded",
+    size: "medium",
+    pressEffect: undefined,
+    weight: undefined
+  },
   argTypes: {
-    tokens: { control: "object" },
     appearance: {
       control: "select",
       options: [
@@ -35,13 +41,18 @@ const meta: Meta<Record<string, unknown>> = {
       control: "select",
       options: ["rounded", "square", "circular"],
     },
+    weight: {
+      control: "select",
+      options: ["thin", "light", "normal", "medium", "bold", "heavy"],
+    },
+    className: { control: false },
   },
 };
 export default meta;
 
 type Story = StoryObj<typeof ThemeToggle>;
 
-export const Playground: Story = {
+export const Basic: Story = {
   args: {
     appearance: "outline",
     shape: "rounded",

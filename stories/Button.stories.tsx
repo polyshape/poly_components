@@ -1,18 +1,34 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FaCheck } from "react-icons/fa";
-import { Button } from "../src";
+import { Button, CheckIcon } from "../src";
+
+const DEFAULT_STYLES = {
+  root: {},
+  content: {},
+  icon: {},
+  spinner: {},
+  dropdown: {},
+  dropdownArrow: {},
+} as const;
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
   component: Button,
   tags: ["autodocs"],
   args: {
-    pressEffect: true,
-  },
-  parameters: {
-    controls: {
-      sort: "alpha",
-    },
+    appearance: "secondary",
+    size: "large",
+    shape: "rounded",
+    children: undefined,
+    pressEffect: undefined,
+    loading: undefined,
+    iconOnly: undefined,
+    selected: undefined,
+    hideChevron: undefined,
+    menuTrigger: undefined,
+    type: undefined,
+    styles: DEFAULT_STYLES,
+    menuItems: undefined,
   },
   argTypes: {
     appearance: {
@@ -29,37 +45,33 @@ const meta: Meta<typeof Button> = {
     },
     icon: { control: false },
     iconAfter: { control: false },
-    iconOnly: { control: "boolean" },
+    iconOnly: { control: "boolean", },
+    iconClassName: { control: false},
+    spinnerClassName: { control: false},
+    className: { control: false},
+    contentClassName: { control: false},
     loading: { control: "boolean" },
-    disabled: { control: "boolean" },
     pressEffect: { control: "boolean" },
     children: { control: "text" },
+    styles: { control: "object", description: "Per-part style overrides" },
   },
 };
 export default meta;
 
 type Story = StoryObj<typeof Button>;
 
-export const Playground: Story = {
+export const Basic: Story = {
   args: {
-    children: "Playground Button",
-    appearance: "secondary",
-    size: "large",
-    shape: "rounded",
-    loading: false,
-    disabled: false,
-    iconOnly: false,
-    pressEffect: true,
+    children: "Press me!",
   },
-  render: (args) => <Button {...args} />,
+  render: (args) => <Button {...args} onClick={() => alert("Button Pressed!")} />,
 };
 
-// --- Example Variations ---
 export const WithIcons: Story = {
   args: {
     children: "Save",
     appearance: "primary",
-    icon: <FaCheck />,
+    icon: <CheckIcon weight={"bold"} />,
   },
 };
 
@@ -68,13 +80,13 @@ export const Loading: Story = {
     children: "Processing…",
     appearance: "primary",
     loading: true,
-    disabled: true,
   },
 };
 
-// --- Showcase: All Appearances ---
 export const AppearanceShowcase: Story = {
-  args: { pressEffect: true },
+  parameters: {
+    controls: { exclude: ["appearance", "children"] },
+  },
   render: (args) => (
     <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
       <Button {...args} appearance="primary">Primary</Button>
@@ -87,26 +99,28 @@ export const AppearanceShowcase: Story = {
   ),
 };
 
-// --- Showcase: All Sizes ---
 export const SizeShowcase: Story = {
-  args: { pressEffect: true },
+  parameters: {
+    controls: { exclude: ["children"] },
+  },
   render: (args) => (
     <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-      <Button {...args} size="small" appearance="primary">Small</Button>
-      <Button {...args} size="medium" appearance="primary">Medium</Button>
-      <Button {...args} size="large" appearance="primary">Large</Button>
+      <Button {...args} size="small">Small</Button>
+      <Button {...args} size="medium">Medium</Button>
+      <Button {...args} size="large">Large</Button>
     </div>
   ),
 };
 
-// --- Showcase: All Shapes ---
 export const ShapeShowcase: Story = {
-  args: { pressEffect: true },
+  parameters: {
+    controls: { exclude: ["children", "shape"] },
+  },
   render: (args) => (
     <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-      <Button {...args} shape="rounded" appearance="secondary">Rounded</Button>
-      <Button {...args} shape="square" appearance="secondary">Square</Button>
-      <Button {...args} shape="circular" appearance="secondary" icon={<FaCheck />} iconOnly />
+      <Button {...args} shape="rounded">Rounded</Button>
+      <Button {...args} shape="square">Square</Button>
+      <Button {...args} shape="circular" icon={<FaCheck />} iconOnly />
     </div>
   ),
 };

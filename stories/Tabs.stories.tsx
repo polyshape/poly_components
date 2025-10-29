@@ -14,14 +14,23 @@ const meta: Meta<TabsStoryProps> = {
   title: "Components/Tabs",
   component: Tabs,
   tags: ["autodocs"],
+  args: {
+    tabs: undefined,
+    defaultActive: undefined,
+    active: undefined,
+    ariaLabel: undefined,
+    onChangeBehavior: "none",
+  },
   argTypes: {
     tabs: { control: "object" },
     defaultActive: { control: "text" },
     active: { control: "text" },
-    onChange: { table: { disable: true } },
+    onChange: { control: false },
+    className: { control: false },
     onChangeBehavior: {
       control: { type: "inline-radio" },
       options: Object.keys(ON_CHANGE_OPTIONS) as OnChangeOptionKey[],
+      description: "Choose an action to perform when the active tab changes (for demo purposes).",
     },
   },
 };
@@ -41,25 +50,11 @@ const renderTabs = ({ onChangeBehavior, ...rest }: TabsStoryProps) => {
   return <Tabs {...rest} onChange={handler} />;
 };
 
-export const Playground: Story = {
+export const Basic: Story = {
   args: {
     tabs: mainTabs,
     defaultActive: "details",
     ariaLabel: "Main sections",
-    onChangeBehavior: "none",
-  },
-  render: renderTabs,
-};
-
-export const TwoTabs: Story = {
-  args: {
-    tabs: [
-      { key: "a", label: "First", content: <div>First panel</div> },
-      { key: "b", label: "Second", content: <div>Second panel</div> },
-    ],
-    defaultActive: "a",
-    ariaLabel: "Example",
-    onChangeBehavior: "console",
   },
   render: renderTabs,
 };

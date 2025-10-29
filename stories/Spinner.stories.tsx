@@ -5,10 +5,17 @@ const meta: Meta<typeof Spinner> = {
   title: "Components/Spinner",
   component: Spinner,
   tags: ["autodocs"],
+  args: {
+    size: undefined,
+    speed: undefined,
+    color: undefined,
+    style: undefined,
+  },
   argTypes: {
     size: { control: { type: "number", min: 4, max: 40, step: 1 } },
     speed: { control: { type: "number", min: 0.3, max: 3, step: 0.1 } },
     color: { control: "color" },
+    className: { control: false },
   },
 };
 
@@ -16,7 +23,7 @@ export default meta;
 
 type Story = StoryObj<typeof Spinner>;
 
-export const Playground: Story = {
+export const Basic: Story = {
   args: {
     size: 14,
     speed: 1,
@@ -36,7 +43,7 @@ function OverlayDemoInner(overlayProps: Parameters<typeof LoadingOverlay>[0]) {
       <div style={{ display: "flex", gap: 8 }}>
         <Button appearance='primary' onClick={() => setLoadingState("loading")} type="button">Show overlay</Button>
       </div>
-      <div>State: <strong>{String(state)}</strong></div>
+      <div>State: <strong>{state != null ? String(state) : "-"}</strong></div>
       <LoadingOverlay dismissOnClick {...overlayProps} />
     </div>
   );

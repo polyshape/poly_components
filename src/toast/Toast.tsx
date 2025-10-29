@@ -605,7 +605,13 @@ function ToastComponent({ toast, onRemove, styles, icons, closeIcon, showLoading
 }
 
 export interface ToastProps {
-  styles?: ToastStyleOverrides;
+  styles?: {
+    root: CSSProperties;
+    toast: CSSProperties;
+    title: CSSProperties;
+    message: CSSProperties;
+    closeButton: CSSProperties;
+  };
   icons?: ToastIconOverrides;
   closeIcon?: ReactNode | null;
   showLoadingBar?: boolean;

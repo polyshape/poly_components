@@ -1,21 +1,63 @@
 import NavSmall from "../src/nav/NavSmall";
 import { MemoryRouter, NavLink } from "react-router-dom";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, Nav, type NavItem, ThemeToggle } from "../src";
+import { Button, EnvelopeIcon, Nav, type NavItem} from "../src";
 import React from "react";
+
+const DEFAULT_STYLES = {
+  root: {},
+  bar: {},
+  barSmall: {},
+  customLeftSlot: {},
+  customRightSlot: {},
+  itemsWrapper: {},
+  menu: {},
+  item: {},
+  link: {},
+  subMenu: {},
+  subLink: {},
+  overlay: {},
+  burgerButton: {},
+  closeButton: {},
+  moreButton: {},
+  moreWrapper: {},
+  chevron: {},
+  chevronOpen: {},
+  chevronSide: {},
+  chevronIcon: {},
+  activeItem: {},
+  activeLink: {},
+  activeSubLink: {},
+} as const;
 
 const meta: Meta<typeof Nav> = {
   title: "Components/Nav",
   component: Nav,
   tags: ["autodocs"],
+  args: {
+    items: undefined,
+    variant: "top",
+    defaultOpenIds: undefined,
+    showBorder: undefined,
+    linkProp: undefined,
+    responsiveBreakpoint: undefined,
+    showActiveUnderline: undefined,
+    disableOverflow: undefined,
+    overflowAvailableWidth: undefined,
+    styles: DEFAULT_STYLES,
+  },
   argTypes: {
     variant: { control: "radio", options: ["top", "side"] },
-    as: { table: { disable: true } },
+    as: { control: false },
     linkProp: {
       control: { type: "text" },
       table: { disable: false },
       description: 'Prop name for navigation (e.g., "href", "to")',
     },
+    overflowMeasure: { table: { disable: true } },
+    customLeft: { control: false },
+    customRight: { control: false },
+    className: { control: false },
   },
 };
 
@@ -26,7 +68,7 @@ type Story = StoryObj<typeof Nav>;
 const stop: React.MouseEventHandler = (e) => e.preventDefault();
 
 const sample: NavItem[] = [
-  { id: "home", label: "Home", href: "/home", end: true },
+  { id: "home", label: "Home", to: "/home", end: true },
   {
     id: "products",
     label: "Products",
@@ -132,13 +174,8 @@ const sampleNoRouting: NavItem[] = [
 ];
 
 export const Top: Story = {
-  args: { items: sampleNoRouting, variant: "top" },
-  render: (args) => <Nav responsiveBreakpoint={500} {...args} />,
-};
-
-export const TopNoPadding: Story = {
   args: {
-    items: sampleNoRouting, variant: "top"
+    items: sampleNoRouting
   },
   parameters: { layout: "fullscreen" },
   render: (args) => <Nav responsiveBreakpoint={600} {...args} />,
@@ -146,6 +183,7 @@ export const TopNoPadding: Story = {
 
 export const Side: Story = {
   args: { items: sampleNoRouting, variant: "side", defaultOpenIds: ["partners", "company"] },
+  parameters: { layout: "fullscreen" },
   render: (args) => {
     const isSide = args.variant === "side";
     const gridStyle = isSide
@@ -161,7 +199,7 @@ export const Side: Story = {
 };
 
 export const WithNavLink: Story = {
-  args: { items: sample, variant: "top", as: NavLink },
+  args: { items: sample, as: NavLink, linkProp: "to" },
   render: (args) => (
     <MemoryRouter initialEntries={["/home"]}>
       <Nav {...args} />
@@ -175,7 +213,6 @@ export const PlainTextItem: Story = {
       { id: "plain", label: "Plain Text" },
       { id: "link", label: "Link", href: "/link", onClick: stop },
     ],
-    variant: "top",
   },
   render: (args) => <Nav {...args} />,
 };
@@ -211,7 +248,24 @@ export const MobileOverlayNoContainer: Story = {
 };
 
 export const CustomLeftItemsLayout: Story = {
-  render: () => {
+  args: {
+    responsiveBreakpoint: 700,
+    as: NavLink,
+    items: sample,
+    showBorder: false,
+    styles: {
+      menu: { gap: "1.7rem" },
+      subMenu: { minWidth: "200px" },
+      bar: { paddingTop: "8px", paddingRight: "0px", paddingBottom: "10px", justifyContent: "center" },
+      link: { fontSize: "1.2rem", fontWeight: 600 },
+      subLink: { fontWeight: 700, padding: ".7rem .9rem" },
+      itemsWrapper: { paddingBottom: 4 },
+    },
+  },
+  parameters: {
+    controls: { exclude: ["items", "variant", "defaultOpenIds", "className", "linkProp", "customLeft", "customRight",] },
+  },
+  render: (args) => {
     return (
       <MemoryRouter initialEntries={["/home"]}>
         <style>{`
@@ -231,18 +285,7 @@ export const CustomLeftItemsLayout: Story = {
           `}
         </style>
         <Nav
-          as={NavLink}
-          items={sample}
-          responsiveBreakpoint={700}
-          showBorder={false}
-          styles={{
-            menu: { gap: "1.7rem" },
-            subMenu: { backgroundColor: "var(--pc-nav-bg)", minWidth: "200px" },
-            bar: { paddingTop: "8px", paddingRight: "0px", paddingBottom: "10px", justifyContent: "center" },
-            link: { color: "var(--pc-fg)", fontSize: "1.2rem", fontWeight: 600 },
-            subLink: { fontWeight: 700, padding: ".7rem .9rem" },
-            itemsWrapper: { paddingBottom: 4 },
-          }}
+          {...args}
           customLeft={
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <NavLink className="brand" to="/home">
@@ -251,7 +294,7 @@ export const CustomLeftItemsLayout: Story = {
                   <img src="/logo.png" alt="Brand" className="brand__logo" />
                 </picture>
               </NavLink>
-              <ThemeToggle className="theme-toggle" />
+              <Button className="theme-toggle" icon={<EnvelopeIcon weight={"bold"} style={{ fontSize: "20px"}}/>}/>
             </div>
           }
         />
@@ -261,7 +304,24 @@ export const CustomLeftItemsLayout: Story = {
 }
 
 export const CustomItemsLayout: Story = {
-  render: (_args) => {
+  args: {
+    responsiveBreakpoint: 700,
+    as: NavLink,
+    items: sample,
+    showBorder: false,
+    styles: {
+      menu: { gap: "1.7rem" },
+      subMenu: { minWidth: "200px" },
+      bar: { paddingTop: "8px", paddingRight: "0px", paddingBottom: "10px", justifyContent: "center" },
+      link: { fontSize: "1.2rem", fontWeight: 600 },
+      subLink: { fontWeight: 700, padding: ".7rem .9rem" },
+      itemsWrapper: { paddingBottom: 4 },
+    },
+  },
+  parameters: {
+    controls: { exclude: ["items", "variant", "defaultOpenIds", "className", "linkProp", "customLeft", "customRight",] },
+  },
+  render: (args) => {
     return (
       <MemoryRouter initialEntries={["/home"]}>
         <style>{`
@@ -272,18 +332,7 @@ export const CustomItemsLayout: Story = {
           `}
         </style>
         <Nav
-          as={NavLink}
-          items={sample}
-          responsiveBreakpoint={700}
-          showBorder={false}
-          styles={{
-            menu: { gap: "1.7rem" },
-            subMenu: { backgroundColor: "var(--pc-nav-bg)", minWidth: "200px" },
-            bar: { paddingTop: "8px", paddingRight: "0px", paddingBottom: "10px", justifyContent: "center" },
-            link: { color: "var(--pc-fg)", fontSize: "1.2rem", fontWeight: 600 },
-            subLink: { fontWeight: 700, padding: ".7rem .9rem" },
-            itemsWrapper: { paddingBottom: 4 },
-          }}
+          {...args}
           customLeft={
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <NavLink className="brand" to="/home">

@@ -32,6 +32,10 @@ const meta: Meta<typeof Modal> = {
     modeless: undefined,
     isOpen: undefined,
     draggable: undefined,
+    closable: undefined,
+    closeOnEscape: undefined,
+    role: undefined,
+    ariaLabel: undefined,
     styles: DEFAULT_STYLES,
   },
   argTypes: {
@@ -43,8 +47,11 @@ const meta: Meta<typeof Modal> = {
     unmountOnClose: { control: "boolean" },
     modeless: { control: "boolean" },
     useNativeScrollbars: { control: "boolean" },
-    isOpen: { control: "boolean", description: "Controls visibility when provided" },
+    isOpen: { control: "boolean" },
     styles: { control: "object" },
+    footer: { control: false},
+    closeIcon: { control: false},
+    className: { control: false},
   },
 };
 

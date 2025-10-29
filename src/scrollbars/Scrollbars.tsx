@@ -5,17 +5,17 @@ type ScrollbarsProps = PropsWithChildren<{
   className?: string;
   style?: CSSProperties;
   thumbColor?: string;
-  scrollbarWidth?: "thin" | "auto" | "none" | string;
+  scrollbarWidth?: "thin" | "auto" | "none";
 }>;
 
 interface CSSVars extends CSSProperties {
   "--pc-scrollbar-thumb"?: string;
-  "--pc-scrollbar-width"?: "thin" | "auto" | "none" | string;
+  "--pc-scrollbar-width"?: "thin" | "auto" | "none";
 }
 
 type EnhancedStyle = CSSProperties & {
   scrollbarThumb?: string;
-  scrollbarWidth?: "thin" | "auto" | "none" | string;
+  scrollbarWidth?: "thin" | "auto" | "none";
 };
 
 const useScrollbarStaticStyles = makeStaticStyles({

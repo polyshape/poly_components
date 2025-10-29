@@ -474,6 +474,8 @@ const meta: Meta<typeof Icon> = {
   },
   args: {
     name: "home",
+    spin: undefined,
+    weight: undefined,
   },
   argTypes: {
     name: {
@@ -489,10 +491,20 @@ const meta: Meta<typeof Icon> = {
       control: { type: "select" },
       options: ["thin", "light", "normal", "medium", "bold", "heavy"],
       description: "Icon stroke thickness - try different weights to see the effect",
+      table: {
+        type: {
+          summary: "'thin' | 'light' | 'normal' | 'medium' | 'bold' | 'heavy' | number",
+        },
+      },
     },
     style: {
       control: { type: "object" },
       description: "CSS styles - try {fontSize: '32px', color: 'red'}",
+      table: {
+        type: {
+          summary: "CSSProperties",
+        },
+      },
     },
   },
 };
@@ -613,7 +625,6 @@ function App() {
   return <HomeIcon weight="bold" style={{ fontSize: 24 }} />;
 }`;
 
-// Visual regression check for masked/clipPath icons: render many duplicates
 type MaskedStory = StoryObj<{
   weight?: IconProps["weight"];
   style?: CSSProperties;
@@ -631,7 +642,12 @@ export const MaskedIconsGrid: MaskedStory = {
       description: "CSS styles - e.g., { fontSize: '28px' }",
     },
   },
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "fullscreen",
+    controls: {
+      exclude: ["name", "spin"],
+    },
+  },
   args: {
     weight: "normal",
     style: { fontSize: "28px" },

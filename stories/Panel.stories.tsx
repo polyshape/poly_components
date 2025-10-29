@@ -32,6 +32,10 @@ const meta: Meta<typeof Panel> = {
     trapFocus: undefined,
     modeless: undefined,
     isOpen: undefined,
+    closable: undefined,
+    closeOnEscape: undefined,
+    role: undefined,
+    ariaLabel: undefined,
     styles: DEFAULT_STYLES,
   },
   argTypes: {
@@ -45,7 +49,9 @@ const meta: Meta<typeof Panel> = {
     useNativeScrollbars: { control: "boolean" },
     isOpen: { control: "boolean", description: "Controls visibility when provided" },
     styles: { control: "object", description: "Per-part style overrides" },
-    footer: { control: { disable: true } },
+    footer: { control: false },
+    closeIcon: { control: false},
+    className: { control: false},
   },
 };
 

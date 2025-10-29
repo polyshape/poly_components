@@ -6,7 +6,6 @@ import type { ToastProps } from "../src/toast";
 import Button from "../src/button/Button";
 import { Icon } from "../src";
 
-// Define the args interface for toast options
 interface ToastStoryArgs extends ToastProps {
   type: "success" | "error" | "warning" | "info";
   message: ReactNode;
@@ -20,7 +19,6 @@ const meta: Meta<ToastStoryArgs> = {
   component: Toast,
   parameters: {
     layout: "centered",
-    controls: { expanded: true },
     docs: {
       description: {
         component: `
@@ -69,7 +67,6 @@ toast.success('Success!', {
         `,
       },
     },
-    // ...existing code...
     showLoadingBar: {
       control: { type: "boolean" },
       description: "Show the loading/progress bar at the bottom of the toast",
