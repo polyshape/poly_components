@@ -45,11 +45,11 @@ const meta: Meta<typeof Button> = {
     },
     icon: { control: false },
     iconAfter: { control: false },
-    iconOnly: { control: "boolean", },
-    iconClassName: { control: false},
-    spinnerClassName: { control: false},
-    className: { control: false},
-    contentClassName: { control: false},
+    iconOnly: { control: "boolean" },
+    iconClassName: { control: false },
+    spinnerClassName: { control: false },
+    className: { control: false },
+    contentClassName: { control: false },
     loading: { control: "boolean" },
     pressEffect: { control: "boolean" },
     children: { control: "text" },
@@ -89,12 +89,24 @@ export const AppearanceShowcase: Story = {
   },
   render: (args) => (
     <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
-      <Button {...args} appearance="primary">Primary</Button>
-      <Button {...args} appearance="secondary">Secondary</Button>
-      <Button {...args} appearance="outline">Outline</Button>
-      <Button {...args} appearance="subtle">Subtle</Button>
-      <Button {...args} appearance="transparent">Transparent</Button>
-      <Button {...args} appearance="danger">Danger</Button>
+      <Button {...args} appearance="primary">
+        Primary
+      </Button>
+      <Button {...args} appearance="secondary">
+        Secondary
+      </Button>
+      <Button {...args} appearance="outline">
+        Outline
+      </Button>
+      <Button {...args} appearance="subtle">
+        Subtle
+      </Button>
+      <Button {...args} appearance="transparent">
+        Transparent
+      </Button>
+      <Button {...args} appearance="danger">
+        Danger
+      </Button>
     </div>
   ),
 };
@@ -105,9 +117,15 @@ export const SizeShowcase: Story = {
   },
   render: (args) => (
     <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-      <Button {...args} size="small">Small</Button>
-      <Button {...args} size="medium">Medium</Button>
-      <Button {...args} size="large">Large</Button>
+      <Button {...args} size="small">
+        Small
+      </Button>
+      <Button {...args} size="medium">
+        Medium
+      </Button>
+      <Button {...args} size="large">
+        Large
+      </Button>
     </div>
   ),
 };
@@ -118,8 +136,12 @@ export const ShapeShowcase: Story = {
   },
   render: (args) => (
     <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-      <Button {...args} shape="rounded">Rounded</Button>
-      <Button {...args} shape="square">Square</Button>
+      <Button {...args} shape="rounded">
+        Rounded
+      </Button>
+      <Button {...args} shape="square">
+        Square
+      </Button>
       <Button {...args} shape="circular" icon={<FaCheck />} iconOnly />
     </div>
   ),
@@ -131,9 +153,13 @@ export const WithMenuDropdown: Story = {
     children: "Actions",
     appearance: "primary",
     menuItems: [
-      <a href="#docs" onClick={(e) => e.preventDefault()}>Anchor Item</a>,
+      <a href="#docs" onClick={(e) => e.preventDefault()}>
+        Anchor Item
+      </a>,
       <span>Span Item</span>,
-      <Button appearance="subtle" size="small">Button Item</Button>,
+      <Button appearance="subtle" size="small">
+        Button Item
+      </Button>,
     ],
     // default trigger is hover
   } as Parameters<typeof Button>[0],
@@ -151,9 +177,13 @@ export const WithMenuDropdownClick: Story = {
     appearance: "secondary",
     menuTrigger: "click",
     menuItems: [
-      <a href="#alpha" onClick={(e) => e.preventDefault()}>Anchor Item</a>,
+      <a href="#alpha" onClick={(e) => e.preventDefault()}>
+        Anchor Item
+      </a>,
       <span>Span Item</span>,
-      <Button appearance="subtle" size="small">Button Item</Button>,
+      <Button appearance="subtle" size="small">
+        Button Item
+      </Button>,
     ],
   } as Parameters<typeof Button>[0],
   parameters: { layout: "fullscreen" },
