@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Scrollbars, ThemeProvider, ThemeToggle } from "../src";
 
-const meta = {
+const meta: Meta<typeof Scrollbars> = {
   title: "Components/Scrollbars",
   component: Scrollbars,
   tags: ["autodocs"],
@@ -13,10 +13,7 @@ const meta = {
     thumbColor: undefined,
   },
   argTypes: {
-    className: {
-      control: false,
-      description: "Optional CSS class name",
-    },
+    className: { control: false },
     style: {
       control: "object",
       description: "Inline styles; supports scrollbarThumb (color)",
@@ -25,7 +22,7 @@ const meta = {
       control: "select",
       options: ["thin", "auto", "none"],
       table: {
-        type: { summary: "\"thin\" | \"auto\" | \"none\"" },
+        type: { summary: '"thin" | "auto" | "none"' },
       },
     },
     thumbColor: {
@@ -77,11 +74,7 @@ export const Basic: Story = {
         <ThemeToggle appearance="subtle" />
         <span>Toggle theme to change scrollbar color</span>
       </div>
-      <Scrollbars
-        scrollbarWidth={args.scrollbarWidth}
-        thumbColor={args.thumbColor}
-        style={args.style}
-      >
+      <Scrollbars scrollbarWidth={args.scrollbarWidth} thumbColor={args.thumbColor} style={args.style}>
         {/* Force horizontal overflow by widening inner content */}
         <div style={{ minWidth: 720 }}>
           <Content />
@@ -104,11 +97,7 @@ export const CustomColors: Story = {
     },
   },
   render: (args) => (
-    <Scrollbars
-      scrollbarWidth={args.scrollbarWidth}
-      thumbColor={args.thumbColor}
-      style={args.style}
-    >
+    <Scrollbars scrollbarWidth={args.scrollbarWidth} thumbColor={args.thumbColor} style={args.style}>
       <div style={{ minWidth: 720 }}>
         <Content />
       </div>

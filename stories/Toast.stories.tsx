@@ -1,385 +1,365 @@
-import type { ReactNode } from "react";
-import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Toast, toast } from "../src/toast";
-import type { ToastProps } from "../src/toast";
-import Button from "../src/button/Button";
-import { Icon } from "../src";
+import { useState } from "react";
+import { Button, CircleInfoIcon, Icon, type ToastProps } from "../src";
+import { toast, Toast } from "../src/toast";
 
-interface ToastStoryArgs extends ToastProps {
-  type: "success" | "error" | "warning" | "info";
-  message: ReactNode;
-  title?: string;
-  duration?: number;
-  dismissOnClick?: boolean;
-}
+const DEFAULT_STYLES = {
+  root: {},
+  toast: {},
+  title: {},
+  message: {},
+  closeButton: {},
+} as const;
 
-const meta: Meta<ToastStoryArgs> = {
+const meta: Meta<typeof Toast> = {
   title: "Components/Toast",
   component: Toast,
-  parameters: {
-    layout: "centered",
-    docs: {
-      description: {
-        component: `
-Toast notifications for displaying messages to users. 
-
-## Usage
-
-Add the Toast component once to your app (usually in App.tsx or main.tsx):
-
-\`\`\`tsx
-import { Toast } from '@polyutils/components';
-
-function App() {
-  return (
-    <div>
-      {/* Your app content */}
-  <Toast showLoadingBar={args.showLoadingBar} />
-    </div>
-  );
-}
-\`\`\`
-
-Then use the toast function anywhere in your app:
-
-\`\`\`tsx
-import { toast } from '@polyutils/components';
-
-// Success notification
-toast.success('Operation completed successfully!');
-
-// Error notification
-toast.error('Something went wrong!');
-
-// Warning notification
-toast.warning('Please check your input');
-
-// Info notification
-toast.info('New update available');
-
-// With custom title and duration
-toast.success('Success!', { 
-  title: 'Great job', 
-  duration: 3000 
-});
-\`\`\`
-        `,
-      },
-    },
-    showLoadingBar: {
-      control: { type: "boolean" },
-      description: "Show the loading/progress bar at the bottom of the toast",
-    },
-    stacked: {
-      control: { type: "boolean" },
-      description: "Stack toasts visually",
-    },
-  },
   tags: ["autodocs"],
+  args: {
+    duration: undefined,
+    dismissOnClick: undefined,
+    showLoadingBar: undefined,
+    pauseOnHover: undefined,
+    stacked: undefined,
+    position: undefined,
+    theme: "sync",
+    draggable: undefined,
+    role: undefined,
+    styles: DEFAULT_STYLES,
+    closeIcon: undefined,
+    icons: undefined,
+  },
   argTypes: {
     theme: {
       control: { type: "select" },
       options: ["sync", "dark", "light", "colored"],
-      description: "Theme for the toast appearance",
     },
     position: {
       control: { type: "select" },
       options: ["topRight", "topCenter", "topLeft", "bottomRight", "bottomCenter", "bottomLeft"],
-      description: "Position of the toast container",
-    },
-    type: {
-      control: { type: "select" },
-      options: ["success", "error", "warning", "info"],
-      description: "The type of toast notification",
-    },
-    message: {
-      control: { type: "text" },
-      description: "The main message content of the toast",
-    },
-    title: {
-      control: { type: "text" },
-      description: "Optional title for the toast",
     },
     duration: {
       control: { type: "number", min: 0, max: 20000, step: 500 },
       description: "Duration in milliseconds (0 = persistent)",
     },
-    dismissOnClick: {
-      control: { type: "boolean" },
-      description: "Allow dismissing by clicking anywhere on the toast (removes × button)",
-    },
-    showLoadingBar: {
-      control: { type: "boolean" },
-      description: "Show the loading/progress bar at the bottom of the toast",
-    },
-    pauseOnHover: {
-      control: { type: "boolean" },
-      description: "Pause the dismiss countdown and loading bar when hovering the toast",
-    },
-    stacked: {
-      control: { type: "boolean" },
-      description: "Stack toasts visually",
-    },
     draggable: {
       control: { type: "select" },
       options: ["touch", "always", "never"],
       description: "Enable swipe-to-dismiss behavior",
-    }
+    },
+    closeIcon: { control: false },
+    icons: { control: false },
   },
-  args: {
-    type: "success",
-    message: "This is a toast notification!",
-    title: undefined,
-    duration: undefined,
-    dismissOnClick: undefined,
-    showLoadingBar: undefined,
-    pauseOnHover: false,
-    position: "topRight",
-    theme: "light",
-    stacked: undefined,
-    draggable: "touch",
-  },
-};
+} satisfies Meta<typeof Toast>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof Toast>;
 
-export const AllTypes: Story = {
-  argTypes: { type: { control: false } },
-  render: (args) => {
-    const toastOptions = {
-      title: args.title
-    };
-    return (
-      <div style={{ padding: "20px" }}>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "20px" }}>
-          <Button appearance="primary" size="small" onClick={() => toast.success(args.message, toastOptions)}>
-            Success Toast
-          </Button>
-          <Button appearance="danger" size="small" onClick={() => toast.error(args.message, toastOptions)}>
-            Error Toast
-          </Button>
-          <Button appearance="secondary" size="small" style={{ backgroundColor: "#f59e0b", color: "white" }} onClick={() => toast.warning(args.message, toastOptions)}>
-            Warning Toast
-          </Button>
-          <Button appearance="secondary" size="small" style={{ backgroundColor: "#3b82f6", color: "white" }} onClick={() => toast.info(args.message, toastOptions)}>
-            Info Toast
+function AllTypesRender(args: ToastProps) {
+  const DEFAULT_TITLE = "Sample Title";
+  const DEFAULT_MESSAGE = "This is a sample message.";
+  const [title, setTitle] = useState<string>(DEFAULT_TITLE);
+  const [message, setMessage] = useState<string>(DEFAULT_MESSAGE);
+  const common = { title: title || undefined } as { title?: string };
+  return (
+    <div style={{ padding: 20, display: "grid", gap: 12 }}>
+      <div style={{ display: "grid", gap: 8, maxWidth: 520 }}>
+        <label style={{ display: "grid", gap: 4 }}>
+          <span>Title</span>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Optional title" />
+        </label>
+        <label style={{ display: "grid", gap: 4 }}>
+          <span>Message</span>
+          <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} placeholder="Toast message" />
+        </label>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button
+            appearance="outline"
+            size="small"
+            onClick={() => {
+              setTitle(DEFAULT_TITLE);
+              setMessage(DEFAULT_MESSAGE);
+            }}
+          >
+            Reset Inputs
           </Button>
         </div>
+      </div>
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <Button appearance="primary" size="small" styles={{ root: { backgroundColor: "#10b981" } }} onClick={() => toast.success(message, common)}>
+          Success Toast
+        </Button>
+        <Button appearance="secondary" size="small" styles={{ root: { backgroundColor: "#ef4444" } }} onClick={() => toast.error(message, common)}>
+          Error Toast
+        </Button>
+        <Button
+          appearance="secondary"
+          size="small"
+          style={{ backgroundColor: "#f59e0b", color: "white" }}
+          onClick={() => toast.warning(message, common)}
+        >
+          Warning Toast
+        </Button>
+        <Button
+          appearance="secondary"
+          size="small"
+          style={{ backgroundColor: "#3b82f6", color: "white" }}
+          onClick={() => toast.info(message, common)}
+        >
+          Info Toast
+        </Button>
         <Button appearance="default" size="small" onClick={() => toast.clear()}>
           Clear All
         </Button>
-        <p style={{ fontSize: "14px", margin: 0 }}>
-          Use the controls to change the message, title, duration, and dismiss behavior. Then click a button above to trigger a toast.
-        </p>
-        <Toast {...args} />
       </div>
-    );
-  },
-};
-
-export const SuccessToast: Story = {
-  argTypes: { type: { control: false } },
-  render: (args) => (
-    <div style={{ padding: "20px" }}>
-      <Button appearance="primary" size="small" onClick={() => toast.success(args.message, { title: args.title })}>
-        Show Success Toast
-      </Button>
       <Toast {...args} />
     </div>
-  ),
-};
+  );
+}
 
-export const ErrorToast: Story = {
-  argTypes: { type: { control: false } },
-  render: (args) => (
-    <div style={{ padding: "20px" }}>
-      <Button appearance="danger" size="small" onClick={() => toast.error(args.message, { title: args.title })}>
-        Show Error Toast
-      </Button>
-      <Toast {...args} />
-    </div>
-  ),
-};
+export const AllTypes: Story = { render: (args) => <AllTypesRender {...args} /> };
 
-export const WarningToast: Story = {
-  argTypes: { type: { control: false } },
-  render: (args) => (
-    <div style={{ padding: "20px" }}>
-      <Button appearance="secondary" size="small" style={{ backgroundColor: "#f59e0b", color: "white" }} onClick={() => toast.warning(args.message, { title: args.title })}>
-        Show Warning Toast
-      </Button>
-      <Toast {...args} />
-    </div>
-  ),
-};
-
-export const InfoToast: Story = {
-  argTypes: { type: { control: false } },
-  render: (args) => (
-    <div style={{ padding: "20px" }}>
-      <Button appearance="secondary" size="small" style={{ backgroundColor: "#3b82f6", color: "white" }} onClick={() => toast.info(args.message, { title: args.title })}>
-        Show Info Toast
-      </Button>
-      <Toast {...args} />
-    </div>
-  ),
-};
-
-export const WithCustomOptions: Story = {
-  argTypes: { type: { control: false } },
-  render: (args) => (
+function WithCustomOptionsRender(args: ToastProps) {
+  const [showInfo, setShowInfo] = useState(false);
+  return (
     <div style={{ padding: "20px" }}>
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-        <Button appearance="primary" size="small" onClick={() => toast.success(args.message, { title: args.title?? "Custom Title", duration: args.duration ?? 10000 })}>
+        <Button appearance="primary" size="small" onClick={() => toast.success("This is a toast notification!", { title: "Custom Title" })}>
           Custom Title & Duration
         </Button>
-        <Button appearance="secondary" size="small" style={{ backgroundColor: "#f59e0b", color: "white" }} onClick={() => toast.warning(args.message, { title: args.title, duration: 0, dismissOnClick: args.dismissOnClick })}>
-          Persistent Toast
-        </Button>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Button
+            appearance="secondary"
+            size="small"
+            style={{ backgroundColor: "#f59e0b", color: "white" }}
+            onClick={() => toast.warning("This is a toast notification!", { title: "Custom Title", duration: 0 })}
+          >
+            Persistent Toast
+          </Button>
+          <div style={{ position: "relative", display: "inline-block" }}>
+            <CircleInfoIcon
+              style={{ fontSize: "20px", color: "#6b7280", cursor: "pointer", outline: "none", WebkitTapHighlightColor: "transparent" }}
+              onMouseEnter={() => setShowInfo(true)}
+              onMouseLeave={() => setShowInfo(false)}
+              onFocus={() => setShowInfo(true)}
+              onBlur={() => setShowInfo(false)}
+              onMouseDown={(e) => e.preventDefault()}
+              tabIndex={0}
+              aria-label="Info"
+            />
+            {showInfo && (
+              <div
+                role="tooltip"
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  left: "100%",
+                  transform: "translate(8px, -100%)",
+                  background: "var(--pc-nav-bg, var(--pc-bg, #1f2937))",
+                  color: "var(--pc-fg, #e5e7eb)",
+                  border: "1px solid var(--pc-border, rgba(255,255,255,0.12))",
+                  borderRadius: 6,
+                  padding: "8px 10px",
+                  fontSize: 12,
+                  lineHeight: 1.3,
+                  whiteSpace: "nowrap",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+                  zIndex: 5,
+                }}
+              >
+                This toast uses duration "0" within the "toast" call, so it ignores the prop
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       <Toast {...args} />
     </div>
-  ),
+  );
+}
+
+export const WithCustomOptionsInToast: Story = {
+  args: { duration: 10000 },
+  render: (args) => <WithCustomOptionsRender {...args} />,
 };
+
+type FCType = "success" | "error" | "warning" | "info";
+function FullyConfigurableRender(args: ToastProps) {
+  const DEFAULT_TITLE = "Custom Title";
+  const DEFAULT_MESSAGE = "This is a toast notification!";
+  const [type, setType] = useState<FCType>("success");
+  const [title, setTitle] = useState<string>(DEFAULT_TITLE);
+  const [message, setMessage] = useState<string>(DEFAULT_MESSAGE);
+  const handleShowToast = () => {
+    const options: Partial<ToastProps> = {
+      ...(title ? { title } : {}),
+      ...(args.duration !== undefined ? { duration: args.duration } : {}),
+      dismissOnClick: args.dismissOnClick,
+    };
+    const fn = type === "success" ? toast.success : type === "error" ? toast.error : type === "warning" ? toast.warning : toast.info;
+    fn(message, options);
+  };
+  return (
+    <div style={{ padding: 20 }}>
+      <div style={{ display: "grid", gap: 8, maxWidth: 540, marginBottom: 12 }}>
+        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+          <span style={{ minWidth: 60 }}>Type:</span>
+          {["success", "error", "warning", "info"].map((t) => (
+            <label key={t} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <input type="radio" name="fc-type" value={t} checked={type === t} onChange={() => setType(t as FCType)} />
+              {t}
+            </label>
+          ))}
+        </div>
+        <label style={{ display: "grid", gap: 4 }}>
+          <span>Title</span>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Optional title" />
+        </label>
+        <label style={{ display: "grid", gap: 4 }}>
+          <span>Message</span>
+          <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} placeholder="Toast message" />
+        </label>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button
+            appearance="outline"
+            size="small"
+            onClick={() => {
+              setTitle(DEFAULT_TITLE);
+              setMessage(DEFAULT_MESSAGE);
+              setType("success");
+            }}
+          >
+            Reset Inputs
+          </Button>
+        </div>
+      </div>
+      <Button
+        appearance={type === "success" ? "primary" : "secondary"}
+        size="small"
+        style={
+          type === "error"
+            ? { backgroundColor: "#f44336", color: "white" }
+            : type === "success"
+              ? { backgroundColor: "#4caf50", color: "white" }
+              : type === "warning"
+                ? { backgroundColor: "#f59e0b", color: "white" }
+                : type === "info"
+                  ? { backgroundColor: "#3b82f6", color: "white" }
+                  : undefined
+        }
+        onClick={handleShowToast}
+      >
+        Show {type[0].toUpperCase() + type.slice(1)} Toast
+      </Button>
+      <div style={{ marginTop: 12, fontSize: 14 }}>
+        <p style={{ margin: 0 }}>
+          <strong>Current Settings:</strong>
+        </p>
+        <ul>
+          <li>Type: {type}</li>
+          <li>Message: "{message}"</li>
+          {title && <li>Title: "{title}"</li>}
+          <li>Duration: {args.duration === undefined ? "Default" : args.duration === 0 ? "Persistent" : `${args.duration}ms`}</li>
+          <li>Dismiss on Click: {args.dismissOnClick ? "Yes" : "No"}</li>
+          <li>Show Loading Bar: {args.showLoadingBar ? "Yes" : "No"}</li>
+          <li>Pause on Hover: {args.pauseOnHover ? "Yes" : "No"}</li>
+          <li>Position: {args.position}</li>
+          <li>Theme: {args.theme}</li>
+          <li>Stacked: {args.stacked ? "Yes" : "No"}</li>
+          <li>Draggable: {String(args.draggable ?? "touch")}</li>
+        </ul>
+      </div>
+      <Toast {...args} />
+    </div>
+  );
+}
 
 export const FullyConfigurable: Story = {
   parameters: { controls: { disabled: false }, docs: { disable: true } },
-  render: (args) => {
-    const handleShowToast = () => {
-      const options: Partial<ToastProps> = {
-        ...(args.title ? { title: args.title } : {}),
-        ...(args.duration !== undefined ? { duration: args.duration } : {}),
-        dismissOnClick: args.dismissOnClick
-      };
-      toast[args.type](args.message, options);
-    };
-    return (
-      <div style={{ padding: "20px" }}>
-        <Button
-          appearance={
-            args.type === "success" ? "primary" :
-            args.type === "error" ? "danger" :
-            "secondary"
-          }
-          size="small"
-          style={
-            args.type === "warning" ? { backgroundColor: "#f59e0b", color: "white" } :
-            args.type === "info" ? { backgroundColor: "#3b82f6", color: "white" } :
-            undefined
-          }
-          onClick={handleShowToast}
-        >
-          Show {args.type.charAt(0).toUpperCase() + args.type.slice(1)} Toast
-        </Button>
-        <div style={{ marginTop: "20px", fontSize: "14px", }}>
-          <p><strong>Current Settings:</strong></p>
-          <ul>
-            <li>Type: {args.type}</li>
-            <li>Message: "{args.message}"</li>
-            {args.title && <li>Title: "{args.title}"</li>}
-            <li>Duration: {args.duration === undefined ? "Default" : args.duration === 0 ? "Persistent" : `${args.duration}ms`}</li>
-            <li>Dismiss on Click: {args.dismissOnClick ? "Yes" : "No"}</li>
-            <li>Show Loading Bar: {args.showLoadingBar ? "Yes" : "No"}</li>
-            <li>Pause on Hover: {args.pauseOnHover ? "Yes" : "No"}</li>
-            <li>Position: {args.position}</li>
-            <li>Theme: {args.theme}</li>
-            <li>Stacked: {args.stacked ? "Yes" : "No"}</li>
-            <li>Draggable: {args.draggable ? "Yes" : "No"}</li>
-          </ul>
-        </div>
-        <Toast {...args} />
-      </div>
-    );
-  },
+  render: (args) => <FullyConfigurableRender {...args} />,
 };
 
-export const DismissOnClick: Story = {
-  argTypes: { type: { control: false } },
+export const CustomIcon: Story = {
+  args: {
+    icons: { success: <Icon name="star" style={{ fontSize: 20, color: "lime" }} /> },
+    closeIcon: <Icon name="circle-close" style={{ fontSize: 18 }} />,
+  },
+  argTypes: {
+    icons: { control: false },
+    closeIcon: { control: false },
+  },
   render: (args) => (
-    <div style={{ padding: "20px" }}>
-      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "20px" }}>
-        <Button appearance="primary" size="small" onClick={() => toast.success(args.message, { title: args.title, duration: args.duration, dismissOnClick: true })}>
-          Success (Dismiss on Click)
-        </Button>
-        <Button appearance="danger" size="small" onClick={() => toast.error(args.message, { title: args.title, duration: args.duration, dismissOnClick: true })}>
-          Error (Dismiss on Click)
-        </Button>
-        <Button appearance="secondary" size="small" style={{ backgroundColor: "#3b82f6", color: "white" }} onClick={() => toast.info(args.message, { title: args.title })}>
-          Regular Toast (with × button)
-        </Button>
-      </div>
-      <p style={{ fontSize: "14px", margin: 0 }}>
-        Compare the behavior: dismiss-on-click toasts show a pointer cursor and can be clicked anywhere to close.
-        Regular toasts have the × button and default cursor.
-      </p>
+    <div style={{ padding: 20 }}>
+      <Button appearance="primary" size="small" onClick={() => toast.success("Toast with custom icon", { title: "Custom Icon" })}>
+        Show Custom Icon Toast
+      </Button>
       <Toast {...args} />
     </div>
   ),
 };
 
-export const CustomIcon: Story = {
-  args: {icons: { success: <Icon name="star" style={{ fontSize: 20, color: "lime" }} /> }, closeIcon: <Icon name="circle-close" style={{ fontSize: 20}}/>},
-  argTypes: { type: { control: false } },
-  render: (args) => {
-    return (
-      <div style={{ padding: "20px" }}>
-        <Button appearance="primary" size="small" onClick={() => toast.success(args.message, { title: args.title })}>
-          Show Custom Icon Toast
+function ElementMessageRender(args: ToastProps) {
+  const DEFAULT_TITLE = "Warning!";
+  const DEFAULT_MESSAGE = "You will be logged out in 60 seconds due to inactivity.";
+  const [title, setTitle] = useState<string>(DEFAULT_TITLE);
+  const [message, setMessage] = useState<string>(DEFAULT_MESSAGE);
+
+  const handleShowToast = () => {
+    const timeOutToast = toast.info(
+      <div
+        className="auto-logout__warning"
+        role="dialog"
+        aria-live="polite"
+        style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}
+      >
+        {title && <strong>{title}</strong>}
+        <p style={{ marginTop: 5 }}>You will be logged out in 60 seconds due to inactivity.</p>
+        <Button
+          styles={{ root: { marginBottom: "12px" } }}
+          appearance="primary"
+          size="small"
+          onClick={(event) => {
+            event.stopPropagation();
+            toast.remove(timeOutToast);
+            toast.info("Your session has been extended.", { duration: 2000, dismissOnClick: true, draggable: "always" });
+          }}
+        >
+          Stay Logged In
         </Button>
-        <Toast {...args} />
       </div>
     );
-  },
-};
+  };
+
+  return (
+    <div style={{ padding: 20 }}>
+      <div style={{ display: "grid", gap: 8, maxWidth: 560, marginBottom: 12 }}>
+        <label style={{ display: "grid", gap: 4 }}>
+          <span>Title</span>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Optional title" />
+        </label>
+        <label style={{ display: "grid", gap: 4 }}>
+          <span>Message</span>
+          <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} placeholder="Toast message (element)" />
+        </label>
+      </div>
+      <Button appearance="primary" size="small" onClick={handleShowToast}>
+        Show JSX Message Toast
+      </Button>
+      <Toast {...args} />
+    </div>
+  );
+}
 
 export const ElementMessage: Story = {
-  args: {theme: "sync", closeIcon: null, duration: 0, dismissOnClick: false, position: "bottomRight", icons: { info: null }, draggable: "never" },
-  argTypes: { type: { control: false }, message: { control: false } },
-  render: (args) => {
-    const handleShowToast = () => {
-      const timeOutToast = toast.info(
-        (
-          <div className="auto-logout__warning" role="dialog" aria-live="polite" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
-            <p style={{marginTop: 5}}>You will be logged out in 60 seconds due to inactivity.</p>
-            <Button
-              styles={{ root: { marginBottom: "12px" } }}
-              appearance="primary"
-              size="small"
-              onClick={(event) => {
-                event.stopPropagation();
-                toast.remove(timeOutToast);
-                toast.info("Your session has been extended.", { duration: 2000, dismissOnClick: true, draggable: "always" });
-              }}
-              >
-                Stay Logged In
-              </Button>
-          </div>
-        ),
-        {
-          title: args.title
-        }
-      );
-    };
-
-    return (
-      <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "12px", maxWidth: "420px" }}>
-        <Button appearance="primary" size="small" onClick={handleShowToast}>
-          Show JSX Message Toast
-        </Button>
-        <Toast {...args} />
-      </div>
-    );
-  },
+  args: { theme: "sync", closeIcon: null, duration: 0, dismissOnClick: false, position: "bottomRight", icons: { info: null }, draggable: "never" },
+  render: (args) => <ElementMessageRender {...args} />,
 };
 
-function ImperativeControlsDemo(args: ToastStoryArgs) {
+function ImperativeControlsDemo(args: ToastProps) {
   const [latestToastId, setLatestToastId] = useState<string | null>(null);
 
   const showToast = () => {
-    const id = toast[args.type](args.message, {
-      title: args.title,
+    const id = toast.success("This is a toast notification!", {
       duration: args.duration,
       dismissOnClick: args.dismissOnClick,
     });
@@ -394,10 +374,10 @@ function ImperativeControlsDemo(args: ToastStoryArgs) {
     action(latestToastId);
   };
 
-  const handlePause = () => withToastId(id => toast.pause(id), "Trigger a toast first to capture its id.");
-  const handleContinue = () => withToastId(id => toast.play(id), "Trigger a toast first to capture its id.");
+  const handlePause = () => withToastId((id) => toast.pause(id), "Trigger a toast first to capture its id.");
+  const handleContinue = () => withToastId((id) => toast.play(id), "Trigger a toast first to capture its id.");
   const handleIsActive = () =>
-    withToastId(id => {
+    withToastId((id) => {
       const active = toast.isActive(id);
       window.alert(active ? "Toast is still active." : "Toast is no longer active.");
     }, "Trigger a toast first to capture its id.");
@@ -418,16 +398,13 @@ function ImperativeControlsDemo(args: ToastStoryArgs) {
           Is Active?
         </Button>
       </div>
-      <div style={{ fontSize: "14px"}}>
-        Latest toast id: {latestToastId ?? "None yet"}
-      </div>
+      <div style={{ fontSize: "14px" }}>Latest toast id: {latestToastId ?? "None yet"}</div>
       <Toast {...args} />
     </div>
   );
 }
 
 export const ImperativeControls: Story = {
-  argTypes: { type: { control: false } },
   args: { position: "bottomRight" },
   render: (args) => <ImperativeControlsDemo {...args} />,
 };

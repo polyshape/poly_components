@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
 import { Tabs, type Tab, type TabsProps } from "../src";
 
 const ON_CHANGE_OPTIONS = {
@@ -8,9 +9,8 @@ const ON_CHANGE_OPTIONS = {
 } as const;
 
 type OnChangeOptionKey = keyof typeof ON_CHANGE_OPTIONS;
-type TabsStoryProps = TabsProps & { onChangeBehavior: OnChangeOptionKey };
 
-const meta: Meta<TabsStoryProps> = {
+const meta: Meta<typeof Tabs> = {
   title: "Components/Tabs",
   component: Tabs,
   tags: ["autodocs"],
@@ -19,7 +19,6 @@ const meta: Meta<TabsStoryProps> = {
     defaultActive: undefined,
     active: undefined,
     ariaLabel: undefined,
-    onChangeBehavior: "none",
   },
   argTypes: {
     tabs: { control: "object" },
@@ -27,17 +26,12 @@ const meta: Meta<TabsStoryProps> = {
     active: { control: "text" },
     onChange: { control: false },
     className: { control: false },
-    onChangeBehavior: {
-      control: { type: "inline-radio" },
-      options: Object.keys(ON_CHANGE_OPTIONS) as OnChangeOptionKey[],
-      description: "Choose an action to perform when the active tab changes (for demo purposes).",
-    },
   },
 };
 
 export default meta;
 
-type Story = StoryObj<TabsStoryProps>;
+type Story = StoryObj<typeof Tabs>;
 
 const mainTabs: Tab[] = [
   { key: "details", label: "Details", content: <div>Here are the details.</div> },
@@ -45,10 +39,36 @@ const mainTabs: Tab[] = [
   { key: "qa", label: "Q&A", content: <div>Questions and answers.</div> },
 ];
 
-const renderTabs = ({ onChangeBehavior, ...rest }: TabsStoryProps) => {
-  const handler = ON_CHANGE_OPTIONS[onChangeBehavior];
-  return <Tabs {...rest} onChange={handler} />;
-};
+function RenderTabs(args: TabsProps) {
+  const [choice, setChoice] = useState<OnChangeOptionKey>("none");
+  const handler = ON_CHANGE_OPTIONS[choice];
+  const name = "tabs-onchange-choice";
+  return (
+    <div style={{ display: "grid", gap: 12 }}>
+      <fieldset style={{ border: "1px solid var(--pc-border)", borderRadius: 8, padding: 12 }}>
+        <legend>onChange handler</legend>
+        {Object.keys(ON_CHANGE_OPTIONS).map((key) => {
+          const k = key as OnChangeOptionKey;
+          const id = `${name}-${k}`;
+          return (
+            <label key={k} htmlFor={id} style={{ display: "inline-flex", alignItems: "center", gap: 6, marginRight: 12 }}>
+              <input
+                id={id}
+                type="radio"
+                name={name}
+                value={k}
+                checked={choice === k}
+                onChange={() => setChoice(k)}
+              />
+              {k}
+            </label>
+          );
+        })}
+      </fieldset>
+      <Tabs {...args} onChange={handler} />
+    </div>
+  );
+}
 
 export const Basic: Story = {
   args: {
@@ -56,5 +76,5 @@ export const Basic: Story = {
     defaultActive: "details",
     ariaLabel: "Main sections",
   },
-  render: renderTabs,
+  render: (args) => <RenderTabs {...args} />,
 };
