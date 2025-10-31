@@ -9,3 +9,4 @@ export * from "./theme/index.js";
 export * from "./toast/index.js";
 export * from "./panel/index.js";
 export * from "./modal/index.js";
+export * from "./radio/index.js";

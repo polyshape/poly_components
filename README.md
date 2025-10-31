@@ -25,6 +25,61 @@ npm install react-router-dom
 
 ## Usage
 
+### Radio
+
+Accessible radio button with theme-aware styling and controlled/uncontrolled support.
+
+```tsx
+import { useState } from "react";
+import { Radio } from "@polyutils/components";
+
+// Uncontrolled (native behavior)
+export function PlanSelector() {
+  return (
+    <form>
+      <Radio name="plan" value="basic" label="Basic" defaultChecked />
+      <Radio name="plan" value="pro" label="Pro" />
+      <Radio name="plan" value="enterprise" label="Enterprise" />
+    </form>
+  );
+}
+
+// Controlled
+export function ControlledPlanSelector() {
+  const [plan, setPlan] = useState("basic");
+  return (
+    <div>
+      <Radio name="plan" value="basic" label="Basic" checked={plan === "basic"} onChange={() => setPlan("basic")} />
+      <Radio name="plan" value="pro" label="Pro" checked={plan === "pro"} onChange={() => setPlan("pro")} />
+      <Radio name="plan" value="enterprise" label="Enterprise" checked={plan === "enterprise"} onChange={() => setPlan("enterprise")} />
+    </div>
+  );
+}
+```
+
+Customize colors via a CSS variable or per-part styles:
+
+```tsx
+<Radio
+  name="color"
+  value="custom"
+  label="Custom Accent"
+  // Option A: set CSS var (affects ring and dot)
+  styles={{ root: { ["--pc-radio-accent" as any]: "#7051BA" } }}
+  // Option B: override just the dot
+  // styles={{ dot: { background: "#7051BA" } }}
+/>
+```
+
+Props:
+
+- `name`: group name; radios with the same name are mutually exclusive
+- `value`: submitted value when selected (form posts `name=value`)
+- `checked`/`defaultChecked`: controlled vs uncontrolled selection
+- `onChange`: change handler; required for controlled usage
+- `disabled`, `label`, `size`: UI helpers
+- `styles`: `{ root, input, control, dot, label }` per-part overrides
+
 ### Example: Tabs
 
 ```tsx
@@ -37,13 +92,7 @@ const tabs: Tab[] = [
 ];
 
 export function TabsExample() {
-  return (
-    <Tabs
-      tabs={tabs}
-      defaultActive="tab_1"
-      onChange={(key) => console.log("Tab changed", key)}
-    />
-  );
+  return <Tabs tabs={tabs} defaultActive="tab_1" onChange={(key) => console.log("Tab changed", key)} />;
 }
 
 // Controlled usage
@@ -74,12 +123,7 @@ function Example() {
         ))}
       </ul>
 
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        setPage={setPage}
-        delta={2}
-      />
+      <Pagination totalPages={totalPages} currentPage={currentPage} setPage={setPage} delta={2} />
     </div>
   );
 }
@@ -278,11 +322,7 @@ function IconExample() {
         }}
       >
         {/* Override only the duration (keeps default animation name and timing function) */}
-        <Icon
-          name="refresh"
-          spin
-          style={{ fontSize: 24, animationDuration: "2s" }}
-        />
+        <Icon name="refresh" spin style={{ fontSize: 24, animationDuration: "2s" }} />
 
         {/* Override the full animation shorthand */}
         <HomeIcon
@@ -715,8 +755,7 @@ export function App() {
       <main>
         {/* All content here gets automatic baseline theming */}
         <p>
-          This paragraph, <a href="#">links</a>, and other elements are
-          automatically themed.
+          This paragraph, <a href="#">links</a>, and other elements are automatically themed.
         </p>
         <button>Regular HTML elements look great!</button>
       </main>
@@ -760,11 +799,7 @@ import { useTheme } from "@polyutils/components";
 
 function ThemeSwitch() {
   const { theme, setTheme } = useTheme();
-  return (
-    <button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
-      Toggle Theme ({theme})
-    </button>
-  );
+  return <button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>Toggle Theme ({theme})</button>;
 }
 ```
 
@@ -881,11 +916,7 @@ You can toggle the global overlay automatically during lazy loading by using `Lo
 
 ```tsx
 import React, { Suspense } from "react";
-import {
-  LoadingProvider,
-  LoadingOverlay,
-  LoadingSpinnerFallback,
-} from "@polyutils/components";
+import { LoadingProvider, LoadingOverlay, LoadingSpinnerFallback } from "@polyutils/components";
 
 const LazyPage = React.lazy(() => import("./LazyPage"));
 
@@ -930,12 +961,16 @@ export function ModalExample() {
           onClose={() => setOpen(false)}
           title="Modal Title"
           subtitle="Optional subtitle"
-          footer={(
+          footer={
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-              <Button appearance="subtle" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button appearance="primary" onClick={() => setOpen(false)}>Save</Button>
+              <Button appearance="subtle" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button appearance="primary" onClick={() => setOpen(false)}>
+                Save
+              </Button>
             </div>
-          )}
+          }
         >
           <p>Put any content here. The modal closes on backdrop click or Esc.</p>
         </Modal>
