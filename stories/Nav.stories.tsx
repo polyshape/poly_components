@@ -1,8 +1,8 @@
-import NavSmall from "../src/nav/NavSmall";
-import { MemoryRouter, NavLink } from "react-router-dom";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, EnvelopeIcon, Nav, type NavItem} from "../src";
-import React from "react";
+import React, { CSSProperties } from "react";
+import { MemoryRouter, NavLink } from "react-router-dom";
+import { ArrowLeftIcon, ArrowRightIcon, Button, EnvelopeIcon, Nav, type NavItem } from "../src";
+import NavSmall from "../src/nav/NavSmall";
 
 const DEFAULT_STYLES = {
   root: {},
@@ -21,6 +21,7 @@ const DEFAULT_STYLES = {
   closeButton: {},
   moreButton: {},
   moreWrapper: {},
+  collapseButton: {},
   chevron: {},
   chevronOpen: {},
   chevronSide: {},
@@ -39,6 +40,8 @@ const meta: Meta<typeof Nav> = {
     variant: "top",
     defaultOpenIds: undefined,
     showBorder: undefined,
+    hideCollapseToggle: undefined,
+    disableCollapseAnimation: undefined,
     linkProp: undefined,
     responsiveBreakpoint: undefined,
     showActiveUnderline: undefined,
@@ -58,6 +61,8 @@ const meta: Meta<typeof Nav> = {
     customLeft: { control: false },
     customRight: { control: false },
     className: { control: false },
+    collapseIcon: { control: false },
+    expandIcon: { control: false },
   },
 };
 
@@ -114,10 +119,10 @@ const sample: NavItem[] = [
       { id: "careers", label: "Careers", to: "/company/careers" },
     ],
   },
-  { id: "portfolio", label: "Portfolio", to: "/portfolio", },
-  { id: "news", label: "News", to: "/news", },
-  { id: "contact", label: "Contact", to: "/contact", },
-  { id: "about_us", label: "About", to: "/about_us", },
+  { id: "portfolio", label: "Portfolio", to: "/portfolio" },
+  { id: "news", label: "News", to: "/news" },
+  { id: "contact", label: "Contact", to: "/contact" },
+  { id: "about_us", label: "About", to: "/about_us" },
 ];
 
 const sampleNoRouting: NavItem[] = [
@@ -154,7 +159,7 @@ const sampleNoRouting: NavItem[] = [
       { id: "new-customer1", label: "Customer 1", href: "/customers/new-customer1", onClick: stop },
       { id: "new-customer2", label: "Customer 2", href: "/customers/new-customer2", onClick: stop },
       { id: "new-customer3", label: "Customer 3", href: "/customers/new-customer3", onClick: stop },
-      { id: "new-customer4", label: "Customer 4", href: "/customers/new-customer4", onClick: stop },
+      { id: "new-customer4", label: "Customer Long Name 4", href: "/customers/new-customer4", onClick: stop },
     ],
   },
   {
@@ -175,7 +180,7 @@ const sampleNoRouting: NavItem[] = [
 
 export const Top: Story = {
   args: {
-    items: sampleNoRouting
+    items: sampleNoRouting,
   },
   parameters: { layout: "fullscreen" },
   render: (args) => <Nav responsiveBreakpoint={600} {...args} />,
@@ -186,9 +191,32 @@ export const Side: Story = {
   parameters: { layout: "fullscreen" },
   render: (args) => {
     const isSide = args.variant === "side";
-    const gridStyle = isSide
-      ? { display: "grid", gridTemplateColumns: "220px 1fr", minHeight: 240 }
-      : { display: "grid", gridTemplateRows: "56px 1fr", minHeight: 240 };
+    const gridStyle: CSSProperties = isSide
+      ? { display: "flex", flexDirection: "row", minHeight: 240 }
+      : { display: "flex", flexDirection: "column", minHeight: 240 };
+    return (
+      <div style={gridStyle}>
+        <Nav {...args} />
+        <div style={{ padding: 16 }}>Content</div>
+      </div>
+    );
+  },
+};
+
+export const SideWithCustomIcons: Story = {
+  args: {
+    items: sampleNoRouting,
+    variant: "side",
+    defaultOpenIds: ["partners", "company"],
+    collapseIcon: <ArrowLeftIcon weight={"bold"} />,
+    expandIcon: <ArrowRightIcon weight={"bold"} />,
+  },
+  parameters: { layout: "fullscreen" },
+  render: (args) => {
+    const isSide = args.variant === "side";
+    const gridStyle: CSSProperties = isSide
+      ? { display: "flex", flexDirection: "row", minHeight: 240 }
+      : { display: "flex", flexDirection: "column", minHeight: 240 };
     return (
       <div style={gridStyle}>
         <Nav {...args} />
@@ -263,12 +291,13 @@ export const CustomLeftItemsLayout: Story = {
     },
   },
   parameters: {
-    controls: { exclude: ["items", "variant", "defaultOpenIds", "className", "linkProp", "customLeft", "customRight",] },
+    controls: { exclude: ["items", "variant", "defaultOpenIds", "className", "linkProp", "customLeft", "customRight"] },
   },
   render: (args) => {
     return (
       <MemoryRouter initialEntries={["/home"]}>
-        <style>{`
+        <style>
+          {`
           .brand__logo {
             height: 32px;
             display: block;
@@ -294,14 +323,14 @@ export const CustomLeftItemsLayout: Story = {
                   <img src="/logo.png" alt="Brand" className="brand__logo" />
                 </picture>
               </NavLink>
-              <Button className="theme-toggle" icon={<EnvelopeIcon weight={"bold"} style={{ fontSize: "20px"}}/>}/>
+              <Button className="theme-toggle" icon={<EnvelopeIcon weight={"bold"} style={{ fontSize: "20px" }} />} />
             </div>
           }
         />
       </MemoryRouter>
     );
   },
-}
+};
 
 export const CustomItemsLayout: Story = {
   args: {
@@ -319,12 +348,13 @@ export const CustomItemsLayout: Story = {
     },
   },
   parameters: {
-    controls: { exclude: ["items", "variant", "defaultOpenIds", "className", "linkProp", "customLeft", "customRight",] },
+    controls: { exclude: ["items", "variant", "defaultOpenIds", "className", "linkProp", "customLeft", "customRight"] },
   },
   render: (args) => {
     return (
       <MemoryRouter initialEntries={["/home"]}>
-        <style>{`
+        <style>
+          {`
           .brand__logo {
             height: 32px;
             display: block;
@@ -345,17 +375,11 @@ export const CustomItemsLayout: Story = {
           }
           customRight={
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <Button
-                appearance="primary"
-                shape="square"
-                style={{ height: "2rem" }}>
-                  Login
+              <Button appearance="primary" shape="square" style={{ height: "2rem" }}>
+                Login
               </Button>
-              <Button
-                appearance="subtle"
-                shape="square"
-                style={{ height: "2rem" }}>
-                  Logout
+              <Button appearance="subtle" shape="square" style={{ height: "2rem" }}>
+                Logout
               </Button>
             </div>
           }
@@ -363,7 +387,7 @@ export const CustomItemsLayout: Story = {
       </MemoryRouter>
     );
   },
-}
+};
 
 function SmallNavOverlayDemo(args: Record<string, unknown> & { items: NavItem[] }, withMemoryRouter = false) {
   const [width, setWidth] = React.useState(600);
@@ -390,9 +414,7 @@ function SmallNavOverlayDemo(args: Record<string, unknown> & { items: NavItem[] 
   }, []);
 
   const { variant: _variant, showBorder: _showBorder, ...navArgs } = args ?? {};
-  const navSmallElement = (
-    <NavSmall {...navArgs} styles={{ overlay: { position: "absolute", width: "100%", height: "90vh" } }} />
-  );
+  const navSmallElement = <NavSmall {...navArgs} styles={{ overlay: { position: "absolute", width: "100%", height: "90vh" } }} />;
 
   return (
     <div style={{ background: "darkgray", padding: "10px" }}>
@@ -440,13 +462,7 @@ function SmallNavOverlayDemo(args: Record<string, unknown> & { items: NavItem[] 
             margin-left: 8px !important;
           }
         `}</style>
-        {withMemoryRouter ? (
-          <MemoryRouter initialEntries={["/home"]}>
-            {navSmallElement}
-          </MemoryRouter>
-        ) : (
-          navSmallElement
-        )}
+        {withMemoryRouter ? <MemoryRouter initialEntries={["/home"]}>{navSmallElement}</MemoryRouter> : navSmallElement}
         {/* Resize handle */}
         <div
           style={{

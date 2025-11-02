@@ -1,6 +1,6 @@
-import { makeStyles } from "@griffel/react";
-import { useEffect, useRef, useState } from "react";
+import { makeStyles, mergeClasses } from "@griffel/react";
 import type { CSSProperties, ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../button/index.js";
 import { Icon } from "../icons/Icon.js";
 import NavSmall from "./NavSmall.js";
@@ -33,6 +33,8 @@ export type NavStyleOverrides = Partial<{
   // More button styling
   moreButton: CSSProperties;
   moreWrapper: CSSProperties;
+  // Collapse/expand toggle button (side variant)
+  collapseButton: CSSProperties;
   // Chevron/dropdown indicator styling
   chevron: CSSProperties;
   chevronOpen: CSSProperties;
@@ -53,6 +55,14 @@ export type NavProps = {
   showBorder?: boolean;
   as?: React.ElementType;
   linkProp?: "to" | "href" | (string & {}); // "to" for NavLink, "href" for <a>, or any string
+  /** Custom icon for the collapse action (shown when expanded). */
+  collapseIcon?: ReactNode;
+  /** Custom icon for the expand action (shown when collapsed). */
+  expandIcon?: ReactNode;
+  /** Hides the collapse/expand toggle entirely when true. */
+  hideCollapseToggle?: boolean;
+  /** Disables the collapse/expand animation; toggles instantly. */
+  disableCollapseAnimation?: boolean;
   /** Optional content rendered to the left side of the navigation items (top variant only). */
   customLeft?: ReactNode;
   /** Optional content rendered to the right side of the navigation items (top variant only). */
@@ -88,7 +98,7 @@ const useStyles = makeStyles({
     background: "var(--pc-nav-bg)",
     color: "var(--pc-fg, #222)",
     // Allow shrinking when used as a flex child in host layouts
-    minWidth: 0,
+    minWidth: "fit-content",
   },
   rootTopBorder: {
     borderBottom: "1px solid var(--pc-border)",
@@ -165,28 +175,27 @@ const useStyles = makeStyles({
     color: "var(--pc-fg)",
     textDecoration: "none",
     ":hover, :focus": {
-      color: "color-mix(in srgb, var(--pc-fg, currentColor) 75%, var(--pc-bg, #fff))"
+      color: "color-mix(in srgb, var(--pc-fg, currentColor) 75%, var(--pc-bg, #fff))",
     },
     ":active, &[aria-current='page']": {
       color: "var(--pc-fg)",
-      background: "none"
+      background: "none",
     },
     ":visited": {
-      color: "color-mix(in srgb, var(--pc-fg, currentColor) 75%, var(--pc-bg, #fff))"
-    }
+      color: "color-mix(in srgb, var(--pc-fg, currentColor) 75%, var(--pc-bg, #fff))",
+    },
   },
   linkSide: {
     color: "var(--pc-fg)",
     textDecoration: "none",
     ":hover, :focus": {
       color: "color-mix(in srgb, var(--pc-fg, currentColor) 75%, var(--pc-bg, #fff))",
-      background: "none"
+      background: "none",
     },
     ":active, &[aria-current='page']": {
       color: "var(--pc-fg)",
-      background: "none"
+      background: "none",
     },
-    width: "100%",
     height: "100%",
     display: "flex",
     justifyContent: "space-between",
@@ -214,26 +223,26 @@ const useStyles = makeStyles({
       transform: "scaleX(0)",
     },
     ":visited": {
-      color: "color-mix(in srgb, var(--pc-fg, currentColor) 75%, var(--pc-bg, #fff))"
-    }
+      color: "color-mix(in srgb, var(--pc-fg, currentColor) 75%, var(--pc-bg, #fff))",
+    },
   },
   chevron: {
     marginTop: "5px",
     display: "inline-flex",
     verticalAlign: "middle",
     color: "inherit",
-    transition: "transform 160ms ease"
+    transition: "transform 160ms ease",
   },
   chevronSide: {
     marginTop: "2px",
     display: "inline-flex",
     verticalAlign: "middle",
     color: "inherit",
-    transition: "transform 160ms ease"
+    transition: "transform 160ms ease",
   },
   chevronIcon: {
     marginTop: "2px",
-    transition: "transform 160ms ease"
+    transition: "transform 160ms ease",
   },
   chevronOpen: {
     transform: "rotate(180deg)",
@@ -292,13 +301,26 @@ const useStyles = makeStyles({
   rootSide: {
     color: "var(--pc-fg, #222)",
     background: "var(--pc-nav-bg)",
-    // Allow shrinking when used as a flex child in host layouts
-    minWidth: 0,
+    overflow: "hidden",
+    width: "fit-content",
+    transition: "width 220ms ease",
   },
   rootSideBorder: {
     borderRight: "1px solid var(--pc-border)",
   },
-  listSide: { display: "grid", gap: "4px", padding: "8px" },
+  listSide: { display: "grid", gap: "4px", padding: "8px", width: "100%", position: "relative", minWidth: 0 },
+  sideHeader: {
+    position: "absolute",
+    top: "10px",
+    right: "20px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    pointerEvents: "auto",
+    zIndex: 2,
+  },
+  itemsSide: { display: "grid", gap: "4px" },
+  itemsSideHidden: { visibility: "hidden", pointerEvents: "none" },
   itemBtnSide: {
     composes: "$itemBtn",
     width: "100%",
@@ -321,8 +343,7 @@ const useStyles = makeStyles({
   },
 });
 
-const isPositive = (value: unknown): value is number =>
-  typeof value === "number" && Number.isFinite(value) && value > 0;
+const isPositive = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value) && value > 0;
 
 const getViewportWidth = (): number => {
   if (typeof window === "undefined") return 0;
@@ -371,7 +392,7 @@ export default function Nav(props: NavProps) {
     disableOverflow = false,
     overflowAvailableWidth,
     customLeft,
-    customRight
+    customRight,
   } = props;
   const classes = useStyles();
   const [isSmall, setIsSmall] = useState<boolean>(false);
@@ -403,9 +424,7 @@ export default function Nav(props: NavProps) {
   const hasCustomRight = !!customRight;
   useEffect(() => {
     if (variant !== "top") {
-      setAvailableWidth(
-        typeof overflowAvailableWidth === "number" ? Math.max(0, overflowAvailableWidth) : null
-      );
+      setAvailableWidth(typeof overflowAvailableWidth === "number" ? Math.max(0, overflowAvailableWidth) : null);
       return;
     }
 
@@ -465,10 +484,7 @@ export default function Nav(props: NavProps) {
       return;
     }
 
-    const widthLimit =
-      typeof overflowAvailableWidth === "number"
-        ? Math.max(0, overflowAvailableWidth)
-        : availableWidth;
+    const widthLimit = typeof overflowAvailableWidth === "number" ? Math.max(0, overflowAvailableWidth) : availableWidth;
 
     if (widthLimit == null) {
       return;
@@ -484,7 +500,7 @@ export default function Nav(props: NavProps) {
     let gap = 0;
     if (navEl) {
       const cs = window.getComputedStyle(navEl);
-      gap = parseFloat((cs.columnGap || (cs as CSSStyleDeclaration & { gap?: string }).gap) || "0") || 0;
+      gap = parseFloat(cs.columnGap || (cs as CSSStyleDeclaration & { gap?: string }).gap || "0") || 0;
     }
 
     const itemNodes = Array.from(measurer.querySelectorAll('[data-role="item"]')) as HTMLElement[];
@@ -533,6 +549,9 @@ export default function Nav(props: NavProps) {
   const [open, setOpen] = useState<Set<string>>(new Set(defaultOpenIds));
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
+  const [animWidth, setAnimWidth] = useState<number | undefined>(undefined);
+  const navRef = useRef<HTMLElement | null>(null);
   const LinkComponent = as || "a";
   const renderMoreButton = (menuItemsForButton: ReactNode[], extraProps?: Record<string, unknown>) => (
     <Button
@@ -561,7 +580,7 @@ export default function Nav(props: NavProps) {
       props[linkProp] = navTarget;
     } else {
       const comp = LinkComponent as React.ComponentType<Record<string, unknown>> & { defaultProps?: { to?: unknown }; $$typeof?: symbol };
-      
+
       // Per-item navigation type detection respecting precedence
       // If item has href, use regular anchor navigation regardless of component
       if (item.href) {
@@ -569,19 +588,18 @@ export default function Nav(props: NavProps) {
       } else if (item.to) {
         // Only use router navigation if item uses 'to' and no 'href'
         // Detect if this should be a router link
-        const isRouterLink = 
+        const isRouterLink =
           // Standard checks for development
           comp?.displayName === "NavLink" ||
           comp?.name === "NavLink" ||
           comp?.displayName === "Link" ||
           // Check for router-specific props in the component
-          (typeof comp === "function" && (
-            comp?.propTypes?.to ||
-            comp?.defaultProps?.to !== undefined ||
-            // ForwardRef detection for newer React Router versions
-            (comp?.$$typeof === Symbol.for("react.forward_ref"))
-          ));
-        
+          (typeof comp === "function" &&
+            (comp?.propTypes?.to ||
+              comp?.defaultProps?.to !== undefined ||
+              // ForwardRef detection for newer React Router versions
+              comp?.$$typeof === Symbol.for("react.forward_ref")));
+
         if (isRouterLink) {
           props.to = navTarget;
         } else {
@@ -599,44 +617,113 @@ export default function Nav(props: NavProps) {
   }
 
   if (variant === "side") {
+    const collapsedWidth = 44;
     return (
-      <nav className={`${classes.rootSide} ${showBorder ? classes.rootSideBorder : ""} ${className ?? ""}`} style={styles?.root}>
+      <nav
+        ref={navRef as React.RefObject<HTMLElement>}
+        className={`${classes.rootSide} ${showBorder ? classes.rootSideBorder : ""} ${className ?? ""}`}
+        style={{
+          ...(styles?.root || {}),
+          width: animWidth !== undefined ? animWidth : collapsed ? collapsedWidth : undefined,
+        }}
+        onTransitionEnd={(e) => {
+          if (e.propertyName === "width") {
+            // After expand, restore fit-content by clearing inline width
+            if (!collapsed) setAnimWidth(undefined);
+          }
+        }}
+      >
         <div className={classes.listSide} style={styles?.menu}>
-          {items.map((it, idx) => {
-            const id = it.id ?? `i-${idx}`;
-            const hasChildren = !!it.items?.length;
-            const opened = open.has(id);
-            const isActive = activeId === id || (hasChildren && it.items?.some(sub => sub.id === activeId || sub.href === activeId));
-            return (
-              <div key={id}>
-                <Button
-                  appearance="transparent"
-                  pressEffect={false}
-                  className={classes.itemBtnSide}
-                    style={{...styles?.item, ...(isActive ? styles?.activeItem : {})}}
-                  onClick={(e: React.MouseEvent) => {
-                    if (hasChildren) {
-                      setOpen(prev => {
-                        const next = new Set(prev);
-                        if (opened) {
-                          next.delete(id);
-                        } else {
-                          next.add(id);
-                        }
-                        return next;
-                      });
-                    } else {
-                      setActiveId(id);
-                      it.onClick?.(e);
-                    }
-                  }}
-                  aria-expanded={hasChildren ? opened : undefined}
-                  styles={{content: {height: "100%", width: "100%"}}}
-                >
-                  {(it.href || it.to)
-                    ? <LinkComponent
+          {!props.hideCollapseToggle && (
+            <div className={classes.sideHeader}>
+              <Button
+                appearance="transparent"
+                size="small"
+                shape="circular"
+                pressEffect={false}
+                aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
+                icon={
+                  collapsed
+                    ? props.expandIcon ?? <Icon name="angles-right" weight="bold" />
+                    : props.collapseIcon ?? <Icon name="angles-left" weight="bold" />
+                }
+                style={styles?.collapseButton}
+                iconOnly
+                onClick={() => {
+                  const el = navRef.current;
+                  if (!el) {
+                    setCollapsed((v) => !v);
+                    return;
+                  }
+                  if (props.disableCollapseAnimation) {
+                    setAnimWidth(undefined);
+                    setCollapsed((v) => !v);
+                    return;
+                  }
+                  const measureExpanded = () => {
+                    const prev = el.style.width;
+                    el.style.width = "max-content";
+                    const w = Math.round(el.getBoundingClientRect().width);
+                    el.style.width = prev;
+                    return w;
+                  };
+                  if (collapsed) {
+                    // Expand: animate from collapsedWidth to measured expanded width
+                    setAnimWidth(collapsedWidth);
+                    setCollapsed(false);
+                    requestAnimationFrame(() => {
+                      const target = measureExpanded();
+                      if (target) setAnimWidth(target);
+                    });
+                  } else {
+                    // Collapse: animate from current expanded width to collapsed width
+                    const current = measureExpanded();
+                    if (current) setAnimWidth(current);
+                    requestAnimationFrame(() => {
+                      setCollapsed(true);
+                      requestAnimationFrame(() => setAnimWidth(collapsedWidth));
+                    });
+                  }
+                }}
+              />
+            </div>
+          )}
+          <div className={mergeClasses(classes.itemsSide, collapsed && classes.itemsSideHidden)}>
+            {items.map((it, idx) => {
+              const id = it.id ?? `i-${idx}`;
+              const hasChildren = !!it.items?.length;
+              const opened = open.has(id);
+              const isActive = activeId === id || (hasChildren && it.items?.some((sub) => sub.id === activeId || sub.href === activeId));
+              return (
+                <div key={id}>
+                  <Button
+                    appearance="transparent"
+                    pressEffect={false}
+                    className={classes.itemBtnSide}
+                    style={{ ...styles?.item, ...(isActive ? styles?.activeItem : {}) }}
+                    onClick={(e: React.MouseEvent) => {
+                      if (hasChildren) {
+                        setOpen((prev) => {
+                          const next = new Set(prev);
+                          if (opened) {
+                            next.delete(id);
+                          } else {
+                            next.add(id);
+                          }
+                          return next;
+                        });
+                      } else {
+                        setActiveId(id);
+                        it.onClick?.(e);
+                      }
+                    }}
+                    aria-expanded={hasChildren ? opened : undefined}
+                    styles={{ content: { height: "100%", width: "100%" } }}
+                  >
+                    {it.href || it.to ? (
+                      <LinkComponent
                         className={`${classes.linkSide} ${!showActiveUnderline ? classes.noUnderline : ""}`}
-                          style={{...styles?.link, ...(isActive ? styles?.activeLink : {})}}
+                        style={{ ...styles?.link, ...(isActive ? styles?.activeLink : {}) }}
                         {...getLinkProps(it)}
                         onClick={(e: React.MouseEvent) => {
                           if (!hasChildren) {
@@ -648,41 +735,50 @@ export default function Nav(props: NavProps) {
                       >
                         <span>{it.label}</span>
                         {hasChildren && (
-                        <span className={`${classes.chevronSide} ${opened ? classes.chevronOpenSide : ""}`} style={{...styles?.chevronSide, ...(opened ? styles?.chevronOpen : {})}} aria-hidden>
-                          <Icon name="chevron-down" className={classes.chevronIcon} style={{ fontSize: "18px", ...styles?.chevronIcon }} />
-                        </span>
+                          <span
+                            className={`${classes.chevronSide} ${opened ? classes.chevronOpenSide : ""}`}
+                            style={{ ...styles?.chevronSide, ...(opened ? styles?.chevronOpen : {}) }}
+                            aria-hidden
+                          >
+                            <Icon name="chevron-down" className={classes.chevronIcon} style={{ fontSize: "18px", ...styles?.chevronIcon }} />
+                          </span>
                         )}
                       </LinkComponent>
-                    : <span style={styles?.link}>{it.label}</span>}
-                </Button>
-                {hasChildren && opened && (
-                  <div className={classes.subListSide} style={styles?.subMenu}>
-                    {it.items!.map((sub, sidx) => {
-                      const subId = sub.id ?? `${id}-s-${sidx}`;
-                      const subActive = activeId === subId || activeId === sub.href;
-                      return (
-                        (sub.href || sub.to)
-                          ? <LinkComponent
-                              key={subId}
-                              className={classes.subLink}
-                                style={{...styles?.subLink, ...(subActive ? styles?.activeSubLink : {})}}
-                              {...getLinkProps(sub)}
-                              onClick={(e: React.MouseEvent) => {
-                                setActiveId(subId);
-                                sub.onClick?.(e);
-                              }}
-                              aria-current={subActive ? "page" : undefined}
-                            >
-                              {sub.label}
-                            </LinkComponent>
-                          : <span key={subId} style={styles?.subLink}>{sub.label}</span>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                    ) : (
+                      <span style={styles?.link}>{it.label}</span>
+                    )}
+                  </Button>
+                  {hasChildren && opened && (
+                    <div className={classes.subListSide} style={styles?.subMenu}>
+                      {it.items!.map((sub, sidx) => {
+                        const subId = sub.id ?? `${id}-s-${sidx}`;
+                        const subActive = activeId === subId || activeId === sub.href;
+                        return sub.href || sub.to ? (
+                          <LinkComponent
+                            key={subId}
+                            className={classes.subLink}
+                            style={{ ...styles?.subLink, ...(subActive ? styles?.activeSubLink : {}) }}
+                            {...getLinkProps(sub)}
+                            onClick={(e: React.MouseEvent) => {
+                              setActiveId(subId);
+                              sub.onClick?.(e);
+                            }}
+                            aria-current={subActive ? "page" : undefined}
+                          >
+                            {sub.label}
+                          </LinkComponent>
+                        ) : (
+                          <span key={subId} style={styles?.subLink}>
+                            {sub.label}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </nav>
     );
@@ -698,21 +794,17 @@ export default function Nav(props: NavProps) {
           </div>
         ) : null}
         <div className={classes.itemsContainer} style={styles?.itemsWrapper}>
-          <nav
-            className={classes.listTop}
-            style={styles?.menu}
-            ref={containerRef as React.RefObject<HTMLElement>}
-          >
+          <nav className={classes.listTop} style={styles?.menu} ref={containerRef as React.RefObject<HTMLElement>}>
             {(disableOverflow ? items : items.slice(0, visibleCount)).map((it, idx) => {
               const hasChildren = !!it.items?.length;
               const id = it.id ?? `i-${idx}`;
-              const isActive = activeId === id || (hasChildren && it.items?.some(sub => sub.id === activeId || sub.href === activeId));
+              const isActive = activeId === id || (hasChildren && it.items?.some((sub) => sub.id === activeId || sub.href === activeId));
               return (
                 <div
                   key={id}
                   style={{ position: "relative", whiteSpace: "nowrap", ...(styles?.item ?? {}), ...(isActive ? styles?.activeItem : {}) }}
                   onMouseEnter={() => setHoverIdx(idx)}
-                  onMouseLeave={() => setHoverIdx(v => (v === idx ? null : v))}
+                  onMouseLeave={() => setHoverIdx((v) => (v === idx ? null : v))}
                 >
                   {hasChildren && (it.href || it.to) ? (
                     <>
@@ -726,7 +818,11 @@ export default function Nav(props: NavProps) {
                         aria-current={isActive ? "page" : undefined}
                       >
                         <span>{it.label}</span>
-                        <span className={`${classes.chevron} ${hoverIdx === idx ? classes.chevronOpen : ""}`} style={{ ...styles?.chevron, ...(hoverIdx === idx ? styles?.chevronOpen : {}) }} aria-hidden>
+                        <span
+                          className={`${classes.chevron} ${hoverIdx === idx ? classes.chevronOpen : ""}`}
+                          style={{ ...styles?.chevron, ...(hoverIdx === idx ? styles?.chevronOpen : {}) }}
+                          aria-hidden
+                        >
                           <Icon name="chevron-down" style={{ fontSize: "14px", ...styles?.chevronIcon }} />
                         </span>
                       </LinkComponent>
@@ -747,25 +843,25 @@ export default function Nav(props: NavProps) {
                             {it.items!.map((sub, sidx) => {
                               const subId = sub.id ?? `${id}-s-${sidx}`;
                               const subActive = activeId === subId || activeId === sub.href;
-                              return (sub.href || sub.to)
-                                ? (
-                                  <LinkComponent
-                                    key={subId}
-                                    className={classes.subLink}
-                                    style={{ ...styles?.subLink, ...(subActive ? styles?.activeSubLink : {}) }}
-                                    {...getLinkProps(sub)}
-                                    onClick={(e: React.MouseEvent) => {
-                                      setActiveId(subId);
-                                      sub.onClick?.(e);
-                                    }}
-                                    aria-current={subActive ? "page" : undefined}
-                                  >
-                                    {sub.label}
-                                  </LinkComponent>
-                                )
-                                : (
-                                  <span key={subId} className={classes.plainTextItem} style={styles?.subLink}>{sub.label}</span>
-                                );
+                              return sub.href || sub.to ? (
+                                <LinkComponent
+                                  key={subId}
+                                  className={classes.subLink}
+                                  style={{ ...styles?.subLink, ...(subActive ? styles?.activeSubLink : {}) }}
+                                  {...getLinkProps(sub)}
+                                  onClick={(e: React.MouseEvent) => {
+                                    setActiveId(subId);
+                                    sub.onClick?.(e);
+                                  }}
+                                  aria-current={subActive ? "page" : undefined}
+                                >
+                                  {sub.label}
+                                </LinkComponent>
+                              ) : (
+                                <span key={subId} className={classes.plainTextItem} style={styles?.subLink}>
+                                  {sub.label}
+                                </span>
+                              );
                             })}
                           </div>
                         </>
@@ -781,69 +877,34 @@ export default function Nav(props: NavProps) {
                       menuItems={it.items!.map((sub, sidx) => {
                         const subId = sub.id ?? `${id}-s-${sidx}`;
                         const subActive = activeId === subId || activeId === sub.href;
-                        return (sub.href || sub.to)
-                          ? (
-                            <LinkComponent
-                              key={subId}
-                              className={classes.subLink}
-                              style={{ ...styles?.subLink, ...(subActive ? styles?.activeSubLink : {}) }}
-                              {...getLinkProps(sub)}
-                              onClick={(e: React.MouseEvent) => {
-                                setActiveId(subId);
-                                sub.onClick?.(e);
-                              }}
-                              aria-current={subActive ? "page" : undefined}
-                            >
-                              {sub.label}
-                            </LinkComponent>
-                          )
-                          : (
-                            <span key={subId} className={classes.plainTextItem} style={styles?.subLink}>{sub.label}</span>
-                          );
+                        return sub.href || sub.to ? (
+                          <LinkComponent
+                            key={subId}
+                            className={classes.subLink}
+                            style={{ ...styles?.subLink, ...(subActive ? styles?.activeSubLink : {}) }}
+                            {...getLinkProps(sub)}
+                            onClick={(e: React.MouseEvent) => {
+                              setActiveId(subId);
+                              sub.onClick?.(e);
+                            }}
+                            aria-current={subActive ? "page" : undefined}
+                          >
+                            {sub.label}
+                          </LinkComponent>
+                        ) : (
+                          <span key={subId} className={classes.plainTextItem} style={styles?.subLink}>
+                            {sub.label}
+                          </span>
+                        );
                       })}
                       menuTrigger="hover"
                     >
                       {it.label}
                     </Button>
-                  ) : (
-                    (it.href || it.to)
-                      ? (
-                        <LinkComponent
-                          className={`${classes.itemBtn} ${classes.link} ${!showActiveUnderline ? classes.noUnderline : ""}`}
-                          style={{ ...styles?.link, ...(isActive ? styles?.activeLink : {}) }}
-                          {...getLinkProps(it)}
-                          onClick={(e: React.MouseEvent) => {
-                            if (!hasChildren) {
-                              setActiveId(id);
-                            }
-                            it.onClick?.(e);
-                          }}
-                          aria-current={isActive ? "page" : undefined}
-                        >
-                          <span>{it.label}</span>
-                        </LinkComponent>
-                      )
-                      : <span className={classes.plainTextItem} style={styles?.link}>{it.label}</span>
-                  )}
-                </div>
-              );
-            })}
-          </nav>
-        </div>
-        
-        {!disableOverflow && visibleCount < items.length && (
-          <div className={classes.moreWrapper} style={styles?.moreWrapper}>
-            {renderMoreButton(
-              items.slice(visibleCount).map((it, idx) => {
-                const hasChildren = !!it.items?.length;
-                const id = it.id ?? `overflow-i-${idx}`;
-                const isActive = activeId === id || (hasChildren && it.items?.some(sub => sub.id === activeId || sub.href === activeId));
-                return (it.href || it.to)
-                  ? (
+                  ) : it.href || it.to ? (
                     <LinkComponent
-                      key={id}
-                      className={classes.subLink}
-                      style={{ ...styles?.subLink, ...(isActive ? styles?.activeSubLink : {}) }}
+                      className={`${classes.itemBtn} ${classes.link} ${!showActiveUnderline ? classes.noUnderline : ""}`}
+                      style={{ ...styles?.link, ...(isActive ? styles?.activeLink : {}) }}
                       {...getLinkProps(it)}
                       onClick={(e: React.MouseEvent) => {
                         if (!hasChildren) {
@@ -853,10 +914,47 @@ export default function Nav(props: NavProps) {
                       }}
                       aria-current={isActive ? "page" : undefined}
                     >
-                      {it.label}
+                      <span>{it.label}</span>
                     </LinkComponent>
-                  )
-                  : <span key={id} className={classes.plainTextItem} style={styles?.subLink}>{it.label}</span>;
+                  ) : (
+                    <span className={classes.plainTextItem} style={styles?.link}>
+                      {it.label}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
+        </div>
+
+        {!disableOverflow && visibleCount < items.length && (
+          <div className={classes.moreWrapper} style={styles?.moreWrapper}>
+            {renderMoreButton(
+              items.slice(visibleCount).map((it, idx) => {
+                const hasChildren = !!it.items?.length;
+                const id = it.id ?? `overflow-i-${idx}`;
+                const isActive = activeId === id || (hasChildren && it.items?.some((sub) => sub.id === activeId || sub.href === activeId));
+                return it.href || it.to ? (
+                  <LinkComponent
+                    key={id}
+                    className={classes.subLink}
+                    style={{ ...styles?.subLink, ...(isActive ? styles?.activeSubLink : {}) }}
+                    {...getLinkProps(it)}
+                    onClick={(e: React.MouseEvent) => {
+                      if (!hasChildren) {
+                        setActiveId(id);
+                      }
+                      it.onClick?.(e);
+                    }}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {it.label}
+                  </LinkComponent>
+                ) : (
+                  <span key={id} className={classes.plainTextItem} style={styles?.subLink}>
+                    {it.label}
+                  </span>
+                );
               })
             )}
           </div>
@@ -868,30 +966,27 @@ export default function Nav(props: NavProps) {
         ) : null}
       </div>
       {!disableOverflow && (
-        <div
-          className={classes.hiddenMeasure}
-          ref={measureRef}
-          aria-hidden
-        >
+        <div className={classes.hiddenMeasure} ref={measureRef} aria-hidden>
           <nav className={classes.listTop} style={styles?.menu}>
             {items.map((it, idx) => {
               const hasChildren = !!it.items?.length;
               const id = it.id ?? `m-i-${idx}`;
               return (
                 <div key={id} style={{ position: "relative", whiteSpace: "nowrap", ...(styles?.item ?? {}) }}>
-                  {(it.href || it.to)
-                    ? (
-                      <LinkComponent className={`${classes.itemBtn} ${classes.link}`} style={styles?.link} {...getLinkProps(it)} data-role="item">
-                        <span>{it.label}</span>
-                        {hasChildren && (
-                          <span className={classes.chevron} style={styles?.chevron} aria-hidden>
-                            <Icon name="chevron-down" style={{ fontSize: "18px", ...styles?.chevronIcon }} />
-                          </span>
-                        )}
-                      </LinkComponent>
-                    )
-                    : <span className={classes.plainTextItem} style={styles?.link} data-role="item">{it.label}</span>
-                  }
+                  {it.href || it.to ? (
+                    <LinkComponent className={`${classes.itemBtn} ${classes.link}`} style={styles?.link} {...getLinkProps(it)} data-role="item">
+                      <span>{it.label}</span>
+                      {hasChildren && (
+                        <span className={classes.chevron} style={styles?.chevron} aria-hidden>
+                          <Icon name="chevron-down" style={{ fontSize: "18px", ...styles?.chevronIcon }} />
+                        </span>
+                      )}
+                    </LinkComponent>
+                  ) : (
+                    <span className={classes.plainTextItem} style={styles?.link} data-role="item">
+                      {it.label}
+                    </span>
+                  )}
                 </div>
               );
             })}
