@@ -70,14 +70,14 @@ describe("Nav component", () => {
   });
 
   it("renders side variant", () => {
-    render(<Nav items={items} disableOverflow variant="side" />);
+    render(<Nav items={items} disableOverflow variant="side" showOnHover={false} />);
     expect(screen.getByText("Home")).toBeInTheDocument();
     expect(screen.getByText("About")).toBeInTheDocument();
     expect(screen.getByText("Contact")).toBeInTheDocument();
   });
 
   it("opens default submenus in side variant via defaultOpenIds", () => {
-    render(<Nav items={items} disableOverflow variant="side" defaultOpenIds={["about"]} />);
+    render(<Nav items={items} disableOverflow variant="side" defaultOpenIds={["about"]} showOnHover={false} />);
     expect(screen.getByText("Team")).toBeInTheDocument();
     expect(screen.getByText("Company")).toBeInTheDocument();
   });
@@ -109,14 +109,14 @@ describe("Nav component", () => {
   });
 
   it("opens submenu in side variant on click", () => {
-    render(<Nav items={items} disableOverflow variant="side" />);
+    render(<Nav items={items} disableOverflow variant="side" showOnHover={false} />);
     fireEvent.click(screen.getByText("About"));
     expect(screen.getByText("Team")).toBeInTheDocument();
     expect(screen.getByText("Company")).toBeInTheDocument();
   });
 
   it("sets active for sub nav item in side variant", () => {
-    render(<Nav items={items} disableOverflow variant="side" />);
+    render(<Nav items={items} disableOverflow variant="side" showOnHover={false} />);
     fireEvent.click(screen.getByText("About"));
     fireEvent.click(screen.getByText("Company"));
     const companyLink = screen.getByText("Company").closest("a");

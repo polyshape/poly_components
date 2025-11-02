@@ -22,6 +22,7 @@ const DEFAULT_STYLES = {
   moreButton: {},
   moreWrapper: {},
   collapseButton: {},
+  hoverPanel: {},
   chevron: {},
   chevronOpen: {},
   chevronSide: {},
@@ -42,6 +43,7 @@ const meta: Meta<typeof Nav> = {
     showBorder: undefined,
     hideCollapseToggle: undefined,
     disableCollapseAnimation: undefined,
+    showOnHover: undefined,
     linkProp: undefined,
     responsiveBreakpoint: undefined,
     showActiveUnderline: undefined,
@@ -182,20 +184,22 @@ export const Top: Story = {
   args: {
     items: sampleNoRouting,
   },
+  argTypes: {
+    variant: { control: false },
+  },
   parameters: { layout: "fullscreen" },
   render: (args) => <Nav responsiveBreakpoint={600} {...args} />,
 };
 
 export const Side: Story = {
   args: { items: sampleNoRouting, variant: "side", defaultOpenIds: ["partners", "company"] },
+  argTypes: {
+    variant: { control: false },
+  },
   parameters: { layout: "fullscreen" },
   render: (args) => {
-    const isSide = args.variant === "side";
-    const gridStyle: CSSProperties = isSide
-      ? { display: "flex", flexDirection: "row", minHeight: 240 }
-      : { display: "flex", flexDirection: "column", minHeight: 240 };
     return (
-      <div style={gridStyle}>
+      <div style={{ display: "flex", flexDirection: "row", height: "100vh" }}>
         <Nav {...args} />
         <div style={{ padding: 16 }}>Content</div>
       </div>
@@ -210,6 +214,9 @@ export const SideWithCustomIcons: Story = {
     defaultOpenIds: ["partners", "company"],
     collapseIcon: <ArrowLeftIcon weight={"bold"} />,
     expandIcon: <ArrowRightIcon weight={"bold"} />,
+  },
+  argTypes: {
+    variant: { control: false },
   },
   parameters: { layout: "fullscreen" },
   render: (args) => {

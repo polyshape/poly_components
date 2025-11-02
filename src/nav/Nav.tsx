@@ -35,6 +35,8 @@ export type NavStyleOverrides = Partial<{
   moreWrapper: CSSProperties;
   // Collapse/expand toggle button (side variant)
   collapseButton: CSSProperties;
+  // Hover preview panel styling (side variant)
+  hoverPanel: CSSProperties;
   // Chevron/dropdown indicator styling
   chevron: CSSProperties;
   chevronOpen: CSSProperties;
@@ -63,6 +65,8 @@ export type NavProps = {
   hideCollapseToggle?: boolean;
   /** Disables the collapse/expand animation; toggles instantly. */
   disableCollapseAnimation?: boolean;
+  /** When collapsed, show a hover preview panel with full items. */
+  showOnHover?: boolean;
   /** Optional content rendered to the left side of the navigation items (top variant only). */
   customLeft?: ReactNode;
   /** Optional content rendered to the right side of the navigation items (top variant only). */
@@ -98,7 +102,7 @@ const useStyles = makeStyles({
     background: "var(--pc-nav-bg)",
     color: "var(--pc-fg, #222)",
     // Allow shrinking when used as a flex child in host layouts
-    minWidth: "fit-content",
+    minWidth: 0,
   },
   rootTopBorder: {
     borderBottom: "1px solid var(--pc-border)",
@@ -308,19 +312,59 @@ const useStyles = makeStyles({
   rootSideBorder: {
     borderRight: "1px solid var(--pc-border)",
   },
-  listSide: { display: "grid", gap: "4px", padding: "8px", width: "100%", position: "relative", minWidth: 0 },
-  sideHeader: {
+  listSide: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    padding: "8px",
+    width: "100%",
+    position: "relative",
+    minWidth: 0,
+    height: "100%",
+  },
+  sideTriggerCol: {
     position: "absolute",
-    top: "10px",
-    right: "20px",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    pointerEvents: "none",
+    zIndex: 2,
+  },
+  sideHeader: {
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",
     pointerEvents: "auto",
-    zIndex: 2,
+    padding: "10px 20px 6px 8px",
   },
-  itemsSide: { display: "grid", gap: "4px" },
+  itemsSide: { display: "flex", flexDirection: "column", gap: "4px" },
   itemsSideHidden: { visibility: "hidden", pointerEvents: "none" },
+  hoverZone: {
+    flex: 1,
+    width: "73%",
+    pointerEvents: "auto",
+  },
+  sidePreview: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "max-content",
+    minWidth: "fit-content",
+    background: "var(--pc-nav-bg)",
+    color: "var(--pc-fg)",
+    border: "1px solid var(--pc-border)",
+    borderLeft: 0,
+    boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
+    padding: "8px",
+    transition: "opacity 160ms ease, transform 180ms ease",
+    height: "100%",
+    zIndex: 3,
+  },
+  sidePreviewHidden: { opacity: 0, transform: "translateX(-6px)", pointerEvents: "none" },
+  sidePreviewVisible: { opacity: 1, transform: "translateX(0)" },
   itemBtnSide: {
     composes: "$itemBtn",
     width: "100%",
@@ -393,6 +437,7 @@ export default function Nav(props: NavProps) {
     overflowAvailableWidth,
     customLeft,
     customRight,
+    showOnHover = true,
   } = props;
   const classes = useStyles();
   const [isSmall, setIsSmall] = useState<boolean>(false);
@@ -551,6 +596,10 @@ export default function Nav(props: NavProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [animWidth, setAnimWidth] = useState<number | undefined>(undefined);
+  // Hide side-nav children while expanding to prevent layout bounce
+  const [expanding, setExpanding] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [anchorRect, setAnchorRect] = useState<{ left: number; top: number; height: number } | null>(null);
   const navRef = useRef<HTMLElement | null>(null);
   const LinkComponent = as || "a";
   const renderMoreButton = (menuItemsForButton: ReactNode[], extraProps?: Record<string, unknown>) => (
@@ -629,66 +678,88 @@ export default function Nav(props: NavProps) {
         onTransitionEnd={(e) => {
           if (e.propertyName === "width") {
             // After expand, restore fit-content by clearing inline width
-            if (!collapsed) setAnimWidth(undefined);
+            if (!collapsed) {
+              setAnimWidth(undefined);
+              // expansion finished, show children again
+              if (expanding) setExpanding(false);
+            }
           }
         }}
       >
         <div className={classes.listSide} style={styles?.menu}>
-          {!props.hideCollapseToggle && (
-            <div className={classes.sideHeader}>
-              <Button
-                appearance="transparent"
-                size="small"
-                shape="circular"
-                pressEffect={false}
-                aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
-                icon={
-                  collapsed
-                    ? props.expandIcon ?? <Icon name="angles-right" weight="bold" />
-                    : props.collapseIcon ?? <Icon name="angles-left" weight="bold" />
-                }
-                style={styles?.collapseButton}
-                iconOnly
-                onClick={() => {
+          <div className={classes.sideTriggerCol}>
+            {!props.hideCollapseToggle && (
+              <div className={classes.sideHeader}>
+                <Button
+                  appearance="transparent"
+                  size="small"
+                  shape="circular"
+                  pressEffect={false}
+                  aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
+                  icon={
+                    collapsed
+                      ? (props.expandIcon ?? <Icon name="angles-right" weight="bold" />)
+                      : (props.collapseIcon ?? <Icon name="angles-left" weight="bold" />)
+                  }
+                  style={styles?.collapseButton}
+                  iconOnly
+                  onClick={() => {
+                    const el = navRef.current;
+                    if (!el) {
+                      setCollapsed((v) => !v);
+                      return;
+                    }
+                    if (props.disableCollapseAnimation) {
+                      setAnimWidth(undefined);
+                      setCollapsed((v) => !v);
+                      return;
+                    }
+                    const measureExpanded = () => {
+                      const prev = el.style.width;
+                      el.style.width = "max-content";
+                      const w = Math.round(el.getBoundingClientRect().width);
+                      el.style.width = prev;
+                      return w;
+                    };
+                    if (collapsed) {
+                      // Expand: animate from collapsedWidth to measured expanded width
+                      setExpanding(true);
+                      setAnimWidth(collapsedWidth);
+                      setCollapsed(false);
+                      requestAnimationFrame(() => {
+                        const target = measureExpanded();
+                        if (target) setAnimWidth(target);
+                      });
+                    } else {
+                      // Collapse: animate from current expanded width to collapsed width
+                      const current = measureExpanded();
+                      if (current) setAnimWidth(current);
+                      requestAnimationFrame(() => {
+                        setCollapsed(true);
+                        requestAnimationFrame(() => setAnimWidth(collapsedWidth));
+                      });
+                    }
+                  }}
+                />
+              </div>
+            )}
+            {collapsed && showOnHover && (
+              <div
+                className={classes.hoverZone}
+                onMouseEnter={() => {
+                  if (previewOpen) return;
+                  setPreviewOpen(true);
                   const el = navRef.current;
-                  if (!el) {
-                    setCollapsed((v) => !v);
-                    return;
-                  }
-                  if (props.disableCollapseAnimation) {
-                    setAnimWidth(undefined);
-                    setCollapsed((v) => !v);
-                    return;
-                  }
-                  const measureExpanded = () => {
-                    const prev = el.style.width;
-                    el.style.width = "max-content";
-                    const w = Math.round(el.getBoundingClientRect().width);
-                    el.style.width = prev;
-                    return w;
-                  };
-                  if (collapsed) {
-                    // Expand: animate from collapsedWidth to measured expanded width
-                    setAnimWidth(collapsedWidth);
-                    setCollapsed(false);
-                    requestAnimationFrame(() => {
-                      const target = measureExpanded();
-                      if (target) setAnimWidth(target);
-                    });
-                  } else {
-                    // Collapse: animate from current expanded width to collapsed width
-                    const current = measureExpanded();
-                    if (current) setAnimWidth(current);
-                    requestAnimationFrame(() => {
-                      setCollapsed(true);
-                      requestAnimationFrame(() => setAnimWidth(collapsedWidth));
-                    });
+                  if (el) {
+                    const r = el.getBoundingClientRect();
+                    setAnchorRect({ left: Math.round(r.left), top: Math.round(r.top), height: Math.round(r.height) });
                   }
                 }}
+                aria-hidden
               />
-            </div>
-          )}
-          <div className={mergeClasses(classes.itemsSide, collapsed && classes.itemsSideHidden)}>
+            )}
+          </div>
+          <div className={mergeClasses(classes.itemsSide, (collapsed || expanding) && classes.itemsSideHidden)}>
             {items.map((it, idx) => {
               const id = it.id ?? `i-${idx}`;
               const hasChildren = !!it.items?.length;
@@ -779,6 +850,115 @@ export default function Nav(props: NavProps) {
               );
             })}
           </div>
+          {showOnHover && (
+            <div
+              className={mergeClasses(classes.sidePreview, previewOpen ? classes.sidePreviewVisible : classes.sidePreviewHidden)}
+              onMouseLeave={() => {
+                if (!previewOpen) return;
+                setPreviewOpen(false);
+              }}
+              style={{
+                ...(styles?.hoverPanel || {}),
+                ...(showBorder ? {} : { border: "none" }),
+                ...(props.disableCollapseAnimation ? { transition: "none" } : {}),
+                ...(collapsed && previewOpen && anchorRect
+                  ? { position: "fixed", left: anchorRect.left, top: anchorRect.top, height: anchorRect.height }
+                  : {}),
+              }}
+            >
+              <div className={classes.itemsSide}>
+                {items.map((it, idx) => {
+                  const id = it.id ?? `p-i-${idx}`;
+                  const hasChildren = !!it.items?.length;
+                  const opened = open.has(id);
+                  const isActive = activeId === id || (hasChildren && it.items?.some((sub) => sub.id === activeId || sub.href === activeId));
+                  return (
+                    <div key={id}>
+                      <Button
+                        appearance="transparent"
+                        pressEffect={false}
+                        className={classes.itemBtnSide}
+                        style={{ ...styles?.item, ...(isActive ? styles?.activeItem : {}) }}
+                        onClick={(e: React.MouseEvent) => {
+                          if (hasChildren) {
+                            setOpen((prev) => {
+                              const next = new Set(prev);
+                              if (opened) {
+                                next.delete(id);
+                              } else {
+                                next.add(id);
+                              }
+                              return next;
+                            });
+                          } else {
+                            setActiveId(id);
+                            it.onClick?.(e);
+                          }
+                        }}
+                        aria-expanded={hasChildren ? opened : undefined}
+                        styles={{ content: { height: "100%", width: "100%" } }}
+                      >
+                        {it.href || it.to ? (
+                          <LinkComponent
+                            className={`${classes.linkSide} ${!showActiveUnderline ? classes.noUnderline : ""}`}
+                            style={{ ...styles?.link, ...(isActive ? styles?.activeLink : {}) }}
+                            {...getLinkProps(it)}
+                            onClick={(e: React.MouseEvent) => {
+                              if (!hasChildren) {
+                                setActiveId(id);
+                              }
+                              it.onClick?.(e);
+                            }}
+                            aria-current={isActive ? "page" : undefined}
+                          >
+                            <span>{it.label}</span>
+                            {hasChildren && (
+                              <span
+                                className={`${classes.chevronSide} ${opened ? classes.chevronOpenSide : ""}`}
+                                style={{ ...styles?.chevronSide, ...(opened ? styles?.chevronOpen : {}) }}
+                                aria-hidden
+                              >
+                                <Icon name="chevron-down" className={classes.chevronIcon} style={{ fontSize: "18px", ...styles?.chevronIcon }} />
+                              </span>
+                            )}
+                          </LinkComponent>
+                        ) : (
+                          <span style={styles?.link}>{it.label}</span>
+                        )}
+                      </Button>
+                      {hasChildren && opened && (
+                        <div className={classes.subListSide} style={styles?.subMenu}>
+                          {it.items!.map((sub, sidx) => {
+                            const subId = sub.id ?? `${id}-s-${sidx}`;
+                            const subActive = activeId === subId || activeId === sub.href;
+                            return sub.href || sub.to ? (
+                              <LinkComponent
+                                key={subId}
+                                className={classes.subLink}
+                                style={{ ...styles?.subLink, ...(subActive ? styles?.activeSubLink : {}) }}
+                                {...getLinkProps(sub)}
+                                onClick={(e: React.MouseEvent) => {
+                                  setActiveId(subId);
+                                  sub.onClick?.(e);
+                                }}
+                                aria-current={subActive ? "page" : undefined}
+                              >
+                                {sub.label}
+                              </LinkComponent>
+                            ) : (
+                              <span key={subId} style={styles?.subLink}>
+                                {sub.label}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </nav>
     );
