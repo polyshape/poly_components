@@ -35,6 +35,8 @@ export type NavStyleOverrides = Partial<{
   moreWrapper: CSSProperties;
   // Collapse/expand toggle button (side variant)
   collapseButton: CSSProperties;
+  // Expand button for the hover preview panel (side variant)
+  hoverCollapseButton: CSSProperties;
   // Hover preview panel styling (side variant)
   hoverPanel: CSSProperties;
   // Chevron/dropdown indicator styling
@@ -339,6 +341,11 @@ const useStyles = makeStyles({
     justifyContent: "flex-end",
     pointerEvents: "auto",
     padding: "10px 20px 6px 8px",
+  },
+  previewPanelButton: {
+    position: "absolute",
+    top: "10px",
+    right: "2px",
   },
   itemsSide: { display: "flex", flexDirection: "column", gap: "4px" },
   itemsSideHidden: { visibility: "hidden", pointerEvents: "none" },
@@ -866,6 +873,43 @@ export default function Nav(props: NavProps) {
                   : {}),
               }}
             >
+              <Button
+                appearance="transparent"
+                size="small"
+                shape="circular"
+                pressEffect={false}
+                aria-label={"Expand navigation"}
+                icon={props.expandIcon ?? <Icon name="angles-right" weight="bold" />}
+                className={classes.previewPanelButton}
+                style={styles?.collapseButton}
+                iconOnly
+                onClick={() => {
+                  const el = navRef.current;
+                  if (!el) {
+                    setCollapsed((v) => !v);
+                    return;
+                  }
+                  if (props.disableCollapseAnimation) {
+                    setAnimWidth(undefined);
+                    setCollapsed((v) => !v);
+                    return;
+                  }
+                  const measureExpanded = () => {
+                    const prev = el.style.width;
+                    el.style.width = "max-content";
+                    const w = Math.round(el.getBoundingClientRect().width);
+                    el.style.width = prev;
+                    return w;
+                  };
+                  setExpanding(true);
+                  setAnimWidth(collapsedWidth);
+                  setCollapsed(false);
+                  requestAnimationFrame(() => {
+                    const target = measureExpanded();
+                    if (target) setAnimWidth(target);
+                  });
+                }}
+              />
               <div className={classes.itemsSide}>
                 {items.map((it, idx) => {
                   const id = it.id ?? `p-i-${idx}`;

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import React, { CSSProperties } from "react";
+import React from "react";
 import { MemoryRouter, NavLink } from "react-router-dom";
 import { ArrowLeftIcon, ArrowRightIcon, Button, EnvelopeIcon, Nav, type NavItem } from "../src";
 import NavSmall from "../src/nav/NavSmall";
@@ -22,6 +22,7 @@ const DEFAULT_STYLES = {
   moreButton: {},
   moreWrapper: {},
   collapseButton: {},
+  hoverCollapseButton: {},
   hoverPanel: {},
   chevron: {},
   chevronOpen: {},
@@ -220,12 +221,8 @@ export const SideWithCustomIcons: Story = {
   },
   parameters: { layout: "fullscreen" },
   render: (args) => {
-    const isSide = args.variant === "side";
-    const gridStyle: CSSProperties = isSide
-      ? { display: "flex", flexDirection: "row", minHeight: 240 }
-      : { display: "flex", flexDirection: "column", minHeight: 240 };
     return (
-      <div style={gridStyle}>
+      <div style={{ display: "flex", flexDirection: "row", height: "100vh" }}>
         <Nav {...args} />
         <div style={{ padding: 16 }}>Content</div>
       </div>
